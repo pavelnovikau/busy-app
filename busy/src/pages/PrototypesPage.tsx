@@ -8,6 +8,8 @@ import { EnergyPrediction } from '@components/proto/EnergyPrediction'
 import { TeamFlowDashboard } from '@components/proto/TeamFlowDashboard'
 import { FocusProfile } from '@components/proto/FocusProfile'
 import { BodyDoublingRoom } from '@components/proto/BodyDoublingRoom'
+import { AICoachChat } from '@components/proto/AICoachChat'
+import { FocusProfilePage } from '@components/proto/FocusProfilePage'
 
 const prototypes = prototypesData as Prototype[]
 
@@ -39,6 +41,8 @@ const protoComponents: Record<string, React.ComponentType> = {
   'team-flow-dashboard': TeamFlowDashboard,
   'focus-profile': FocusProfile,
   'body-doubling-room': BodyDoublingRoom,
+  'ai-coach-chat': AICoachChat,
+  'focus-profile-page': FocusProfilePage,
 }
 
 const ALL_RINGS = ['r0', 'r1', 'r2', 'r3'] as const

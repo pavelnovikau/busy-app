@@ -644,7 +644,7 @@ interface Prototype {
 
 - [x] `SystemPage.tsx` — typography specimen, color tokens, component gallery
 - [x] Performance: LazyMotion async, route-level code splitting
-- [ ] `AICoachChat.tsx` + `FocusProfilePage.tsx` (Ring 3 прото)
+- [x] `AICoachChat.tsx` + `FocusProfilePage.tsx` (Ring 3 прото)
 
 **Deliverable:** ✅ `npm run build` — initial chunk 227kb (был 462kb). Полностью законченный инструмент
 
