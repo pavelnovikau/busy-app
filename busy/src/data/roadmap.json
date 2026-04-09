@@ -1,0 +1,84 @@
+[
+  {
+    "id": "p0",
+    "ring": "r0",
+    "label": "Phase 0 \u2014 Core",
+    "horizon": "\u0421\u0435\u0439\u0447\u0430\u0441",
+    "monthsRange": [0, 0],
+    "gate": null,
+    "circuitBreakers": [
+      "\u0415\u0441\u043b\u0438 30-day retention < 15% \u0447\u0435\u0440\u0435\u0437 6 \u043c\u0435\u0441\u044f\u0446\u0435\u0432 \u2192 \u043e\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0432\u0441\u0435 Ring 1 \u0440\u0430\u0431\u043e\u0442\u044b"
+    ],
+    "prototypeIds": ["focus-heatmap"],
+    "milestones": [
+      { "label": "Hardware ship", "date": "2025-Q4" }
+    ]
+  },
+  {
+    "id": "p1.0",
+    "ring": "r1",
+    "label": "Phase 1.0 \u2014 Auto Presence",
+    "horizon": "0\u20136 \u043c\u0435\u0441",
+    "monthsRange": [0, 6],
+    "gate": "30-day retention \u2265 40%; < 20% = STOP",
+    "circuitBreakers": [
+      "\u0415\u0441\u043b\u0438 Microsoft \u0432\u044b\u043f\u0443\u0441\u043a\u0430\u0435\u0442 Teams hardware < $79 \u2192 pivot to ADHD/prosumer"
+    ],
+    "prototypeIds": ["ai-focus-mentor"],
+    "milestones": []
+  },
+  {
+    "id": "p1.5",
+    "ring": "r1",
+    "label": "Phase 1.5 \u2014 Focus Memory",
+    "horizon": "6\u20139 \u043c\u0435\u0441",
+    "monthsRange": [6, 9],
+    "gate": "Focus Score adoption \u2265 30% DAU",
+    "circuitBreakers": [
+      "\u0415\u0441\u043b\u0438 < 10% \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439 \u043e\u0442\u043a\u0440\u044b\u0432\u0430\u044e\u0442 \u0430\u043d\u0430\u043b\u0438\u0442\u0438\u043a\u0443 \u0435\u0436\u0435\u043d\u0435\u0434\u0435\u043b\u044c\u043d\u043e \u2192 \u043f\u0435\u0440\u0435\u0441\u043c\u043e\u0442\u0440\u0435\u0442\u044c UX"
+    ],
+    "prototypeIds": ["energy-prediction"],
+    "milestones": []
+  },
+  {
+    "id": "p2.0",
+    "ring": "r2",
+    "label": "Phase 2.0 \u2014 Open Platform",
+    "horizon": "9\u201318 \u043c\u0435\u0441",
+    "monthsRange": [9, 18],
+    "gate": "200+ apps \u0432 Library, 30% active 3rd party",
+    "circuitBreakers": [
+      "\u0415\u0441\u043b\u0438 < 50 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0439 \u0447\u0435\u0440\u0435\u0437 12 \u043c\u0435\u0441\u044f\u0446\u0435\u0432 \u2192 \u043f\u0435\u0440\u0435\u0441\u043c\u043e\u0442\u0440\u0435\u0442\u044c API \u0441\u0442\u0440\u0430\u0442\u0435\u0433\u0438\u044e"
+    ],
+    "prototypeIds": ["team-flow-dashboard"],
+    "milestones": []
+  },
+  {
+    "id": "p2.5",
+    "ring": "r2",
+    "label": "Phase 2.5 \u2014 Team + AI-Adjacent",
+    "horizon": "12\u201324 \u043c\u0435\u0441",
+    "monthsRange": [12, 24],
+    "gate": "Team Mesh organic adoption \u2265 100 \u043a\u043e\u043c\u0430\u043d\u0434",
+    "circuitBreakers": [
+      "\u0415\u0441\u043b\u0438 Slack Bot MAU < 500 \u0447\u0435\u0440\u0435\u0437 6 \u043c\u0435\u0441\u044f\u0446\u0435\u0432 \u043f\u043e\u0441\u043b\u0435 \u0437\u0430\u043f\u0443\u0441\u043a\u0430 \u2192 \u043f\u0440\u0435\u043a\u0440\u0430\u0442\u0438\u0442\u044c \u0438\u043d\u0432\u0435\u0441\u0442\u0438\u0446\u0438\u0438 \u0432 Team"
+    ],
+    "prototypeIds": ["focus-profile"],
+    "milestones": []
+  },
+  {
+    "id": "p3",
+    "ring": "r3",
+    "label": "Phase 3 \u2014 Intelligence + Expansion",
+    "horizon": "18\u201336 \u043c\u0435\u0441",
+    "monthsRange": [18, 36],
+    "gate": "Ring 2 metrics + 50K units",
+    "circuitBreakers": [
+      "\u0415\u0441\u043b\u0438 AI Coach retention < 20% \u0447\u0435\u0440\u0435\u0437 3 \u043c\u0435\u0441\u044f\u0446\u0430 \u2192 \u043f\u0435\u0440\u0435\u0441\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u043f\u043e\u0434\u0445\u043e\u0434"
+    ],
+    "prototypeIds": ["body-doubling-room"],
+    "milestones": [
+      { "label": "Revenue target: $12\u201318M/year steady state", "date": null }
+    ]
+  }
+]

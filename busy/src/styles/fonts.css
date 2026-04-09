@@ -1,0 +1,29 @@
+/* ============================================================
+   BUSY — Font Face Declarations
+   Geist Pixel variants for pixel-art / retro UI elements.
+   woff2 files live in /busy/public/fonts/
+   ============================================================ */
+
+@font-face {
+  font-family: "Geist Pixel Square";
+  src: url("/fonts/GeistPixel-Square.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Pixel Grid";
+  src: url("/fonts/GeistPixel-Grid.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Circle, Triangle, Line variants not yet in vercel/geist-font releases.
+   Uncomment when files become available and add woff2 to public/fonts/.
+
+@font-face { font-family: "Geist Pixel Circle";   src: url("/fonts/GeistPixel-Circle.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Geist Pixel Triangle"; src: url("/fonts/GeistPixel-Triangle.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Geist Pixel Line";     src: url("/fonts/GeistPixel-Line.woff2") format("woff2"); font-display: swap; }
+*/

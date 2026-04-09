@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSY Bar · Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────────────── */
+:root {
+  --font: 'Geist', system-ui, sans-serif;
+  --mono: 'Geist Mono', monospace;
+  --radius: 14px;
+  --transition: .15s cubic-bezier(.4,0,.2,1);
+  --hd-h: 44px;
+  --panel-w: 300px;
+}
+[data-theme="dark"] {
+  --bg:      #090909;
+  --bg-2:    #111111;
+  --surface: #171717;
+  --border:  #262626;
+  --border-2:#343434;
+  --tx:      #EEEADF;
+  --tx-2:    #A19B90;
+  --tx-3:    #5D5A55;
+  --red:     #ED0018;
+  --red-dim: rgba(237,0,24,.12);
+  --or:      #EA5212;
+  --or-dim:  rgba(234,82,18,.10);
+  --bl:      #4385BE;
+  --bl-dim:  rgba(67,133,190,.10);
+  --gr:      #66800B;
+  --gr-dim:  rgba(102,128,11,.12);
+  --ye:      #AD8301;
+  --pu:      #8B7EC8;
+  --r0-fill: #1A1A1A;
+  --r0-stroke:#3A3A3A;
+  --shadow-soft: 0 20px 50px rgba(0,0,0,.36);
+  --shadow-card: 0 10px 24px rgba(0,0,0,.24);
+}
+[data-theme="light"] {
+  --bg:      #FBFAF7;
+  --bg-2:    #F5F2EB;
+  --surface: #FFFFFF;
+  --border:  #E8E1D5;
+  --border-2:#D4CABA;
+  --tx:      #111111;
+  --tx-2:    #666666;
+  --tx-3:    #B9B2A5;
+  --red:     #C8001A;
+  --red-dim: rgba(200,0,26,.08);
+  --or:      #C44000;
+  --or-dim:  rgba(196,64,0,.08);
+  --bl:      #205EA6;
+  --bl-dim:  rgba(32,94,166,.08);
+  --gr:      #66800B;
+  --gr-dim:  rgba(102,128,11,.10);
+  --ye:      #AD8301;
+  --pu:      #5E409D;
+  --r0-fill: #EBEBEB;
+  --r0-stroke:#AAAAAA;
+  --shadow-soft: 0 20px 50px rgba(17,17,17,.06);
+  --shadow-card: 0 10px 24px rgba(17,17,17,.04);
+}
+
+/* ─── RESET ──────────────────────────────────────────────────────── */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--tx); font-family:var(--font); }
+
+/* ─── DOT GRID ───────────────────────────────────────────────────── */
+body {
+  background-image: radial-gradient(circle, rgba(237,0,24,0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+[data-theme="light"] body {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* ─── HEADER ─────────────────────────────────────────────────────── */
+#hd {
+  position: fixed; top:0; left:0; right:0; height: var(--hd-h);
+  display: flex; align-items: center; gap:0;
+  background: var(--bg); border-bottom: 1px solid var(--border);
+  z-index: 100; padding: 0 16px;
+  backdrop-filter: blur(12px);
+}
+.hd-brand {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .08em; color: var(--tx);
+}
+.hd-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red); display: inline-block; flex-shrink: 0;
+}
+.hd-sep {
+  width: 1px; height: 18px; background: var(--border); margin: 0 12px;
+}
+.hd-product {
+  font-family: var(--mono); font-size: 10px; color: var(--tx-2);
+  letter-spacing: .04em;
+}
+.tab-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: .06em; color: var(--tx-3);
+  padding: 5px 10px; border-radius: 6px;
+  transition: color .12s, background .12s;
+}
+.tab-btn.active {
+  color: var(--tx); background: var(--surface);
+  border: 1px solid var(--border);
+}
+.hd-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+#focus-btn {
+  background: none; border: 1px solid var(--border); cursor: pointer;
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .08em; color: var(--tx-3);
+  padding: 4px 10px; border-radius: 20px;
+  transition: all .15s;
+}
+#focus-btn.focus-active {
+  background: var(--red); border-color: var(--red);
+  color: #fff;
+}
+#theme-btn {
+  background: none; border: 1px solid var(--border); cursor: pointer;
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .06em; color: var(--tx-3);
+  padding: 4px 10px; border-radius: 6px;
+  transition: all .12s;
+}
+#theme-btn:hover { color: var(--tx); border-color: var(--border-2); }
+
+/* ─── PIPELINE LAYOUT ────────────────────────────────────────────── */
+#pipeline {
+  position: fixed;
+  top: var(--hd-h); left: 0; right: 0; bottom: 0;
+  display: flex; flex-direction: row;
+  overflow: hidden;
+}
+
+/* ─── COLUMN ─────────────────────────────────────────────────────── */
+.col {
+  flex: 1; display: flex; flex-direction: column;
+  border-right: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  transition: opacity .2s;
+}
+.col:last-child { border-right: none; }
+
+/* Arrow connector between columns */
+.col:not(:last-child)::after {
+  content: '→';
+  position: absolute; right: -10px; top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font); font-size: 16px;
+  color: var(--tx-3); z-index: 10;
+  line-height: 1;
+}
+
+/* ─── COLUMN HEADER ──────────────────────────────────────────────── */
+.col-header {
+  flex-shrink: 0;
+  padding: 14px 14px 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 5;
+  transition: opacity .2s;
+}
+.col-ring-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ring-color);
+  margin-bottom: 3px;
+}
+.col-ring-sub {
+  font-family: var(--font); font-size: 11px;
+  color: var(--tx-2); line-height: 1.35;
+  margin-bottom: 6px;
+}
+.col-gate {
+  font-family: var(--mono); font-size: 8.5px;
+  color: var(--tx-3);
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  line-height: 1.4;
+}
+
+/* ─── COLUMN BODY ────────────────────────────────────────────────── */
+.col-body {
+  flex: 1; overflow-y: auto;
+  padding: 8px 6px 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.col-body::-webkit-scrollbar { width: 4px; }
+.col-body::-webkit-scrollbar-track { background: transparent; }
+.col-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ─── GROUPS ─────────────────────────────────────────────────────── */
+.group {
+  margin-bottom: 10px;
+}
+.group-label {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: .10em; text-transform: uppercase;
+  color: var(--tx-3);
+  padding: 6px 8px 5px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+  transition: opacity .2s;
+}
+
+/* ─── CHIPS ──────────────────────────────────────────────────────── */
+.chip {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 10px; margin: 2px 0;
+  border-left: 2px solid transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background .12s, opacity .2s, border-left-color .15s;
+  position: relative;
+}
+.chip:hover { background: var(--surface); }
+.chip-prio {
+  font: 600 11px var(--mono);
+  color: var(--ring-color);
+  min-width: 14px; flex-shrink: 0;
+}
+.chip-id {
+  font: 600 9px var(--mono);
+  color: var(--ring-color);
+  min-width: 30px; flex-shrink: 0;
+}
+.chip-name {
+  font: 400 11px var(--font);
+  color: var(--tx);
+  line-height: 1.35;
+}
+.chip-note {
+  font: 400 9.5px var(--font);
+  color: var(--tx-3);
+  margin-left: auto;
+  flex-shrink: 0;
+  max-width: 90px;
+  text-align: right;
+  line-height: 1.3;
+}
+
+/* Focus label above anchor chip */
+.chip-focus-tag {
+  position: absolute; top: -9px; left: 10px;
+  font-family: var(--mono); font-size: 8px; font-weight: 600;
+  color: var(--red); letter-spacing: .05em;
+  pointer-events: none;
+}
+
+/* ─── FOCUS MODE ─────────────────────────────────────────────────── */
+body.focus-active .chip[data-anchor="false"] {
+  opacity: 0.15;
+}
+body.focus-active .chip[data-anchor="true"] {
+  border-left-color: var(--red);
+  background: var(--red-dim);
+}
+body.focus-active .group-label {
+  opacity: 0.4;
+}
+body.focus-active .col-header {
+  opacity: 0.6;
+}
+
+/* ─── TOOLTIP ────────────────────────────────────────────────────── */
+#tooltip {
+  position: fixed; pointer-events: none; z-index: 200;
+  background: var(--surface); border: 1px solid var(--border-2);
+  border-radius: 6px; padding: 6px 10px;
+  font-family: var(--mono); font-size: 10px; color: var(--tx);
+  box-shadow: var(--shadow-card);
+  opacity: 0; transition: opacity .1s;
+  max-width: 220px; line-height: 1.45;
+  white-space: nowrap;
+}
+#tooltip.visible { opacity: 1; }
+.tt-id { color: var(--tx-3); margin-right: 6px; }
+
+/* ─── DETAIL PANEL ───────────────────────────────────────────────── */
+#detail {
+  position: fixed; top: var(--hd-h); right: 0; bottom: 0;
+  width: var(--panel-w);
+  background: var(--bg-2); border-left: 1px solid var(--border);
+  transform: translateX(100%);
+  transition: transform .2s cubic-bezier(.4,0,.2,1);
+  z-index: 50; overflow-y: auto;
+  padding: 20px 18px 32px;
+}
+#detail.open { transform: translateX(0); }
+#detail-close {
+  position: absolute; top: 12px; right: 14px;
+  font-size: 18px; color: var(--tx-3); cursor: pointer;
+  line-height: 1; width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px;
+  transition: color .1s, background .1s;
+}
+#detail-close:hover { color: var(--tx); background: var(--surface); }
+.dt-ring-badge {
+  display: inline-block;
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 20px;
+  border: 1px solid currentColor;
+  margin-bottom: 10px;
+}
+#detail-title {
+  font: 600 16px var(--font); color: var(--tx);
+  line-height: 1.3; margin-bottom: 4px;
+}
+.dt-id {
+  font: 500 10px var(--mono); color: var(--tx-3);
+  margin-bottom: 14px;
+}
+.dt-section {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--tx-3); margin-bottom: 6px; margin-top: 14px;
+}
+.dt-metric {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; margin-bottom: 8px;
+  font-size: 12px; color: var(--tx-2); line-height: 1.55;
+  box-shadow: var(--shadow-card);
+}
+.dt-metric strong {
+  color: var(--tx); display: block;
+  font-size: 11px; font-weight: 600; margin-bottom: 2px;
+}
+.dt-prio-row {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--tx-2); margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="hd">
+  <div class="hd-brand"><span class="hd-dot"></span>BUSY BAR</div>
+  <div class="hd-sep"></div>
+  <span class="hd-product">Product Strategy</span>
+  <div class="hd-sep"></div>
+  <button class="tab-btn active">Пайплайн</button>
+  <div class="hd-right">
+    <button id="focus-btn" onclick="toggleFocus()">FOCUS</button>
+    <button id="theme-btn" onclick="toggleTheme()">Light</button>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div id="pipeline"></div>
+
+<!-- TOOLTIP -->
+<div id="tooltip"><span class="tt-id" id="tt-id"></span><span id="tt-name"></span></div>
+
+<!-- DETAIL PANEL -->
+<div id="detail">
+  <div id="detail-close" onclick="closeDetail()">×</div>
+  <div id="detail-content"></div>
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────
+const RINGS = [
+  {
+    id:'r0', label:'Ring 0', sub:'Core · Hardware + App', short:'Core',
+    color:'var(--r0-stroke)',
+    gate: null,
+    groups:[
+      { label:'Устройство', feats:[
+        {id:'0.1', p:'●', name:'Pomodoro Timer'},
+        {id:'0.2', p:'●', name:'Status Button'},
+        {id:'0.3', p:'●', name:'iOS App'},
+        {id:'0.4', p:'●', name:'Android App'},
+        {id:'0.5', p:'●', name:'Apple Watch'},
+        {id:'0.6', p:'●', name:'Wear OS'},
+        {id:'0.13', p:'●', name:'LED Matrix 72×16px, RGB'},
+        {id:'0.14', p:'●', name:'OLED Display'},
+        {id:'0.12', p:'●', name:'WiFi 6 + Matter', note:'Feb 2026'},
+      ]},
+      { label:'SDK + API', feats:[
+        {id:'0.9',  p:'●', name:'HTTP API + MQTT'},
+        {id:'0.10', p:'●', name:'SDK Py/TS/Go'},
+        {id:'0.11', p:'●', name:'OBS Auto-detect'},
+        {id:'0.7',  p:'●', name:'Focus Sessions'},
+        {id:'0.8',  p:'●', name:'App Blocking (basic)'},
+        {id:'0.15', p:'●', name:'Themes & UI'},
+      ]},
+    ],
+    metrics:[]
+  },
+  {
+    id:'r1', label:'Ring 1', sub:'Auto Presence + Focus Memory · 0–9 мес', short:'Software',
+    color:'var(--red)',
+    gate:'Gate: 30-day retention ≥ 40%',
+    groups:[
+      { label:'Auto Presence · 1.0', feats:[
+        {id:'1.1',  p:'●', name:'Google Calendar → автостатус', note:'За 2 мин'},
+        {id:'1.2',  p:'●', name:'Zoom / Meet / Teams'},
+        {id:'1.12', p:'●', name:'Slack bidirectional sync'},
+        {id:'1.11', p:'●', name:'Family URL', note:'Без установки'},
+        {id:'1.9',  p:'●', name:'macOS App (menubar)'},
+      ]},
+      { label:'Focus Memory · 1.5', feats:[
+        {id:'1.3',  p:'●', name:'App Blocking', note:'macOS Focus API'},
+        {id:'1.4',  p:'●', name:'App Tracking', note:'Во время BUSY'},
+        {id:'1.7',  p:'●', name:'Auto-Timesheet'},
+        {id:'1.8',  p:'●', name:'Project Tags', note:'Основа биллинга'},
+        {id:'1.10', p:'●', name:'Interruption Cost'},
+        {id:'1.5',  p:'●', name:'Focus Heatmap'},
+        {id:'1.6',  p:'◐', name:'Focus Score'},
+      ]},
+    ],
+    metrics:[
+      {label:'North Star', val:'30-day retention ≥ 40%'},
+      {label:'Calendar connected', val:'≥ 60% пользователей'},
+      {label:'Kill metric', val:'Retention < 20% → STOP'},
+    ]
+  },
+  {
+    id:'r2', label:'Ring 2', sub:'Open Platform + Team/AI-Adjacent · 9–24 мес', short:'Platform',
+    color:'var(--or)',
+    gate:'Gate: 200+ apps в Library, 30% active 3rd party',
+    groups:[
+      { label:'Developer Platform · 2.0', feats:[
+        {id:'2.3', p:'●', name:'Developer Portal'},
+        {id:'2.4', p:'●', name:'App Library', note:'Install 1 клик'},
+        {id:'2.5', p:'●', name:'AI Agent Monitor', note:'Claude/Codex hooks'},
+        {id:'2.8', p:'●', name:'OBS Plugin'},
+      ]},
+      { label:'Matter + Smart Home · 2.0', feats:[
+        {id:'2.6', p:'●', name:'Home Assistant'},
+        {id:'2.7', p:'●', name:'HomeKit / Matter'},
+      ]},
+      { label:'Time Tracking + Team · 2.5', feats:[
+        {id:'2.1', p:'●', name:'Cross-Device Tracking', note:'Mac+iPhone+iPad'},
+        {id:'2.2', p:'●', name:'Toggl Export'},
+        {id:'2.9', p:'●', name:'Slack Bot Free', note:'Trojan horse'},
+        {id:'2.10', p:'◐', name:'Team Dashboard'},
+      ]},
+    ],
+    metrics:[
+      {label:'App Library', val:'200+ интеграций'},
+      {label:'3rd party active', val:'30% пользователей'},
+      {label:'SDK GitHub stars', val:'≥ 5,000'},
+    ]
+  },
+  {
+    id:'r3', label:'Ring 3', sub:'Intelligence + Expansion · 18–36 мес', short:'Ecosystem',
+    color:'var(--bl)',
+    gate:'Gate: Ring 2 metrics + 50K units',
+    groups:[
+      { label:'AI Layer', feats:[
+        {id:'3.1', p:'●', name:'AI Focus Coach'},
+        {id:'3.2', p:'●', name:'Energy Prediction'},
+        {id:'3.5', p:'◐', name:'Focus Profile', note:'LinkedIn / X'},
+      ]},
+      { label:'New Hardware', feats:[
+        {id:'3.3', p:'◐', name:'BUSY Mini ($99)', note:'После валидации'},
+      ]},
+      { label:'Marketplace + Culture', feats:[
+        {id:'3.4', p:'◐', name:'Marketplace', note:'Revenue sharing'},
+        {id:'3.6', p:'○', name:'HSA/FSA ADHD', note:'~$160 эфф. цена'},
+        {id:'3.7', p:'○', name:'Enterprise Tier'},
+        {id:'3.8', p:'○', name:'Body Doubling'},
+      ]},
+    ],
+    metrics:[
+      {label:'Revenue target', val:'$12–18M/year'},
+      {label:'Installed base', val:'50K+ units'},
+    ]
+  },
+];
+
+const FOCUS_PATH = {
+  title:'Focus Constellation',
+  subtitle:'Ritual → Presence → Platform → Intelligence',
+  anchors:['r0:0.13', 'r1:1.9', 'r1:1.12', 'r2:2.4', 'r3:3.1', 'r3:3.5'],
+  anchorLabels:{
+    'r0:0.13': 'Hub',
+    'r1:1.9':  'macOS',
+    'r1:1.12': 'Presence',
+    'r2:2.4':  'Platform',
+    'r3:3.1':  'AI Coach',
+    'r3:3.5':  'Profile',
+  }
+};
+
+// Build anchor set for fast lookup
+const ANCHOR_SET = new Set(FOCUS_PATH.anchors);
+
+// Ring color map for CSS var resolution
+const RING_COLOR_VARS = {
+  r0: 'var(--r0-stroke)',
+  r1: 'var(--red)',
+  r2: 'var(--or)',
+  r3: 'var(--bl)',
+};
+
+// ─── BUILD PIPELINE ───────────────────────────────────────────────────
+function buildPipeline() {
+  const pipeline = document.getElementById('pipeline');
+  pipeline.innerHTML = '';
+
+  RINGS.forEach((ring, ri) => {
+    const col = document.createElement('div');
+    col.className = 'col';
+    col.style.setProperty('--ring-color', ring.color);
+
+    // Column header
+    const hdr = document.createElement('div');
+    hdr.className = 'col-header';
+    hdr.innerHTML = `
+      <div class="col-ring-label">${ring.label} · ${ring.short}</div>
+      <div class="col-ring-sub">${ring.sub}</div>
+      ${ring.gate ? `<div class="col-gate">${ring.gate}</div>` : ''}
+    `;
+    col.appendChild(hdr);
+
+    // Column body
+    const body = document.createElement('div');
+    body.className = 'col-body';
+
+    ring.groups.forEach(group => {
+      const grpEl = document.createElement('div');
+      grpEl.className = 'group';
+
+      const lbl = document.createElement('div');
+      lbl.className = 'group-label';
+      lbl.textContent = group.label;
+      grpEl.appendChild(lbl);
+
+      group.feats.forEach(feat => {
+        const fkey = `${ring.id}:${feat.id}`;
+        const isAnchor = ANCHOR_SET.has(fkey);
+        const anchorLabel = FOCUS_PATH.anchorLabels[fkey];
+
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.dataset.ring = ring.id;
+        chip.dataset.anchor = isAnchor ? 'true' : 'false';
+        chip.dataset.id = feat.id;
+        chip.dataset.name = feat.name;
+        chip.dataset.prio = feat.p;
+        chip.dataset.note = feat.note || '';
+
+        chip.innerHTML = `
+          ${isAnchor && anchorLabel ? `<span class="chip-focus-tag">${anchorLabel}</span>` : ''}
+          <span class="chip-prio">${feat.p}</span>
+          <span class="chip-id">${feat.id}</span>
+          <span class="chip-name">${feat.name}</span>
+          ${feat.note ? `<span class="chip-note">${feat.note}</span>` : ''}
+        `;
+
+        // Tooltip
+        chip.addEventListener('mouseenter', (e) => showTooltip(e, feat.id, feat.name));
+        chip.addEventListener('mousemove', moveTooltip);
+        chip.addEventListener('mouseleave', hideTooltip);
+
+        // Detail panel
+        chip.addEventListener('click', () => openDetail(ring, feat, fkey, isAnchor));
+
+        grpEl.appendChild(chip);
+      });
+
+      body.appendChild(grpEl);
+    });
+
+    // Metrics footer
+    if (ring.metrics && ring.metrics.length) {
+      const mDiv = document.createElement('div');
+      mDiv.style.cssText = 'padding: 10px 8px 0; border-top: 1px solid var(--border); margin-top: 6px;';
+      const mlbl = document.createElement('div');
+      mlbl.style.cssText = 'font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-3);margin-bottom:6px;';
+      mlbl.textContent = 'METRICS';
+      mDiv.appendChild(mlbl);
+      ring.metrics.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'dt-metric';
+        item.innerHTML = `<strong>${m.label}</strong>${m.val}`;
+        mDiv.appendChild(item);
+      });
+      body.appendChild(mDiv);
+    }
+
+    col.appendChild(body);
+    pipeline.appendChild(col);
+  });
+}
+
+// ─── TOOLTIP ──────────────────────────────────────────────────────────
+const tooltip = document.getElementById('tooltip');
+const ttId = document.getElementById('tt-id');
+const ttName = document.getElementById('tt-name');
+
+function showTooltip(e, id, name) {
+  ttId.textContent = id;
+  ttName.textContent = name;
+  tooltip.classList.add('visible');
+  moveTooltip(e);
+}
+function moveTooltip(e) {
+  let x = e.clientX + 14, y = e.clientY - 28;
+  const tw = tooltip.offsetWidth;
+  if (x + tw > window.innerWidth - 8) x = e.clientX - tw - 14;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
+}
+function hideTooltip() {
+  tooltip.classList.remove('visible');
+}
+
+// ─── DETAIL PANEL ─────────────────────────────────────────────────────
+const detailEl = document.getElementById('detail');
+const detailContent = document.getElementById('detail-content');
+
+function openDetail(ring, feat, fkey, isAnchor) {
+  hideTooltip();
+  const colorVar = RING_COLOR_VARS[ring.id];
+  const anchorLabel = FOCUS_PATH.anchorLabels[fkey];
+
+  let html = `
+    <div class="dt-ring-badge" style="color:${colorVar}">${ring.label} · ${ring.short}</div>
+    <div id="detail-title">${feat.name}</div>
+    <div class="dt-id">${fkey}</div>
+    <div class="dt-prio-row">
+      <span style="font-family:var(--mono);font-size:13px;color:${colorVar}">${feat.p}</span>
+      <span>Priority ${feat.p === '●' ? 'High' : feat.p === '◐' ? 'Medium' : 'Low'}</span>
+    </div>
+  `;
+
+  if (feat.note) {
+    html += `<div class="dt-section">Note</div>
+      <div style="font-size:13px;color:var(--tx-2);line-height:1.5;margin-bottom:8px;">${feat.note}</div>`;
+  }
+
+  if (isAnchor) {
+    html += `<div class="dt-metric" style="border-color:var(--red);">
+      <strong style="color:var(--red)">Focus Path · ${anchorLabel || 'Anchor'}</strong>
+      ${FOCUS_PATH.subtitle}
+    </div>`;
+  }
+
+  if (ring.metrics && ring.metrics.length) {
+    html += `<div class="dt-section">Ring Metrics</div>`;
+    ring.metrics.forEach(m => {
+      html += `<div class="dt-metric"><strong>${m.label}</strong>${m.val}</div>`;
+    });
+  }
+
+  detailContent.innerHTML = html;
+  detailEl.classList.add('open');
+}
+
+function closeDetail() {
+  detailEl.classList.remove('open');
+}
+
+// ─── FOCUS TOGGLE ──────────────────────────────────────────────────────
+const focusBtn = document.getElementById('focus-btn');
+
+function toggleFocus() {
+  document.body.classList.toggle('focus-active');
+  focusBtn.classList.toggle('focus-active');
+}
+
+// ─── THEME TOGGLE ──────────────────────────────────────────────────────
+const themeBtn = document.getElementById('theme-btn');
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  themeBtn.textContent = isDark ? 'Dark' : 'Light';
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────
+buildPipeline();
+</script>
+</body>
+</html>

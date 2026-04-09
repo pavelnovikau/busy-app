@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSY Bar · Product Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────────────── */
+:root {
+  --font: 'Geist', system-ui, sans-serif;
+  --mono: 'Geist Mono', monospace;
+  --radius: 14px;
+  --transition: .15s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="dark"] {
+  --bg:      #090909;
+  --bg-2:    #111111;
+  --surface: #171717;
+  --border:  #262626;
+  --border-2:#343434;
+  --tx:      #EEEADF;
+  --tx-2:    #A19B90;
+  --tx-3:    #5D5A55;
+  --red:     #ED0018;
+  --red-dim: rgba(237,0,24,.12);
+  --or:      #EA5212;
+  --or-dim:  rgba(234,82,18,.10);
+  --bl:      #4385BE;
+  --bl-dim:  rgba(67,133,190,.10);
+  --gr:      #66800B;
+  --gr-dim:  rgba(102,128,11,.12);
+  --ye:      #AD8301;
+  --pu:      #8B7EC8;
+  --r0-fill: #1A1A1A;
+  --r0-stroke:#3A3A3A;
+  --shadow-soft: 0 20px 50px rgba(0, 0, 0, .36);
+  --shadow-card: 0 10px 24px rgba(0, 0, 0, .24);
+}
+[data-theme="light"] {
+  --bg:      #FBFAF7;
+  --bg-2:    #F5F2EB;
+  --surface: #FFFFFF;
+  --border:  #E8E1D5;
+  --border-2:#D4CABA;
+  --tx:      #111111;
+  --tx-2:    #666666;
+  --tx-3:    #B9B2A5;
+  --red:     #C8001A;
+  --red-dim: rgba(200,0,26,.08);
+  --or:      #C44000;
+  --or-dim:  rgba(196,64,0,.08);
+  --bl:      #205EA6;
+  --bl-dim:  rgba(32,94,166,.08);
+  --gr:      #66800B;
+  --gr-dim:  rgba(102,128,11,.10);
+  --ye:      #AD8301;
+  --pu:      #5E409D;
+  --r0-fill: #EBEBEB;
+  --r0-stroke:#AAAAAA;
+  --shadow-soft: 0 20px 50px rgba(17, 17, 17, .06);
+  --shadow-card: 0 10px 24px rgba(17, 17, 17, .04);
+}
+
+/* ─── RESET ──────────────────────────────────────────────────────── */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--tx); font-family:var(--font); }
+
+/* ─── HEADER ─────────────────────────────────────────────────────── */
+#hd {
+  position:fixed; top:0; left:0; right:0; z-index:400;
+  height:56px; background:color-mix(in srgb, var(--bg) 88%, white);
+  border-bottom:1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  backdrop-filter: blur(14px);
+  display:flex; align-items:center; padding:0 24px; gap:0;
+}
+.hd-brand {
+  font-family:var(--mono); font-size:12px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--tx);
+  display:flex; align-items:center; gap:8px; flex-shrink:0; padding-right:16px;
+}
+.hd-dot { width:8px; height:8px; border-radius:50%; background:var(--red); flex-shrink:0; }
+.hd-sep { width:1px; height:20px; background:var(--border); margin:0 4px; flex-shrink:0; }
+.tab-btn {
+  font-family:var(--mono); font-size:11px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.1em; padding:0 18px; height:56px; border:none; background:transparent;
+  color:var(--tx-2); cursor:pointer; position:relative; transition:color var(--transition); white-space:nowrap;
+}
+.tab-btn:hover { color:var(--tx); }
+.tab-btn.active { color:var(--tx); }
+.tab-btn.active::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--red); }
+.hd-right { margin-left:auto; display:flex; align-items:center; gap:6px; flex-shrink:0; }
+.zoom-btn {
+  width:32px; height:32px; border:1px solid var(--border); border-radius:10px;
+  background:var(--surface); cursor:pointer; font:600 13px/1 var(--mono); color:var(--tx-2);
+  display:flex; align-items:center; justify-content:center; transition:all var(--transition);
+}
+.zoom-btn:hover { background:var(--bg-2); color:var(--tx); }
+#zoom-val { font:500 10px/1 var(--mono); color:var(--tx-3); min-width:36px; text-align:center; }
+.theme-btn {
+  height:32px; padding:0 12px; border:1px solid var(--border); border-radius:10px;
+  background:var(--surface); cursor:pointer; font:500 11px/1 var(--mono); color:var(--tx-2);
+  letter-spacing:.06em; text-transform:uppercase; transition:all var(--transition);
+}
+.theme-btn:hover { background:var(--bg-2); color:var(--tx); }
+
+/* ─── LAYOUT ─────────────────────────────────────────────────────── */
+#main { position:fixed; top:56px; left:0; right:0; bottom:84px; display:flex; }
+#sidebar {
+  width:280px; flex-shrink:0; background:linear-gradient(180deg, color-mix(in srgb, var(--surface) 70%, var(--bg)) 0%, var(--bg) 100%);
+  border-right:1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  overflow-y:auto; padding:20px 16px 24px;
+}
+#center { flex:1; position:relative; overflow:hidden; background:
+  radial-gradient(circle at 50% 0%, rgba(255,255,255,.92), transparent 34%),
+  linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,0)); }
+[data-theme="dark"] #center {
+  background:
+    radial-gradient(circle at 50% 4%, rgba(255,255,255,.08), transparent 28%),
+    radial-gradient(circle at 50% 52%, rgba(255,255,255,.03), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,0)),
+    #0b0b0b;
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────────────────── */
+.sb-label {
+  font-family:var(--mono); font-size:10px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--tx-3); margin-bottom:10px;
+}
+.focus-toggle {
+  width:100%; display:flex; align-items:center; justify-content:center; gap:8px;
+  height:40px; margin-bottom:18px; border:1px solid color-mix(in srgb, var(--border-2) 76%, transparent); border-radius:999px;
+  background:var(--surface); color:var(--tx); cursor:pointer;
+  font:700 11px/1 var(--mono); letter-spacing:.14em; text-transform:uppercase;
+  transition:all var(--transition); box-shadow:var(--shadow-card);
+}
+.focus-toggle:hover { background:var(--bg-2); }
+[data-theme="dark"] .focus-toggle { background:#141414; border-color:#2a2a2a; }
+[data-theme="dark"] .focus-toggle:hover { background:#1a1a1a; }
+.focus-toggle.active {
+  background:var(--red); border-color:var(--red); color:#fff;
+  box-shadow:0 0 0 1px rgba(237,0,24,.15), 0 10px 30px rgba(237,0,24,.18);
+}
+.focus-toggle-dot {
+  width:8px; height:8px; border-radius:50%; background:var(--tx-3); transition:all var(--transition);
+}
+.focus-toggle.active .focus-toggle-dot {
+  background:#fff;
+  box-shadow:0 0 12px rgba(255,255,255,.65);
+}
+.focus-copy {
+  margin:0 0 18px; padding:14px 14px 15px; border:1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(245,242,235,.96)); display:none;
+  box-shadow:var(--shadow-card);
+}
+[data-theme="dark"] .focus-copy {
+  background:linear-gradient(180deg, rgba(24,24,24,.96), rgba(16,16,16,.96));
+  border-color:#262626;
+}
+.focus-copy.show { display:block; }
+.focus-copy-kicker {
+  font:700 10px/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--red);
+  margin-bottom:6px;
+}
+.focus-copy-title { font-size:14px; font-weight:600; color:var(--tx); margin-bottom:5px; }
+.focus-copy-body { font-size:12px; line-height:1.55; color:var(--tx-2); }
+.sb-item {
+  display:flex; align-items:flex-start; gap:10px; padding:9px 10px;
+  border-radius:12px; cursor:pointer; transition:all var(--transition); margin-bottom:4px;
+}
+.sb-item:hover { background:rgba(255,255,255,.75); }
+.sb-item.active { background:rgba(255,255,255,.9); outline:1px solid color-mix(in srgb, var(--border-2) 70%, transparent); box-shadow:var(--shadow-card); }
+.sb-item.dimmed { opacity:.3; }
+[data-theme="dark"] .sb-item:hover { background:rgba(255,255,255,.04); }
+[data-theme="dark"] .sb-item.active { background:rgba(255,255,255,.06); }
+.sb-emoji {
+  font-family:var(--mono); font-size:15px; line-height:1; flex-shrink:0; margin-top:2px;
+  min-width:28px; color:var(--tx-3); letter-spacing:0; text-transform:none;
+}
+.sb-info { flex:1; min-width:0; }
+.sb-name { font-size:14px; font-weight:600; color:var(--tx); line-height:1.25; }
+.sb-role { font-size:12px; color:var(--tx-2); line-height:1.35; margin-top:2px; }
+.sb-p { font-family:var(--mono); font-size:10px; font-weight:700; padding:2px 5px; border-radius:2px; flex-shrink:0; margin-top:3px; }
+.p0 { background:var(--red-dim); color:var(--red); }
+.p1 { background:var(--or-dim); color:var(--or); }
+.p2 { background:var(--bl-dim); color:var(--bl); }
+.p3 { background:var(--bg-2); color:var(--tx-3); }
+.sb-div { height:1px; background:color-mix(in srgb, var(--border) 78%, transparent); margin:14px 0; }
+.legend-row { display:flex; align-items:center; gap:7px; margin-bottom:6px; }
+.leg-ring { width:12px; height:12px; border-radius:50%; border:2px solid; flex-shrink:0; }
+.leg-txt { font-family:var(--mono); font-size:10px; color:var(--tx-2); }
+.subphase-legend { margin-top:10px; padding-top:10px; border-top:1px solid color-mix(in srgb, var(--border) 78%, transparent); }
+.subphase-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+.subphase-dot {
+  width:12px; height:12px; border-radius:50%; flex-shrink:0;
+  border:1.1px solid var(--red);
+}
+.subphase-dot.primary { background:var(--red); border-color:var(--red); }
+.subphase-dot.secondary { background:var(--red-dim); }
+.subphase-txt { font-family:var(--mono); font-size:10px; color:var(--tx-2); }
+
+/* ─── SVG DIAGRAM ────────────────────────────────────────────────── */
+#diagram { width:100%; height:100%; display:block; cursor:grab; }
+#diagram.panning { cursor:grabbing; }
+
+/* ─── ROADMAP VIEW ───────────────────────────────────────────────── */
+#roadmap-view {
+  display:none; height:100%; overflow-x:auto; overflow-y:hidden;
+  padding:34px 40px; gap:0;
+}
+.rm-cols { display:flex; gap:0; height:100%; min-width:max-content; }
+.rm-col {
+  width:290px; flex-shrink:0; display:flex; flex-direction:column;
+  border-right:1px solid color-mix(in srgb, var(--border) 72%, transparent); padding:0 24px; padding-right:34px; overflow-y:auto;
+}
+.rm-col:last-child { border-right:none; }
+.rm-col-head { margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid color-mix(in srgb, var(--border) 72%, transparent); }
+.rm-ring-label {
+  font-family:var(--mono); font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.1em; margin-bottom:4px;
+}
+.rm-ring-sub { font-size:12px; color:var(--tx-2); }
+.rm-gate {
+  font-family:var(--mono); font-size:10px; color:var(--tx-3); margin-top:6px;
+  padding:5px 9px; background:rgba(255,255,255,.82); border-radius:999px; display:inline-block;
+  border:1px solid color-mix(in srgb, var(--border) 76%, transparent);
+}
+.rm-group { margin-bottom:18px; }
+.rm-group-label {
+  font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--tx-3); margin-bottom:6px;
+}
+.rm-group[data-phase="1.5"] .rm-group-label,
+.rm-group[data-phase="2.5"] .rm-group-label { opacity:.68; }
+.rm-feat {
+  display:flex; align-items:flex-start; gap:9px; padding:9px 10px;
+  border-radius:14px; margin-bottom:4px; cursor:pointer;
+  transition:background var(--transition);
+}
+.rm-feat:hover { background:rgba(255,255,255,.76); }
+.rm-feat.focus-dim { opacity:.25; }
+.rm-feat.focus-node {
+  background:color-mix(in srgb, var(--red) 6%, white);
+  outline:1px solid color-mix(in srgb, var(--red) 22%, transparent);
+}
+.rm-feat.focus-anchor {
+  background:color-mix(in srgb, var(--red) 10%, white);
+  outline:1px solid color-mix(in srgb, var(--red) 32%, transparent);
+  box-shadow:var(--shadow-card);
+}
+[data-theme="dark"] .rm-feat:hover { background:rgba(255,255,255,.04); }
+[data-theme="dark"] .rm-feat.focus-node {
+  background:rgba(237,0,24,.08);
+  outline:1px solid rgba(237,0,24,.22);
+}
+[data-theme="dark"] .rm-feat.focus-anchor {
+  background:rgba(237,0,24,.13);
+  outline:1px solid rgba(237,0,24,.34);
+}
+.rm-group.focus-dim { opacity:.35; }
+.rm-prio { font-family:var(--mono); font-size:12px; flex-shrink:0; margin-top:1px; }
+.rm-feat-name { font-size:13px; color:var(--tx); line-height:1.45; }
+.rm-feat-note { font-size:12px; color:var(--tx-2); margin-top:2px; line-height:1.45; }
+
+/* ─── INSIGHTS VIEW ──────────────────────────────────────────────── */
+#insights-view {
+  display:none; height:100%; overflow-y:auto; padding:40px 48px;
+}
+.ins-inner { max-width:760px; }
+.ins-section { margin-bottom:36px; }
+.ins-h {
+  font-family:var(--mono); font-size:12px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--tx); padding-left:12px;
+  border-left:3px solid var(--red); margin-bottom:14px;
+}
+.ins-card {
+  background:rgba(255,255,255,.92); border:1px solid color-mix(in srgb, var(--border) 70%, transparent); border-radius:18px;
+  padding:18px 18px; margin-bottom:12px; box-shadow:var(--shadow-card);
+}
+[data-theme="dark"] .ins-card {
+  background:rgba(22,22,22,.92);
+  border-color:#262626;
+}
+.ins-card-title { font-size:15px; font-weight:600; color:var(--tx); margin-bottom:6px; }
+.ins-card-body { font-size:14px; color:var(--tx-2); line-height:1.65; }
+.ins-card-body strong { color:var(--tx); font-weight:600; }
+.ins-tag {
+  display:inline-block; font-family:var(--mono); font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.06em; padding:1px 6px; border-radius:2px;
+  margin:0 3px 0 0;
+}
+.tag-red { background:var(--red-dim); color:var(--red); }
+.tag-or  { background:var(--or-dim);  color:var(--or); }
+.tag-bl  { background:var(--bl-dim);  color:var(--bl); }
+.tag-gr  { background:var(--gr-dim);  color:var(--gr); }
+.ins-quote {
+  border-left:3px solid var(--border-2); padding:10px 16px;
+  font-size:14px; color:var(--tx-2); background:var(--bg-2);
+  border-radius:0 var(--radius) var(--radius) 0; margin:10px 0; line-height:1.6;
+}
+.ins-quote em { color:var(--tx); font-style:normal; font-weight:600; }
+
+/* ─── BOTTOM TIMELINE ────────────────────────────────────────────── */
+#timeline {
+  position:fixed; bottom:0; left:280px; right:0; z-index:300; height:84px;
+  background:color-mix(in srgb, var(--bg) 88%, white); border-top:1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  backdrop-filter: blur(14px);
+  display:flex; align-items:center; padding:0 28px; gap:0;
+}
+.tl-block {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  padding:8px 10px; border-radius:var(--radius); cursor:pointer;
+  transition:background var(--transition); position:relative;
+}
+.tl-block:hover { background:rgba(255,255,255,.72); }
+.tl-block.active { background:rgba(255,255,255,.88); outline:1px solid color-mix(in srgb, var(--border-2) 68%, transparent); box-shadow:var(--shadow-card); }
+[data-theme="dark"] .tl-block:hover { background:rgba(255,255,255,.04); }
+[data-theme="dark"] .tl-block.active { background:rgba(255,255,255,.06); }
+.tl-label { font-family:var(--mono); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:3px; }
+.tl-sub { font-size:12px; color:var(--tx-2); text-align:center; line-height:1.35; }
+.tl-arrow { color:var(--tx-3); font-size:16px; flex-shrink:0; padding:0 4px; align-self:center; }
+.tl-focus-sub {
+  font-family:var(--mono); font-size:9px; color:var(--red);
+  letter-spacing:.06em; margin-top:2px; display:none;
+}
+.tl-focus-sub.show { display:block; }
+
+/* ─── TOOLTIP ────────────────────────────────────────────────────── */
+#tooltip {
+  position:fixed; z-index:600; background:var(--surface);
+  border:1px solid color-mix(in srgb, var(--border-2) 70%, transparent); border-radius:16px;
+  padding:10px 14px; max-width:280px;
+  box-shadow:var(--shadow-soft);
+  pointer-events:none; opacity:0; transition:opacity .1s;
+  font-size:13px; line-height:1.55; color:var(--tx-2);
+}
+#tooltip.show { opacity:1; }
+.tt-title { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--tx); margin-bottom:5px; }
+
+/* ─── DETAIL PANEL ───────────────────────────────────────────────── */
+#detail {
+  position:fixed; top:56px; right:0; bottom:84px; width:336px; z-index:350;
+  background:color-mix(in srgb, var(--bg) 85%, white); border-left:1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  backdrop-filter: blur(14px);
+  transform:translateX(100%); transition:transform .22s cubic-bezier(.4,0,.2,1);
+  overflow-y:auto; padding:22px 18px;
+}
+[data-theme="dark"] #detail {
+  background:rgba(10,10,10,.88);
+  border-left-color:#262626;
+}
+#detail.open { transform:translateX(0); }
+#detail-close {
+  position:absolute; top:12px; right:12px; width:24px; height:24px;
+  border:1px solid var(--border); border-radius:10px; background:var(--surface);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:13px; color:var(--tx-3); transition:all var(--transition);
+}
+#detail-close:hover { background:var(--surface); color:var(--tx); }
+#detail-title {
+  font-family:var(--mono); font-size:13px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.08em; color:var(--tx); margin-bottom:14px; padding-right:32px;
+  padding-bottom:12px; border-bottom:1px solid var(--border);
+}
+.dt-section { margin-bottom:16px; }
+.dt-sec-label {
+  font-family:var(--mono); font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.12em; color:var(--tx-3); margin-bottom:6px;
+}
+.dt-item {
+  display:flex; gap:7px; align-items:baseline; padding:3px 0;
+  border-bottom:1px solid var(--border); font-size:13px; color:var(--tx); line-height:1.45;
+}
+.dt-item:last-child { border-bottom:none; }
+.dt-prio { font-family:var(--mono); font-size:12px; flex-shrink:0; }
+.dt-note { font-size:12px; color:var(--tx-2); margin-left:auto; flex-shrink:0; }
+.dt-metric {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:10px 12px; margin-bottom:8px; font-size:13px; color:var(--tx-2); line-height:1.55;
+  box-shadow:var(--shadow-card);
+}
+[data-theme="dark"] .dt-metric { border-color:#262626; }
+.dt-metric strong { color:var(--tx); display:block; font-size:12px; font-weight:600; margin-bottom:3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="hd">
+  <div class="hd-brand"><span class="hd-dot"></span>BUSY BAR</div>
+  <div class="hd-sep"></div>
+  <span style="font-family:var(--mono);font-size:10px;color:var(--tx-2);letter-spacing:.04em;padding-right:12px;">Product Strategy</span>
+  <div class="hd-sep"></div>
+  <button class="tab-btn active" onclick="switchTab('map')">Экосистема</button>
+  <button class="tab-btn" onclick="switchTab('roadmap')">Роадмап</button>
+  <button class="tab-btn" onclick="switchTab('insights')">Инсайты</button>
+  <div class="hd-right">
+    <button class="zoom-btn" onclick="zoom(.88)">−</button>
+    <span id="zoom-val">100%</span>
+    <button class="zoom-btn" onclick="zoom(1.14)">+</button>
+    <button class="zoom-btn" onclick="zoomReset()" title="Reset">⊙</button>
+    <div class="hd-sep"></div>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">Dark</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div id="main">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <button class="focus-toggle" id="focus-toggle" onclick="toggleFocusMode()" title="Highlight critical path">
+      <span class="focus-toggle-dot"></span>
+      <span>Focus</span>
+    </button>
+    <div class="focus-copy" id="focus-copy">
+      <div class="focus-copy-kicker">Critical Path</div>
+      <div class="focus-copy-title">Focus Constellation</div>
+      <div class="focus-copy-body">A semantic product spine: ritual becomes presence, presence becomes platform, platform becomes intelligence. Supporting nodes stay close to each stage instead of hijacking the whole map.</div>
+    </div>
+    <div class="sb-label">Стейкхолдеры</div>
+    <div id="sb-list"></div>
+    <div class="sb-div"></div>
+    <div class="sb-label">Кольца</div>
+    <div id="ring-legend"></div>
+  </div>
+
+  <!-- CENTER -->
+  <div id="center">
+    <svg id="diagram" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="roadmap-view"><div class="rm-cols" id="rm-cols"></div></div>
+    <div id="insights-view"><div class="ins-inner" id="ins-inner"></div></div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div id="timeline" id="tl"></div>
+
+<!-- TOOLTIP -->
+<div id="tooltip"><div class="tt-title" id="tt-title"></div><div id="tt-body"></div></div>
+
+<!-- DETAIL -->
+<div id="detail">
+  <div id="detail-close" onclick="closeDetail()">×</div>
+  <div id="detail-title"></div>
+  <div id="detail-body"></div>
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────
+const RINGS = [
+  {
+    id:'r0', label:'Ring 0', sub:'Core · Сейчас', short:'Core',
+    color:'var(--r0-stroke)', dim:'var(--r0-fill)', r:72,
+    gate: null,
+    features:[
+      // ── Personal / Focus Worker (top, -90° → 60°) ──
+      {id:'0.1', short:'Pomodoro Timer'},
+      {id:'0.2', short:'Status Button'},
+      {id:'0.3', short:'iOS App'},
+      {id:'0.4', short:'Android App'},
+      {id:'0.5', short:'Apple Watch'},
+      {id:'0.6', short:'Wear OS'},
+      {id:'0.7', short:'Focus Sessions'},
+      {id:'0.8', short:'App Blocking (basic)'},
+      // ── Developer (right, 78° → 126°) ──
+      {id:'0.9',  short:'HTTP API + MQTT'},
+      {id:'0.10', short:'SDK Py/TS/Go'},
+      {id:'0.11', short:'OBS Auto-detect'},
+      // ── Smart Home (lower-right, 150° → 174°) ──
+      {id:'0.12', short:'WiFi 6 + Matter'},
+      // ── Visual / Core hardware (bottom-left, 198° → 246°) ──
+      {id:'0.13', short:'LED Matrix'},
+      {id:'0.14', short:'OLED Display'},
+      {id:'0.15', short:'Themes & UI'},
+    ],
+    groups:[
+      { label:'Устройство', feats:[
+        {p:'●', name:'LED матрица 72×16px, RGB'},
+        {p:'●', name:'Pomodoro + кастомный таймер'},
+        {p:'●', name:'Кнопка ручной смены статуса'},
+        {p:'●', name:'OLED back display'},
+        {p:'●', name:'WiFi 6 + Matter (сертиф. Feb 2026)'},
+        {p:'●', name:'HTTP API + MQTT'},
+        {p:'●', name:'SDK: Python / TypeScript / Go'},
+        {p:'●', name:'OBS / mic auto-detection "ON CALL"'},
+      ]},
+      { label:'BUSY App (уже существует)', feats:[
+        {p:'●', name:'iOS App — таймер, темы, Apple Watch sync'},
+        {p:'●', name:'Android App — Pomodoro, Wear OS'},
+        {p:'●', name:'Focus Sessions standalone (без устройства)'},
+        {p:'●', name:'App Blocking базовый (iOS Screen Time / Android)'},
+        {p:'●', name:'Темы и кастомизация интерфейса'},
+      ]},
+    ],
+    metrics:[]
+  },
+  {
+    id:'r1', label:'Ring 1', sub:'Auto Presence + Focus Memory · 0–9 мес', short:'Software',
+    color:'var(--red)', dim:'var(--red-dim)', r:175,
+    gate:'Gate: 30-day retention ≥ 40%',
+    features:[
+      // ── Focus Worker (top, -90° → 60°) ──
+      {id:'1.1',  short:'Google Calendar', phase:'1.0'},
+      {id:'1.2',  short:'Zoom / Meet', phase:'1.0'},
+      {id:'1.3',  short:'App Blocking', phase:'1.5'},
+      {id:'1.4',  short:'App Tracking', phase:'1.5'},
+      {id:'1.5',  short:'Focus Heatmap', phase:'1.5'},
+      {id:'1.6',  short:'Focus Score', phase:'1.5'},
+      // ── All users (right, 90° → 150°) ──
+      {id:'1.7',  short:'Auto-Timesheet', phase:'1.5'},
+      {id:'1.8',  short:'Project Tags', phase:'1.5'},
+      {id:'1.9',  short:'macOS App', phase:'1.0'},
+      // ── Team / Family (left → bottom, 180° → 240°) ──
+      {id:'1.10', short:'Interruption Cost', phase:'1.5'},
+      {id:'1.11', short:'Family URL', phase:'1.0'},
+      {id:'1.12', short:'Slack Sync', phase:'1.0'},
+    ],
+    groups:[
+      { label:'Ring 1 — Auto Presence', phase:'1.0', feats:[
+        {p:'●', name:'Google Calendar → автостатус', note:'За 2 мин до встречи'},
+        {p:'●', name:'Outlook Calendar → автостатус'},
+        {p:'●', name:'Zoom / Meet / Teams → автодетект'},
+        {p:'●', name:'Slack bidirectional sync'},
+        {p:'◐', name:'Smart transitions (cooling)'},
+        {p:'●', name:'Override: "я работаю" без встречи'},
+      ]},
+      { label:'Ring 1 — Shared Presence', phase:'1.0', feats:[
+        {p:'●', name:'Shared URL (busy.app/status/name)', note:'Без установки приложения'},
+        {p:'◐', name:'Кнопка "Нужно поговорить" → ping'},
+        {p:'○', name:'Team Presence View (opt-in)'},
+      ]},
+      { label:'Ring 1 — Desktop App', phase:'1.0', feats:[
+        {p:'●', name:'macOS app (menubar)'},
+        {p:'●', name:'Windows app (system tray)'},
+        {p:'●', name:'Background sync, автозапуск'},
+        {p:'◐', name:'Hotkeys (⌥⌘B)'},
+      ]},
+      { label:'Ring 1.5 — Focus Memory', phase:'1.5', feats:[
+        {p:'●', name:'App tracking во время BUSY-сессий', note:'Только когда девайс "занят"'},
+        {p:'●', name:'Auto-timesheet: Productive / Neutral / Distracting'},
+        {p:'●', name:'Тэг проекта перед сессией', note:'Основа для биллинга'},
+        {p:'●', name:'App blocking (macOS Focus API)', note:'Приоритет'},
+        {p:'●', name:'Стоимость прерываний — сделать видимой'},
+      ]},
+      { label:'Ring 1.5 — Analytics Layer', phase:'1.5', feats:[
+        {p:'●', name:'Daily Focus Heatmap'},
+        {p:'●', name:'Session breakdown: deep/meet/distracted'},
+        {p:'◐', name:'Focus Score (0–100)'},
+        {p:'◐', name:'Best Hours паттерн'},
+        {p:'○', name:'Weekly Streak'},
+      ]},
+    ],
+    metrics:[
+      {label:'North Star', val:'30-day retention ≥ 40%'},
+      {label:'Kill metric', val:'Retention < 20% → STOP'},
+      {label:'Calendar connected', val:'≥ 60% пользователей'},
+      {label:'App Store', val:'≥ 4.5 ★'},
+    ]
+  },
+  {
+    id:'r2', label:'Ring 2', sub:'Open Platform + Team/AI-Adjacent · 9–24 мес', short:'Platform',
+    color:'var(--or)', dim:'var(--or-dim)', r:285,
+    gate:'Gate: 200+ apps в Library, 30% active 3rd party',
+    features:[
+      // ── Focus Worker / Work (top, -90° → -54°) ──
+      {id:'2.1',  short:'Cross-Device Track', phase:'2.5'},
+      {id:'2.2',  short:'Toggl Export', phase:'2.5'},
+      // ── Developer (right, -18° → 54°) ──
+      {id:'2.3',  short:'Developer Portal', phase:'2.0'},
+      {id:'2.4',  short:'App Library', phase:'2.0'},
+      {id:'2.5',  short:'AI Agent Monitor', phase:'2.5'},
+      // ── Smart Home (lower-right, 90° → 126°) ──
+      {id:'2.6',  short:'Home Assistant', phase:'2.0'},
+      {id:'2.7',  short:'HomeKit / Matter', phase:'2.0'},
+      // ── Streamer (lower, 162°) ──
+      {id:'2.8',  short:'OBS Plugin', phase:'2.0'},
+      // ── Team / Colleague (bottom-left, 198° → 234°) ──
+      {id:'2.9',  short:'Slack Bot Free', phase:'2.5'},
+      {id:'2.10', short:'Team Dashboard', phase:'2.5'},
+    ],
+    groups:[
+      { label:'Ring 2 — Developer Platform', phase:'2.0', feats:[
+        {p:'●', name:'Developer Portal (docs.busy.app)'},
+        {p:'●', name:'App Library — галерея с install в 1 клик'},
+        {p:'◐', name:'Webhook система'},
+        {p:'◐', name:'GitHub CI/CD интеграция', note:'Цвет по статусу сборки'},
+        {p:'●', name:'AI-агент монитор (Claude Code / Codex hooks)', note:'Физический сигнал: думает / готово / ошибка'},
+      ]},
+      { label:'Ring 2 — Matter + Smart Home', phase:'2.0', feats:[
+        {p:'●', name:'Home Assistant нативная интеграция'},
+        {p:'●', name:'Apple HomeKit (через Matter)'},
+        {p:'●', name:'Google Home (через Matter)'},
+        {p:'◐', name:'Smart Home Recipe Builder'},
+        {p:'●', name:'OBS native plugin (сцена → цвет)'},
+      ]},
+      { label:'Ring 2.5 — Time Tracking Layer', phase:'2.5', feats:[
+        {p:'●', name:'Экспорт таймшита: CSV / JSON'},
+        {p:'●', name:'Интеграция с Toggl', note:'Автозаполнение'},
+        {p:'◐', name:'Clockify / Harvest'},
+        {p:'◐', name:'Клиентские проекты и отчёты'},
+        {p:'◐', name:'Заметки к сессии'},
+        {p:'●', name:'Cross-device tracking (Mac + iPhone + iPad)', note:'Через BUSY App hub'},
+      ]},
+      { label:'Ring 2.5 — Team + Workflow Gravity', phase:'2.5', feats:[
+        {p:'●', name:'"BUSY for Teams" Slack Bot (бесплатный)', note:'Trojan horse'},
+        {p:'◐', name:'Team Dashboard для менеджера'},
+        {p:'◐', name:'Focus Windows — тихие часы команды'},
+      ]},
+    ],
+    metrics:[
+      {label:'App Library', val:'200+ интеграций'},
+      {label:'3rd party active', val:'30% пользователей'},
+      {label:'SDK GitHub stars', val:'≥ 5,000'},
+    ]
+  },
+  {
+    id:'r3', label:'Ring 3', sub:'Intelligence + Expansion · 18–36 мес', short:'Ecosystem',
+    color:'var(--bl)', dim:'var(--bl-dim)', r:390,
+    gate:'Gate: Ring 2 metrics + 50K units',
+    features:[
+      {id:'3.1', short:'AI Focus Coach'},
+      {id:'3.2', short:'Energy Prediction'},
+      {id:'3.3', short:'BUSY Mini ($99)'},
+      {id:'3.4', short:'Marketplace'},
+      {id:'3.5', short:'Focus Profile'},
+      {id:'3.6', short:'HSA/FSA ADHD'},
+      {id:'3.7', short:'Enterprise Tier'},
+      {id:'3.8', short:'Body Doubling'},
+    ],
+    groups:[
+      { label:'AI Layer', feats:[
+        {p:'●', name:'AI Focus Coach — персональные рекомендации'},
+        {p:'●', name:'Предсказание пиков энергии / лучших часов'},
+        {p:'●', name:'Инсайты по типу работы'},
+        {p:'◐', name:'Корреляция со сном (Apple Watch, Oura)'},
+      ]},
+      { label:'New Hardware', feats:[
+        {p:'◐', name:'BUSY Bar Mini ($99–129)', note:'Только после валидации'},
+        {p:'○', name:'BUSY Bar Pro (office, larger display)'},
+      ]},
+      { label:'Marketplace', feats:[
+        {p:'◐', name:'Платные анимации, revenue sharing'},
+        {p:'◐', name:'Premium интеграции'},
+        {p:'○', name:'Enterprise tier + fleet management'},
+      ]},
+      { label:'Culture Layer', feats:[
+        {p:'◐', name:'Focus Score как публичный профиль', note:'LinkedIn / X sharing'},
+        {p:'○', name:'HSA/FSA eligibility (ADHD)', note:'Медицинский девайс'},
+        {p:'○', name:'Focusmate / body-doubling интеграция'},
+        {p:'○', name:'Организационный Focus Infrastructure'},
+      ]},
+    ],
+    metrics:[
+      {label:'Revenue target', val:'$12–18M/year steady state'},
+      {label:'Installed base', val:'50K+ units'},
+    ]
+  },
+];
+
+const SUBPHASES = [
+  { ring:'r1', code:'1.0', label:'Auto Presence', x: 1235, y: 340, align:'start' },
+  { ring:'r1', code:'1.5', label:'Focus Memory', x: 1205, y: 785, align:'start' },
+  { ring:'r2', code:'2.0', label:'Open Platform', x: 1480, y: 350, align:'start' },
+  { ring:'r2', code:'2.5', label:'Team + AI-Adjacent', x: 1420, y: 820, align:'start' },
+];
+
+const STAKEHOLDERS = [
+  // top: Focus Worker — рядом с Calendar/AppBlocking/Analytics (r1: -90°→60°)
+  { id:'fw',   emoji:'◉', name:'Focus Worker',  role:'Основной пользователь', p:'P0', rings:['r0','r1','r2','r3'], angle:-68 },
+  // right: Developer — рядом с SDK/API (r0: 102°-150°), DevPortal/AI Monitor (r2: -18°→54°)
+  { id:'dev',  emoji:'⌘',  name:'Developer',      role:'Open API builder',      p:'P1', rings:['r0','r2','r3'], angle:30 },
+  // lower-right: Smart Home — рядом с Matter (r0: 150°), HomeKit/HA (r2: 90°→126°)
+  { id:'sh',   emoji:'⌂',  name:'Smart Home',     role:'Home automation',       p:'P2', rings:['r0','r2'], angle:105 },
+  // lower-right: Стример — рядом с OBS Auto-detect (r0: 126°), OBS Plugin (r2: 162°)
+  { id:'str',  emoji:'◫',  name:'Стример',        role:'Content creator',       p:'P2', rings:['r0','r2'], angle:148 },
+  // lower-left: IT Manager — рядом с Team Dashboard (r2: 234°), Enterprise (r3: 180°)
+  { id:'it',   emoji:'▣',  name:'IT Manager',     role:'Enterprise buyer',      p:'P3', rings:['r2'], angle:172 },
+  // left: Руководитель — рядом с Interruption Cost (r1: 180°), Team Dashboard (r2: 234°)
+  { id:'lead', emoji:'◬',  name:'Руководитель',   role:'Team lead / manager',   p:'P2', rings:['r1','r2'], angle:210 },
+  // bottom-left: Семья — рядом с Family URL (r1: 210°)
+  { id:'fam',  emoji:'◎', name:'Семья',         role:'Дома с работником',     p:'P1', rings:['r1'], angle:240 },
+  // bottom: Коллеги — рядом со Slack Sync (r1: 240°), Slack Bot (r2: 198°)
+  { id:'col',  emoji:'◌',  name:'Коллеги',        role:'Команда / офис',        p:'P1', rings:['r1','r2'], angle:265 },
+];
+
+const INSIGHTS = [
+  {
+    h:'Что нашли в рисёрче — меняет предположения',
+    cards:[
+      { title:'SDK уже существует', tag:'tag-gr', tagLabel:'Готово', body:'Python / TypeScript / Go SDK анонсированы с Day 1. Ring 2 developer platform начинается сегодня — нужно документировать и продвигать, не строить с нуля.' },
+      { title:'Matter сертифицирован 17 февраля 2026', tag:'tag-gr', tagLabel:'Готово', body:'CSA ID: CSA260HLMAT50041-24. Apple HomeKit и Google Home работают уже сейчас. Говорить об этом сегодня — ни у одного конкурента нет WiFi + Matter.' },
+      { title:'Реальные цены ниже пресс-релизов', tag:'tag-or', tagLabel:'Важно', body:'Пресса: $249. Официальный магазин: $219. Early Bird: $179. Ценовое поле гибче чем казалось. Переход к $199 SKU — не болезненная уступка.' },
+      { title:'App blocking — хрупкая фича', tag:'tag-red', tagLabel:'Риск', body:'iOS Screen Time API нестабилен, пользователь снимает разрешение одним тапом. Android требует VPN API против Google Play политики. Исследовать: macOS Focus API (стабильнее), DNS-level blocking через router.' },
+    ]
+  },
+  {
+    h:'Нераскрытые возможности',
+    cards:[
+      { title:'Стоимость прерываний — сделать видимой', tag:'tag-bl', tagLabel:'Новое', body:'Stanford: один context switch = 23 мин восстановления. 8 прерываний в день = 3 часа потерь. Никто не показывает это число. BUSY Bar знает каждый прерванный таймер — это аргумент для разговора с командой.' },
+      { title:'Кросс-девайс таймшит', tag:'tag-bl', tagLabel:'Уникально', body:'Нет ни у кого. Qbserve / RescueTime трекают один девайс. BUSY Bar — физический координатор: знает что именно ты занят, а не конкретный девайс. Mac + iPhone + iPad = единый честный таймшит.' },
+      { title:'Физический монитор AI-агентов', tag:'tag-bl', tagLabel:'Новое', body:'Vibe Island (vibeisland.app) хукается в Claude Code / Codex и показывает статус в нотче MacBook. BUSY Bar = то же самое, но физически виден из любой точки комнаты. Новый статус: "агент работает, я занят, но не за компьютером".' },
+      { title:'ADHD как медицинский девайс', tag:'tag-or', tagLabel:'Сегмент', body:'BleepingComputer назвал BUSY Bar "ADHD productivity tool" органически. В США расходы на ADHD покрываются через HSA/FSA. Статус "FSA Eligible" снижает эффективную цену с $219 до ~$160 и открывает канал через telehealth.' },
+    ]
+  },
+  {
+    h:'Стратегический смысл',
+    cards:[
+      { title:'Суверенитет над вниманием — настоящая цель', tag:'tag-red', tagLabel:'Core', body:'Люди не хотят "быть продуктивными". Они хотят доказательство что их время принадлежит им. Каждое прерывание — кто-то забирает часть жизни без спроса. BUSY Bar решает не задачу продуктивности — он решает задачу контроля над собственной жизнью.' },
+      { title:'Конкуренты не могут скопировать экосистему', tag:'tag-gr', tagLabel:'Моут', body:'Luxafor / Kuando — USB HID, замороженные в момент покупки. BUSY Bar эволюционирует через OTA. За 18-24 месяца можно построить installed base + community + brand trust, которые клон не воспроизведёт за один hardware cycle.' },
+    ]
+  },
+];
+
+const FOCUS_PATH = {
+  title:'Focus Constellation',
+  subtitle:'Ritual → Presence → Platform → Intelligence',
+  anchors:['r0:0.13', 'r1:1.9', 'r1:1.12', 'r2:2.4', 'r3:3.1', 'r3:3.5'],
+  nodes:[
+    'r0:0.1', 'r0:0.2', 'r0:0.12', 'r0:0.13',
+    'r1:1.1', 'r1:1.2', 'r1:1.9', 'r1:1.11', 'r1:1.12',
+    'r2:2.3', 'r2:2.4', 'r2:2.5', 'r2:2.6', 'r2:2.10',
+    'r3:3.1', 'r3:3.2', 'r3:3.3', 'r3:3.4', 'r3:3.5'
+  ],
+  edges:[
+    ['r0:0.1', 'r0:0.13', 'local'],
+    ['r0:0.2', 'r0:0.13', 'local'],
+    ['r0:0.12', 'r0:0.13', 'local'],
+    ['r0:0.13', 'r1:1.9', 'bridge'],
+    ['r1:1.1', 'r1:1.9', 'local'],
+    ['r1:1.2', 'r1:1.9', 'local'],
+    ['r1:1.9', 'r1:1.12', 'bridge'],
+    ['r1:1.9', 'r1:1.11', 'local'],
+    ['r1:1.12', 'r2:2.3', 'bridge'],
+    ['r2:2.3', 'r2:2.4', 'bridge'],
+    ['r2:2.4', 'r2:2.6', 'local'],
+    ['r2:2.4', 'r2:2.10', 'local'],
+    ['r2:2.4', 'r2:2.5', 'local'],
+    ['r2:2.4', 'r3:3.1', 'bridge'],
+    ['r3:3.1', 'r3:3.2', 'local'],
+    ['r3:3.1', 'r3:3.5', 'bridge'],
+    ['r2:2.4', 'r3:3.4', 'bridge'],
+    ['r3:3.4', 'r3:3.3', 'local']
+  ],
+  stakeholders:['fw', 'dev', 'fam', 'col', 'lead', 'sh'],
+  labels:[
+    ['r0:0.13', 'Ritual'],
+    ['r1:1.9', 'Hub'],
+    ['r1:1.12', 'Presence'],
+    ['r2:2.4', 'Platform'],
+    ['r3:3.1', 'Intelligence'],
+    ['r3:3.5', 'Identity']
+  ]
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────
+let activeTab    = 'map';
+let activeRing   = null;
+let activeStk    = null;
+let activeDotKey = null;   // "ringId:featureId"
+let focusMode    = false;
+let svgZoom = 1, svgPanX = 0, svgPanY = 0;
+let isPanning = false, panStart = null;
+let panZoomBound = false;
+let dragMoved = false;
+let suppressClickUntil = 0;
+const CX = 600, CY = 480, STK_R = 490;
+const VW = 1200, VH = 960;
+
+// ─── SIDEBAR ──────────────────────────────────────────────────────────
+function buildSidebar() {
+  const list = document.getElementById('sb-list');
+  list.innerHTML = STAKEHOLDERS.map(s => `
+    <div class="sb-item" id="sbi-${s.id}" onclick="selectStk('${s.id}')">
+      <span class="sb-emoji">${s.emoji}</span>
+      <div class="sb-info">
+        <div class="sb-name">${s.name}</div>
+        <div class="sb-role">${s.role}</div>
+      </div>
+      <div class="sb-p ${s.p.toLowerCase()}">${s.p}</div>
+    </div>
+  `).join('');
+
+  const leg = document.getElementById('ring-legend');
+  leg.innerHTML = RINGS.map(r => `
+    <div class="legend-row">
+      <div class="leg-ring" style="border-color:${r.color};background:${r.dim}"></div>
+      <span class="leg-txt">${r.label} · ${r.short}</span>
+    </div>
+  `).join('') + `
+    <div class="subphase-legend">
+      <div class="sb-label" style="margin-bottom:8px">Подфазы</div>
+      <div class="subphase-row">
+        <div class="subphase-dot primary"></div>
+        <div class="subphase-txt">1.0 / 2.0 — основной цикл</div>
+      </div>
+      <div class="subphase-row">
+        <div class="subphase-dot secondary"></div>
+        <div class="subphase-txt">1.5 / 2.5 — расширение цикла</div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── HELPER: resolve CSS var to hex for SVG fill ─────────────────────
+// We use actual color tokens in SVG via currentColor trick; but we embed
+// the CSS var strings directly – SVG supports them in modern browsers.
+
+// ─── SVG DIAGRAM ──────────────────────────────────────────────────────
+function buildDiagram() {
+  const svg = document.getElementById('diagram');
+  svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+
+  let html = `<g id="g-root" transform="translate(0,0) scale(1)">`;
+  const dotPositions = new Map();
+
+  // ── Ghost ring hit-areas (for ring click between dots) ───────────────
+  // Drawn first (bottom layer), very faint
+  [...RINGS].reverse().forEach(r => {
+    html += `<circle class="ring-hit" data-ring="${r.id}"
+      cx="${CX}" cy="${CY}" r="${r.r}"
+      fill="${r.dim}" fill-opacity="0.025"
+      stroke="${r.color}" stroke-width="1" stroke-opacity="0.12"
+      style="cursor:inherit;transition:opacity .15s"
+      onclick="selectRing('${r.id}')"/>`;
+  });
+
+  // ── Center CORE label (hidden in focus mode — replaced by Status Engine hub) ──
+  if (!focusMode) {
+    html += `<text x="${CX}" y="${CY+4}" text-anchor="middle"
+      font-family="var(--mono)" font-size="10" font-weight="700" letter-spacing="1.5"
+      fill="var(--tx-2)" opacity="0.5" style="pointer-events:none">CORE</text>`;
+  }
+
+  // ── Feature dots on rings ────────────────────────────────────────────
+  const DOT_R       = 5.5;
+  const DOT_R_HOVER = 7;
+  const LABEL_OFFSET = 22; // px beyond dot center from ring center
+
+  RINGS.forEach(ring => {
+    const n = ring.features.length;
+    ring.features.forEach((feat, i) => {
+      const angleRad = ((2 * Math.PI) / n) * i - Math.PI / 2;
+      const cosA = Math.cos(angleRad);
+      const sinA = Math.sin(angleRad);
+
+      // Dot position exactly on ring circumference
+      const dx = CX + ring.r * cosA;
+      const dy = CY + ring.r * sinA;
+
+      // Label position: ring.r + LABEL_OFFSET from center
+      const labelDist = ring.r + LABEL_OFFSET;
+      const lx = CX + labelDist * cosA;
+      const ly = CY + labelDist * sinA;
+
+      // text-anchor
+      let anchor = 'middle';
+      if (cosA > 0.25)  anchor = 'start';
+      if (cosA < -0.25) anchor = 'end';
+
+      // dy offset for id-line
+      let idDy = 0;
+      if (sinA > 0.2)  idDy =  0;   // below center → id on top of name, handled via tspan
+      if (sinA < -0.2) idDy =  0;
+
+      // For two-line label: id line baseline shift
+      const nameDy = sinA > 0.2 ? 12 : (sinA < -0.2 ? -4 : 8);
+      const idDyVal = nameDy - 11;
+
+      const dotKey = `${ring.id}:${feat.id}`;
+      dotPositions.set(dotKey, { x:dx, y:dy, ring:ring.id });
+      const phase = feat.phase || null;
+      const phaseSecondary = phase === '1.5' || phase === '2.5';
+      const dotFill = phaseSecondary ? ring.dim : ring.color;
+      const dotStroke = phaseSecondary ? ring.color : 'none';
+      const dotStrokeWidth = phaseSecondary ? '1.1' : '0';
+      const idFill = phaseSecondary ? 'var(--tx-2)' : ring.color;
+      const labelFill = phaseSecondary ? 'var(--tx-2)' : 'var(--tx-2)';
+      const labelOpacity = phaseSecondary ? '.78' : '1';
+
+      html += `
+      <g class="feat-dot-group" data-ring="${ring.id}" data-dot="${dotKey}"
+         style="cursor:inherit"
+         onmouseenter="showDotTooltip(event,'${dotKey}')"
+         onmouseleave="hideTooltip()"
+         onclick="selectDot(event,'${dotKey}')">
+        <circle class="feat-dot" data-ring="${ring.id}" data-dot="${dotKey}"
+          cx="${dx}" cy="${dy}" r="${DOT_R}"
+          fill="${dotFill}" stroke="${dotStroke}" stroke-width="${dotStrokeWidth}"
+          style="transition:r .12s,opacity .15s"/>
+        <text style="pointer-events:none" fill="${idFill}" opacity="${labelOpacity}"
+          font-family="var(--mono)" font-size="8" font-weight="700"
+          x="${lx}" y="${ly + idDyVal}" text-anchor="${anchor}">${feat.id}</text>
+        <text style="pointer-events:none" fill="${labelFill}" opacity="${labelOpacity}"
+          font-family="var(--font)" font-size="8.5"
+          x="${lx}" y="${ly + nameDy}" text-anchor="${anchor}">${feat.short}</text>
+      </g>`;
+    });
+  });
+
+  SUBPHASES.forEach(phase => {
+    const ring = RINGS.find(r => r.id === phase.ring);
+    if (!ring) return;
+    html += `<text x="${phase.x}" y="${phase.y}" text-anchor="${phase.align}"
+      font-family="var(--mono)" font-size="9.5" font-weight="700" letter-spacing=".14em"
+      fill="${ring.color}" opacity=".85" style="pointer-events:none">${phase.code}</text>`;
+    html += `<text x="${phase.x}" y="${phase.y + 15}" text-anchor="${phase.align}"
+      font-family="var(--font)" font-size="12.5" font-weight="600"
+      fill="var(--tx-2)" opacity=".92" style="pointer-events:none">${phase.label}</text>`;
+  });
+
+  if (focusMode) {
+    html += `<g class="focus-path-layer">`;
+    const allFocusDots = new Set(FOCUS_PATH.nodes);
+    FOCUS_PATH.edges.forEach(([from, to, kind]) => {
+      const a = dotPositions.get(from);
+      const b = dotPositions.get(to);
+      if (!a || !b) return;
+      const isBridge = kind === 'bridge';
+      html += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"
+        stroke="var(--red)"
+        stroke-width="${isBridge ? '1.55' : '1.15'}"
+        stroke-linecap="round"
+        stroke-dasharray="${isBridge ? 'none' : '2.5,4.5'}"
+        opacity="${isBridge ? '.62' : '.28'}"
+        style="pointer-events:none"/>`;
+    });
+
+    [...allFocusDots].forEach(dotKey => {
+      const p = dotPositions.get(dotKey);
+      if (!p) return;
+      const isAnchor = FOCUS_PATH.anchors.includes(dotKey);
+      html += `<circle cx="${p.x}" cy="${p.y}" r="${isAnchor ? 14 : 10}"
+        fill="none" stroke="var(--red)" stroke-width="${isAnchor ? 1.5 : 1.1}"
+        opacity="${isAnchor ? '.34' : '.16'}" style="pointer-events:none"/>`;
+    });
+
+    FOCUS_PATH.labels.forEach(([dotKey, label]) => {
+      const p = dotPositions.get(dotKey);
+      if (!p) return;
+      html += `<text x="${p.x}" y="${p.y - 18}" text-anchor="middle"
+        font-family="var(--mono)" font-size="7.5" font-weight="700" letter-spacing=".6"
+        fill="var(--red)" opacity=".92" style="pointer-events:none">${label}</text>`;
+    });
+
+    html += `<text x="${CX}" y="${CY - 152}" text-anchor="middle"
+      font-family="var(--mono)" font-size="10" font-weight="700" letter-spacing="1.4"
+      fill="var(--red)" opacity=".92" style="pointer-events:none">FOCUS CONSTELLATION</text>`;
+    html += `<text x="${CX}" y="${CY - 134}" text-anchor="middle"
+      font-family="var(--font)" font-size="13" font-weight="600"
+      fill="var(--tx)" opacity=".92" style="pointer-events:none">${FOCUS_PATH.title}</text>`;
+    html += `<text x="${CX}" y="${CY - 116}" text-anchor="middle"
+      font-family="var(--mono)" font-size="8.5" font-weight="500"
+      fill="var(--tx-2)" opacity=".9" style="pointer-events:none">${FOCUS_PATH.subtitle}</text>`;
+    html += `</g>`;
+  }
+
+  // ── Stakeholder nodes ────────────────────────────────────────────────
+  STAKEHOLDERS.forEach(s => {
+    const rad = (s.angle * Math.PI) / 180;
+    const sx = CX + STK_R * Math.cos(rad);
+    const sy = CY + STK_R * Math.sin(rad);
+
+    // Connection lines to each ring (dashed, to ring edge)
+    s.rings.forEach(rid => {
+      const ring = RINGS.find(r => r.id === rid);
+      const ex = CX + ring.r * Math.cos(rad);
+      const ey = CY + ring.r * Math.sin(rad);
+      html += `<line class="conn-line conn-${s.id} conn-ring-${rid}"
+        x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}"
+        stroke="${ring.color}" stroke-width="1" stroke-dasharray="4,3"
+        opacity=".2" style="pointer-events:none;transition:opacity .15s"/>`;
+    });
+
+    // Node bg circle
+    html += `<circle class="stk-node" data-stk="${s.id}"
+      cx="${sx}" cy="${sy}" r="22"
+      fill="var(--bg)" stroke="var(--border-2)" stroke-width="1.5"
+      style="cursor:inherit;transition:all .15s"
+      onmouseenter="showTooltip(event,'${s.id}')"
+      onmouseleave="hideTooltip()"
+      onclick="selectStk('${s.id}')"/>`;
+
+    // Stakeholder ascii tag
+    html += `<text x="${sx}" y="${sy+5}" text-anchor="middle"
+      font-family="var(--mono)" font-size="16" font-weight="700"
+      letter-spacing="0" fill="var(--tx-2)" style="pointer-events:none">${s.emoji}</text>`;
+
+    // Label
+    const labelOffset = sy > CY ? 40 : -34;
+    html += `<text x="${sx}" y="${sy + labelOffset}" text-anchor="middle"
+      font-family="var(--font)" font-size="11" font-weight="600"
+      fill="var(--tx-2)" style="pointer-events:none">${s.name}</text>`;
+  });
+
+  html += `</g>`;
+  svg.innerHTML = html;
+  setupPanZoom();
+}
+
+// ─── DOT INTERACTIONS ─────────────────────────────────────────────────
+function selectDot(e, dotKey) {
+  if (Date.now() < suppressClickUntil) {
+    e.preventDefault();
+    e.stopPropagation();
+    return;
+  }
+  e.stopPropagation();
+  activeDotKey = dotKey === activeDotKey ? null : dotKey;
+  activeRing   = null;
+  activeStk    = null;
+  updateHighlight();
+  if (activeDotKey) openDotDetail(activeDotKey);
+  else closeDetail();
+}
+
+function showDotTooltip(e, dotKey) {
+  const [rid, fid] = dotKey.split(':');
+  const ring = RINGS.find(r => r.id === rid);
+  const feat = ring ? ring.features.find(f => f.id === fid) : null;
+  if (!feat) return;
+  const tt = document.getElementById('tooltip');
+  document.getElementById('tt-title').textContent = `${feat.id} · ${feat.short}`;
+  document.getElementById('tt-body').textContent  = ring.label + ' · ' + ring.sub;
+  tt.classList.add('show');
+  moveTT(e);
+
+  // Expand dot
+  const dotEl = document.querySelector(`.feat-dot[data-dot="${dotKey}"]`);
+  if (dotEl) dotEl.setAttribute('r', '7');
+}
+
+function hideTooltip() {
+  document.getElementById('tooltip').classList.remove('show');
+  // Restore all expanded dots
+  document.querySelectorAll('.feat-dot').forEach(el => {
+    const isActive = el.dataset.dot === activeDotKey;
+    const isFocus = focusMode && FOCUS_PATH.nodes.includes(el.dataset.dot);
+    const isAnchor = focusMode && FOCUS_PATH.anchors.includes(el.dataset.dot);
+    if (isActive) return;
+    el.setAttribute('r', isFocus ? (isAnchor ? '7.3' : '6.1') : '5.5');
+  });
+}
+
+function openDotDetail(dotKey) {
+  const [rid, fid] = dotKey.split(':');
+  const ring = RINGS.find(r => r.id === rid);
+  const feat = ring ? ring.features.find(f => f.id === fid) : null;
+  if (!feat || !ring) return;
+
+  // Find matching feature in groups by short name
+  let matchedFeat = null;
+  for (const g of ring.groups) {
+    for (const f of g.feats) {
+      // fuzzy match: check if group feat name contains short name keywords
+      if (f.name.toLowerCase().includes(feat.short.toLowerCase().split(' ')[0].toLowerCase())) {
+        matchedFeat = f;
+        break;
+      }
+    }
+    if (matchedFeat) break;
+  }
+
+  document.getElementById('detail-title').textContent = `${feat.id} · ${feat.short}`;
+
+  let html = `<div class="dt-metric" style="margin-bottom:10px">
+    <strong>Ring</strong>
+    <span style="color:${ring.color}">${ring.label}</span> · ${ring.sub}
+  </div>`;
+
+  if (feat.phase) {
+    html += `<div class="dt-metric" style="margin-bottom:10px">
+      <strong>Phase</strong>${feat.phase}
+      ${feat.phase === '1.0' ? ' · Auto Presence' : ''}
+      ${feat.phase === '1.5' ? ' · Focus Memory' : ''}
+      ${feat.phase === '2.0' ? ' · Open Platform' : ''}
+      ${feat.phase === '2.5' ? ' · Team + AI-Adjacent' : ''}
+    </div>`;
+  }
+
+  if (matchedFeat) {
+    html += `<div class="dt-metric" style="margin-bottom:10px">
+      <strong>Priority</strong>${matchedFeat.p} ${matchedFeat.name}
+      ${matchedFeat.note ? `<div style="margin-top:4px;font-size:11px;color:var(--tx-3)">${matchedFeat.note}</div>` : ''}
+    </div>`;
+  }
+
+  html += `<div class="dt-section"><div class="dt-sec-label">Ring overview</div>`;
+  if (ring.gate) {
+    html += `<div class="dt-item">${ring.gate}</div>`;
+  }
+  html += `</div>`;
+
+  // List all features of this ring grouped by phase when relevant
+  if (ring.id === 'r1' || ring.id === 'r2') {
+    const phaseOrder = ring.id === 'r1'
+      ? [['1.0', 'Ring 1 — Auto Presence'], ['1.5', 'Ring 1.5 — Focus Memory']]
+      : [['2.0', 'Ring 2 — Open Platform'], ['2.5', 'Ring 2.5 — Team + AI-Adjacent']];
+    phaseOrder.forEach(([phaseId, phaseLabel]) => {
+      const phaseFeatures = ring.features.filter(f => f.phase === phaseId);
+      if (!phaseFeatures.length) return;
+      html += `<div class="dt-section"><div class="dt-sec-label">${phaseLabel}</div>`;
+      phaseFeatures.forEach(f => {
+        const isCurrent = f.id === fid;
+        html += `<div class="dt-item" style="${isCurrent ? 'font-weight:600;color:var(--tx)' : ''}">
+          <span class="dt-prio" style="color:${ring.color}">${f.id}</span>${f.short}
+        </div>`;
+      });
+      html += `</div>`;
+    });
+  } else {
+    html += `<div class="dt-section"><div class="dt-sec-label">All features in ${ring.label}</div>`;
+    ring.features.forEach(f => {
+      const isCurrent = f.id === fid;
+      html += `<div class="dt-item" style="${isCurrent ? 'font-weight:600;color:var(--tx)' : ''}">
+        <span class="dt-prio" style="color:${ring.color}">${f.id}</span>${f.short}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  if (ring.metrics.length) {
+    html += `<div class="dt-section"><div class="dt-sec-label">Метрики</div>`;
+    ring.metrics.forEach(m => html += `<div class="dt-metric"><strong>${m.label}</strong>${m.val}</div>`);
+    html += `</div>`;
+  }
+
+  document.getElementById('detail-body').innerHTML = html;
+  document.getElementById('detail').classList.add('open');
+}
+
+// ─── ROADMAP VIEW ─────────────────────────────────────────────────────
+function buildRoadmap() {
+  const cols = document.getElementById('rm-cols');
+  cols.innerHTML = RINGS.map((r,i) => `
+    <div class="rm-col">
+      <div class="rm-col-head">
+        <div class="rm-ring-label" style="color:${r.color}">${r.label}</div>
+        <div class="rm-ring-sub">${r.sub}</div>
+        ${r.gate ? `<div class="rm-gate">${r.gate}</div>` : ''}
+      </div>
+      ${[...r.groups].sort((a, b) => {
+        const order = {'1.0': 10, '1.5': 15, '2.0': 20, '2.5': 25};
+        return (order[a.phase] || 0) - (order[b.phase] || 0);
+      }).map(g => `
+        <div class="rm-group"${g.phase ? ` data-phase="${g.phase}"` : ''}>
+          <div class="rm-group-label">${g.label}</div>
+          ${g.feats.map(f => {
+            const featureId = featureIdForRoadmapItem(r.id, f.name);
+            return `
+            <div class="rm-feat"${featureId ? ` data-feature-id="${featureId}"` : ''}>
+              <span class="rm-prio">${f.p}</span>
+              <div>
+                <div class="rm-feat-name">${f.name}</div>
+                ${f.note ? `<div class="rm-feat-note">${f.note}</div>` : ''}
+              </div>
+            </div>
+          `}).join('')}
+        </div>
+      `).join('')}
+      ${r.metrics.length ? `
+        <div class="sb-div"></div>
+        <div class="rm-group-label" style="margin-bottom:8px">Метрики</div>
+        ${r.metrics.map(m => `
+          <div class="dt-metric"><strong>${m.label}</strong>${m.val}</div>
+        `).join('')}
+      ` : ''}
+    </div>
+  `).join('');
+  updateRoadmapFocus();
+}
+
+function featureIdForRoadmapItem(ringId, name) {
+  const map = {
+    'r0': {
+      'Pomodoro + кастомный таймер': '0.1',
+      'Кнопка ручной смены статуса': '0.2',
+      'WiFi 6 + Matter (сертиф. Feb 2026)': '0.12',
+      'LED матрица 72×16px, RGB': '0.13',
+    },
+    'r1': {
+      'Google Calendar → автостатус': '1.1',
+      'Zoom / Meet / Teams → автодетект': '1.2',
+      'Slack bidirectional sync': '1.12',
+      'Shared URL (busy.app/status/name)': '1.11',
+      'macOS app (menubar)': '1.9',
+    },
+    'r2': {
+      'Developer Portal (docs.busy.app)': '2.3',
+      'App Library — галерея с install в 1 клик': '2.4',
+      'AI-агент монитор (Claude Code / Codex hooks)': '2.5',
+      'Home Assistant нативная интеграция': '2.6',
+      'Team Dashboard для менеджера': '2.10',
+    },
+    'r3': {
+      'AI Focus Coach — персональные рекомендации': '3.1',
+      'Предсказание пиков энергии / лучших часов': '3.2',
+      'BUSY Bar Mini ($99–129)': '3.3',
+      'Платные анимации, revenue sharing': '3.4',
+      'Focus Score как публичный профиль': '3.5',
+    }
+  };
+  return map[ringId]?.[name] ? `${ringId}:${map[ringId][name]}` : null;
+}
+
+function updateRoadmapFocus() {
+  const focusNodes = new Set(FOCUS_PATH.nodes);
+  const focusAnchors = new Set(FOCUS_PATH.anchors);
+  const roadmapFeatures = document.querySelectorAll('.rm-feat');
+  const roadmapGroups = document.querySelectorAll('.rm-group');
+
+  if (!roadmapFeatures.length) return;
+
+  if (!focusMode) {
+    roadmapFeatures.forEach(el => el.classList.remove('focus-dim', 'focus-node', 'focus-anchor'));
+    roadmapGroups.forEach(el => el.classList.remove('focus-dim'));
+    return;
+  }
+
+  roadmapFeatures.forEach(el => {
+    const fid = el.dataset.featureId;
+    const isFocus = fid && focusNodes.has(fid);
+    const isAnchor = fid && focusAnchors.has(fid);
+    el.classList.toggle('focus-dim', !isFocus);
+    el.classList.toggle('focus-node', !!isFocus);
+    el.classList.toggle('focus-anchor', !!isAnchor);
+  });
+
+  roadmapGroups.forEach(group => {
+    const hasFocus = !!group.querySelector('.rm-feat.focus-node, .rm-feat.focus-anchor');
+    group.classList.toggle('focus-dim', !hasFocus);
+  });
+}
+
+// ─── INSIGHTS VIEW ────────────────────────────────────────────────────
+function buildInsights() {
+  const el = document.getElementById('ins-inner');
+  el.innerHTML = INSIGHTS.map(sec => `
+    <div class="ins-section">
+      <div class="ins-h">${sec.h}</div>
+      ${sec.cards.map(c => `
+        <div class="ins-card">
+          <div class="ins-card-title">
+            <span class="ins-tag ${c.tag}">${c.tagLabel}</span>${c.title}
+          </div>
+          <div class="ins-card-body">${c.body}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+// ─── TIMELINE ─────────────────────────────────────────────────────────
+function buildTimeline() {
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = RINGS.map((r, i) => `
+    ${i > 0 ? '<div class="tl-arrow">→</div>' : ''}
+    <div class="tl-block ${i===0?'active':''}" id="tlb-${r.id}" onclick="highlightRing('${r.id}')">
+      <div class="tl-label" style="color:${r.color}">${r.label}</div>
+      <div class="tl-sub">${r.short}</div>
+      ${r.id === 'r1' ? '<div class="tl-focus-sub show">1.0 Auto Presence · 1.5 Focus Memory</div>' : ''}
+      ${r.id === 'r2' ? '<div class="tl-focus-sub show">2.0 Open Platform · 2.5 Team + AI-Adjacent</div>' : ''}
+    </div>
+  `).join('');
+}
+
+function toggleFocusMode() {
+  focusMode = !focusMode;
+  syncFocusUI();
+  if (activeTab === 'map') buildDiagram();
+  if (activeTab === 'roadmap') updateRoadmapFocus();
+  updateHighlight();
+}
+
+function syncFocusUI() {
+  document.getElementById('focus-toggle')?.classList.toggle('active', focusMode);
+  document.getElementById('focus-copy')?.classList.toggle('show', focusMode);
+}
+
+// ─── INTERACTIONS ─────────────────────────────────────────────────────
+function selectRing(rid) {
+  if (Date.now() < suppressClickUntil) return;
+  activeRing   = rid === activeRing ? null : rid;
+  activeStk    = null;
+  activeDotKey = null;
+  updateHighlight();
+  if (activeRing) openRingDetail(activeRing);
+  else closeDetail();
+  // sync timeline
+  document.querySelectorAll('.tl-block').forEach(b => b.classList.remove('active'));
+  if (activeRing) {
+    const tb = document.getElementById('tlb-'+activeRing);
+    if (tb) tb.classList.add('active');
+  }
+}
+
+function highlightRing(rid) {
+  selectRing(rid);
+}
+
+function selectStk(sid) {
+  if (Date.now() < suppressClickUntil) return;
+  activeStk    = sid === activeStk ? null : sid;
+  activeRing   = null;
+  activeDotKey = null;
+  updateHighlight();
+  if (activeStk) openStkDetail(activeStk);
+  else closeDetail();
+  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
+  if (activeStk) document.getElementById('sbi-'+activeStk)?.classList.add('active');
+}
+
+function updateHighlight() {
+  const allHitRings  = document.querySelectorAll('.ring-hit');
+  const allDotGroups = document.querySelectorAll('.feat-dot-group');
+  const allNodes     = document.querySelectorAll('.stk-node');
+  const allLines     = document.querySelectorAll('.conn-line');
+  const allSbi       = document.querySelectorAll('.sb-item');
+  const focusDots    = new Set(FOCUS_PATH.nodes);
+  const focusStakeholders = new Set(FOCUS_PATH.stakeholders);
+
+  // Reset
+  if (!activeRing && !activeStk && !activeDotKey) {
+    if (focusMode) {
+      allHitRings.forEach(el  => {
+        const ringActive = [...focusDots].some(dotKey => dotKey.startsWith(el.dataset.ring + ':'));
+        el.style.opacity = ringActive ? '.85' : '.12';
+      });
+      allDotGroups.forEach(el => {
+        const ringActive = [...focusDots].some(dotKey => dotKey.startsWith(el.dataset.ring + ':'));
+        el.style.opacity = focusDots.has(el.dataset.dot) ? '1' : (ringActive ? '.18' : '.08');
+      });
+      allNodes.forEach(el     => { el.style.opacity = focusStakeholders.has(el.dataset.stk) ? '1' : '.16'; });
+      allLines.forEach(el => {
+        const isFocusStakeholder = [...focusStakeholders].some(sid => el.classList.contains('conn-'+sid));
+        const isFocusRing = [...focusDots].some(dotKey => el.classList.contains('conn-ring-'+dotKey.split(':')[0]));
+        el.setAttribute('opacity', isFocusStakeholder && isFocusRing ? '.42' : '.04');
+      });
+      allSbi.forEach(el => {
+        const sid = el.id.replace('sbi-','');
+        el.classList.toggle('dimmed', !focusStakeholders.has(sid));
+      });
+    } else {
+      allHitRings.forEach(el  => { el.style.opacity = '1'; });
+      allDotGroups.forEach(el => { el.style.opacity = '1'; });
+      allNodes.forEach(el     => { el.style.opacity = '1'; });
+      allLines.forEach(el     => { el.style.opacity = ''; el.setAttribute('opacity','.2'); });
+      allSbi.forEach(el       => el.classList.remove('dimmed'));
+    }
+    // Reset dot sizes
+    document.querySelectorAll('.feat-dot').forEach(el => {
+      const isAnchor = FOCUS_PATH.anchors.includes(el.dataset.dot);
+      const r = focusMode && focusDots.has(el.dataset.dot) ? (isAnchor ? '7.3' : '6.1') : '5.5';
+      el.setAttribute('r', r);
+    });
+    return;
+  }
+
+  if (activeDotKey) {
+    const [rid] = activeDotKey.split(':');
+    allDotGroups.forEach(el => {
+      const isCurrent = el.dataset.dot === activeDotKey;
+      const isSameRing = el.dataset.ring === rid;
+      el.style.opacity = isCurrent ? '1' : (isSameRing ? '0.5' : '0.15');
+    });
+    allHitRings.forEach(el  => el.style.opacity = el.dataset.ring === rid ? '1' : '0.3');
+    allNodes.forEach(el     => el.style.opacity = '0.4');
+    allLines.forEach(el     => { el.style.opacity=''; el.setAttribute('opacity','.08'); });
+    allSbi.forEach(el       => el.classList.remove('dimmed'));
+    document.querySelectorAll('.feat-dot').forEach(el => {
+      el.setAttribute('r', el.dataset.dot === activeDotKey ? '7' : '5.5');
+    });
+    return;
+  }
+
+  if (activeRing) {
+    const stksInRing = STAKEHOLDERS.filter(s => s.rings.includes(activeRing)).map(s => s.id);
+    allHitRings.forEach(el  => el.style.opacity = el.dataset.ring === activeRing ? '1' : '.2');
+    allDotGroups.forEach(el => {
+      el.style.opacity = el.dataset.ring === activeRing ? '1' : '0.15';
+    });
+    allNodes.forEach(el     => el.style.opacity = stksInRing.includes(el.dataset.stk) ? '1' : '.2');
+    allLines.forEach(el => {
+      const active = el.classList.contains('conn-ring-'+activeRing);
+      el.setAttribute('opacity', active ? '.7' : '.04');
+    });
+    allSbi.forEach(el => {
+      const sid = el.id.replace('sbi-','');
+      el.classList.toggle('dimmed', !stksInRing.includes(sid));
+    });
+    document.querySelectorAll('.feat-dot').forEach(el => el.setAttribute('r','5.5'));
+  }
+
+  if (activeStk) {
+    const stk = STAKEHOLDERS.find(s => s.id === activeStk);
+    allHitRings.forEach(el  => el.style.opacity = stk.rings.includes(el.dataset.ring) ? '1' : '.2');
+    allDotGroups.forEach(el => {
+      el.style.opacity = stk.rings.includes(el.dataset.ring) ? '1' : '0.15';
+    });
+    allNodes.forEach(el     => el.style.opacity = el.dataset.stk === activeStk ? '1' : '.2');
+    allLines.forEach(el => {
+      const active = el.classList.contains('conn-'+activeStk);
+      el.setAttribute('opacity', active ? '.9' : '.04');
+    });
+    allSbi.forEach(el => el.classList.remove('dimmed'));
+    document.querySelectorAll('.feat-dot').forEach(el => el.setAttribute('r','5.5'));
+  }
+}
+
+function openRingDetail(rid) {
+  const r = RINGS.find(x => x.id === rid);
+  document.getElementById('detail-title').textContent = `${r.label} · ${r.short}`;
+  let html = '';
+  if (r.gate) html += `<div class="dt-metric" style="margin-bottom:14px"><strong>Gate</strong>${r.gate}</div>`;
+  r.groups.forEach(g => {
+    html += `<div class="dt-section"><div class="dt-sec-label">${g.label}</div>`;
+    g.feats.forEach(f => {
+      html += `<div class="dt-item"><span class="dt-prio">${f.p}</span>${f.name}${f.note ? `<span class="dt-note">${f.note}</span>` : ''}</div>`;
+    });
+    html += `</div>`;
+  });
+  if (r.metrics.length) {
+    html += `<div class="dt-section"><div class="dt-sec-label">Метрики</div>`;
+    r.metrics.forEach(m => html += `<div class="dt-metric"><strong>${m.label}</strong>${m.val}</div>`);
+    html += `</div>`;
+  }
+  document.getElementById('detail-body').innerHTML = html;
+  document.getElementById('detail').classList.add('open');
+}
+
+function openStkDetail(sid) {
+  const s = STAKEHOLDERS.find(x => x.id === sid);
+  document.getElementById('detail-title').textContent = `${s.emoji} ${s.name}`;
+  const ringNames = s.rings.map(rid => {
+    const r = RINGS.find(x => x.id === rid);
+    return `<span style="color:${r.color}">${r.label}</span>`;
+  }).join(', ');
+  document.getElementById('detail-body').innerHTML = `
+    <div class="dt-metric"><strong>Роль</strong>${s.role}</div>
+    <div class="dt-metric"><strong>Приоритет</strong>${s.p}</div>
+    <div class="dt-metric"><strong>Кольца</strong>${ringNames}</div>
+  `;
+  document.getElementById('detail').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail').classList.remove('open');
+  activeRing   = null;
+  activeStk    = null;
+  activeDotKey = null;
+  updateHighlight();
+  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tl-block').forEach(el => el.classList.remove('active'));
+}
+
+// ─── TOOLTIP ──────────────────────────────────────────────────────────
+function showTooltip(e, id) {
+  const ring = RINGS.find(r => r.id === id);
+  const stk  = STAKEHOLDERS.find(s => s.id === id);
+  const tt   = document.getElementById('tooltip');
+  if (ring) {
+    document.getElementById('tt-title').textContent = `${ring.label} · ${ring.sub}`;
+    document.getElementById('tt-body').textContent  = ring.gate || '';
+  } else if (stk) {
+    document.getElementById('tt-title').textContent = `${stk.emoji} ${stk.name}`;
+    document.getElementById('tt-body').textContent  = stk.role;
+  }
+  tt.classList.add('show');
+  moveTT(e);
+}
+function moveTT(e) {
+  const tt = document.getElementById('tooltip');
+  tt.style.left = (e.clientX + 14) + 'px';
+  tt.style.top  = (e.clientY - 8)  + 'px';
+}
+document.addEventListener('mousemove', moveTT);
+
+// ─── TAB SWITCHING ────────────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
+  document.getElementById('diagram').style.display      = tab==='map'      ? 'block' : 'none';
+  document.getElementById('roadmap-view').style.display  = tab==='roadmap'  ? 'flex'  : 'none';
+  document.getElementById('insights-view').style.display = tab==='insights' ? 'block' : 'none';
+  if (tab === 'map') buildDiagram();
+  if (tab === 'roadmap') updateRoadmapFocus();
+}
+
+// ─── PAN / ZOOM ───────────────────────────────────────────────────────
+function applyTransform(animate) {
+  const g = document.getElementById('g-root');
+  if (!g) return;
+  const transformValue = `translate(${svgPanX}px,${svgPanY}px) scale(${svgZoom})`;
+  g.style.transformOrigin = '600px 480px';
+  if (animate) {
+    g.style.transition = 'transform .18s cubic-bezier(.25,.46,.45,.94)';
+    g.style.transform  = transformValue;
+    setTimeout(() => { g.style.transition = ''; }, 200);
+  } else {
+    g.style.transition = '';
+    g.style.transform = transformValue;
+  }
+  document.getElementById('zoom-val').textContent = Math.round(svgZoom*100)+'%';
+}
+function zoom(factor) {
+  svgZoom = Math.min(3, Math.max(.3, svgZoom * factor));
+  applyTransform(true);
+}
+function zoomReset() { svgZoom=1; svgPanX=0; svgPanY=0; applyTransform(true); }
+
+function setupPanZoom() {
+  const svg = document.getElementById('diagram');
+  if (!panZoomBound) {
+    svg.addEventListener('mousedown', e => {
+      if (activeTab !== 'map') return;
+      if (e.button !== 0) return;
+      isPanning = true;
+      dragMoved = false;
+      svg.classList.add('panning');
+      panStart = {x: e.clientX - svgPanX, y: e.clientY - svgPanY};
+      e.preventDefault();
+    }, true);
+    svg.addEventListener('click', e => {
+      if (Date.now() < suppressClickUntil) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+    window.addEventListener('mousemove', e => {
+      if (!isPanning) return;
+      const nextPanX = e.clientX - panStart.x;
+      const nextPanY = e.clientY - panStart.y;
+      if (Math.abs(nextPanX - svgPanX) > 2 || Math.abs(nextPanY - svgPanY) > 2) {
+        dragMoved = true;
+      }
+      svgPanX = nextPanX;
+      svgPanY = nextPanY;
+      applyTransform();
+    });
+    window.addEventListener('mouseup', () => {
+      if (dragMoved) suppressClickUntil = Date.now() + 120;
+      isPanning = false;
+      dragMoved = false;
+      document.getElementById('diagram')?.classList.remove('panning');
+    });
+    svg.addEventListener('wheel', e => {
+      if (activeTab !== 'map') return;
+      e.preventDefault();
+      const delta = -e.deltaY;
+      const factor = 1 + Math.min(Math.abs(delta), 120) / 120 * 0.08;
+      zoom(delta > 0 ? factor : 1 / factor);
+    }, {passive:false});
+    panZoomBound = true;
+  }
+}
+
+// ─── THEME ────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isDark ? 'Dark' : 'Light';
+  if (activeTab === 'map') buildDiagram();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────
+buildSidebar();
+buildDiagram();
+buildRoadmap();
+buildInsights();
+buildTimeline();
+syncFocusUI();
+</script>
+</body>
+</html>

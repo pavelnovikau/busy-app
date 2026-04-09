@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSY Bar · Engineering Schematic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────────────── */
+:root {
+  --font: 'Geist', system-ui, sans-serif;
+  --mono: 'Geist Mono', monospace;
+  --radius: 14px;
+  --transition: .15s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="dark"] {
+  --bg:      #090909;
+  --bg-2:    #111111;
+  --surface: #171717;
+  --border:  #262626;
+  --border-2:#343434;
+  --tx:      #EEEADF;
+  --tx-2:    #A19B90;
+  --tx-3:    #5D5A55;
+  --red:     #ED0018;
+  --red-dim: rgba(237,0,24,.12);
+  --or:      #EA5212;
+  --or-dim:  rgba(234,82,18,.10);
+  --bl:      #4385BE;
+  --bl-dim:  rgba(67,133,190,.10);
+  --gr:      #66800B;
+  --gr-dim:  rgba(102,128,11,.12);
+  --ye:      #AD8301;
+  --pu:      #8B7EC8;
+  --r0-fill: #1A1A1A;
+  --r0-stroke:#3A3A3A;
+  --shadow-soft: 0 20px 50px rgba(0, 0, 0, .36);
+  --shadow-card: 0 10px 24px rgba(0, 0, 0, .24);
+}
+[data-theme="light"] {
+  --bg:      #FBFAF7;
+  --bg-2:    #F5F2EB;
+  --surface: #FFFFFF;
+  --border:  #E8E1D5;
+  --border-2:#D4CABA;
+  --tx:      #111111;
+  --tx-2:    #666666;
+  --tx-3:    #B9B2A5;
+  --red:     #C8001A;
+  --red-dim: rgba(200,0,26,.08);
+  --or:      #C44000;
+  --or-dim:  rgba(196,64,0,.08);
+  --bl:      #205EA6;
+  --bl-dim:  rgba(32,94,166,.08);
+  --gr:      #66800B;
+  --gr-dim:  rgba(102,128,11,.10);
+  --ye:      #AD8301;
+  --pu:      #5E409D;
+  --r0-fill: #EBEBEB;
+  --r0-stroke:#AAAAAA;
+  --shadow-soft: 0 20px 50px rgba(17, 17, 17, .06);
+  --shadow-card: 0 10px 24px rgba(17, 17, 17, .04);
+}
+
+/* ─── RESET ──────────────────────────────────────────────────────── */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--tx); font-family:var(--font); }
+
+/* ─── ENGINEERING GRID ───────────────────────────────────────────── */
+[data-theme="light"] body {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+[data-theme="dark"] body {
+  background-image:
+    linear-gradient(rgba(237,0,24,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(237,0,24,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ─── HEADER ─────────────────────────────────────────────────────── */
+#hd {
+  position:fixed; top:0; left:0; right:0; z-index:400;
+  height:44px; background:color-mix(in srgb, var(--bg) 88%, white);
+  border-bottom:1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  backdrop-filter: blur(14px);
+  display:flex; align-items:center; padding:0 20px; gap:0;
+}
+.hd-brand {
+  font-family:var(--mono); font-size:11px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--tx);
+  display:flex; align-items:center; gap:7px; flex-shrink:0; padding-right:14px;
+}
+.hd-dot { width:7px; height:7px; border-radius:50%; background:var(--red); flex-shrink:0; }
+.hd-sep { width:1px; height:18px; background:var(--border); margin:0 4px; flex-shrink:0; }
+.tab-btn {
+  font-family:var(--mono); font-size:10px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.1em; padding:0 16px; height:44px; border:none; background:transparent;
+  color:var(--tx-2); cursor:pointer; position:relative; transition:color var(--transition); white-space:nowrap;
+}
+.tab-btn:hover { color:var(--tx); }
+.tab-btn.active { color:var(--tx); }
+.tab-btn.active::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--red); }
+.hd-right { margin-left:auto; display:flex; align-items:center; gap:5px; flex-shrink:0; }
+.zoom-btn {
+  width:28px; height:28px; border:1px solid var(--border); border-radius:9px;
+  background:var(--surface); cursor:pointer; font:600 12px/1 var(--mono); color:var(--tx-2);
+  display:flex; align-items:center; justify-content:center; transition:all var(--transition);
+}
+.zoom-btn:hover { background:var(--bg-2); color:var(--tx); }
+#zoom-val { font:500 9px/1 var(--mono); color:var(--tx-3); min-width:32px; text-align:center; }
+.theme-btn {
+  height:28px; padding:0 10px; border:1px solid var(--border); border-radius:9px;
+  background:var(--surface); cursor:pointer; font:500 10px/1 var(--mono); color:var(--tx-2);
+  letter-spacing:.06em; text-transform:uppercase; transition:all var(--transition);
+}
+.theme-btn:hover { background:var(--bg-2); color:var(--tx); }
+
+/* ─── LAYOUT ─────────────────────────────────────────────────────── */
+#main { position:fixed; top:44px; left:0; right:0; bottom:72px; display:flex; }
+#sidebar {
+  width:220px; flex-shrink:0;
+  background:color-mix(in srgb, var(--surface) 72%, var(--bg));
+  border-right:1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  overflow-y:auto; padding:16px 14px 20px;
+}
+#center { flex:1; position:relative; overflow:hidden; }
+
+/* ─── SIDEBAR ────────────────────────────────────────────────────── */
+.sb-label {
+  font-family:var(--mono); font-size:9px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--tx-3); margin-bottom:9px;
+}
+.focus-toggle {
+  width:100%; display:flex; align-items:center; justify-content:center; gap:7px;
+  height:36px; margin-bottom:16px; border:1px solid color-mix(in srgb, var(--border-2) 76%, transparent); border-radius:999px;
+  background:var(--surface); color:var(--tx); cursor:pointer;
+  font:700 10px/1 var(--mono); letter-spacing:.14em; text-transform:uppercase;
+  transition:all var(--transition); box-shadow:var(--shadow-card);
+}
+.focus-toggle:hover { background:var(--bg-2); }
+[data-theme="dark"] .focus-toggle { background:#141414; border-color:#2a2a2a; }
+[data-theme="dark"] .focus-toggle:hover { background:#1a1a1a; }
+.focus-toggle.active {
+  background:var(--red); border-color:var(--red); color:#fff;
+  box-shadow:0 0 0 1px rgba(237,0,24,.15), 0 8px 24px rgba(237,0,24,.18);
+}
+.focus-toggle-dot {
+  width:7px; height:7px; border-radius:50%; background:var(--tx-3); transition:all var(--transition);
+}
+.focus-toggle.active .focus-toggle-dot { background:#fff; box-shadow:0 0 10px rgba(255,255,255,.65); }
+.focus-copy {
+  margin:0 0 16px; padding:11px 12px 12px; border:1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius:14px; background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(245,242,235,.96)); display:none;
+  box-shadow:var(--shadow-card);
+}
+[data-theme="dark"] .focus-copy {
+  background:linear-gradient(180deg, rgba(24,24,24,.96), rgba(16,16,16,.96));
+  border-color:#262626;
+}
+.focus-copy.show { display:block; }
+.focus-copy-kicker { font:700 9px/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--red); margin-bottom:5px; }
+.focus-copy-title { font-size:13px; font-weight:600; color:var(--tx); margin-bottom:4px; }
+.focus-copy-body { font-size:11px; line-height:1.55; color:var(--tx-2); }
+.sb-item {
+  display:flex; align-items:flex-start; gap:8px; padding:7px 9px;
+  border-radius:10px; cursor:pointer; transition:all var(--transition); margin-bottom:3px;
+}
+.sb-item:hover { background:rgba(255,255,255,.75); }
+.sb-item.active { background:rgba(255,255,255,.9); outline:1px solid color-mix(in srgb, var(--border-2) 70%, transparent); box-shadow:var(--shadow-card); }
+.sb-item.dimmed { opacity:.3; }
+[data-theme="dark"] .sb-item:hover { background:rgba(255,255,255,.04); }
+[data-theme="dark"] .sb-item.active { background:rgba(255,255,255,.06); }
+.sb-emoji { font-family:var(--mono); font-size:13px; line-height:1; flex-shrink:0; margin-top:2px; min-width:22px; color:var(--tx-3); }
+.sb-info { flex:1; min-width:0; }
+.sb-name { font-size:12px; font-weight:600; color:var(--tx); line-height:1.2; }
+.sb-role { font-size:11px; color:var(--tx-2); line-height:1.3; margin-top:1px; }
+.sb-p { font-family:var(--mono); font-size:9px; font-weight:700; padding:1px 4px; border-radius:2px; flex-shrink:0; margin-top:2px; }
+.p0 { background:var(--red-dim); color:var(--red); }
+.p1 { background:var(--or-dim); color:var(--or); }
+.p2 { background:var(--bl-dim); color:var(--bl); }
+.p3 { background:var(--bg-2); color:var(--tx-3); }
+.sb-div { height:1px; background:color-mix(in srgb, var(--border) 78%, transparent); margin:12px 0; }
+.legend-row { display:flex; align-items:center; gap:6px; margin-bottom:5px; }
+.leg-ring { width:10px; height:10px; border-radius:50%; border:2px solid; flex-shrink:0; }
+.leg-txt { font-family:var(--mono); font-size:9px; color:var(--tx-2); }
+
+/* ─── SVG DIAGRAM ────────────────────────────────────────────────── */
+#diagram { width:100%; height:100%; display:block; cursor:grab; }
+#diagram.panning { cursor:grabbing; }
+
+/* ─── BOTTOM TIMELINE ────────────────────────────────────────────── */
+#timeline {
+  position:fixed; bottom:0; left:220px; right:0; z-index:300; height:72px;
+  background:color-mix(in srgb, var(--bg) 88%, white); border-top:1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  backdrop-filter: blur(14px);
+  display:flex; align-items:center; padding:0 24px; gap:0;
+}
+.tl-block {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  padding:7px 8px; border-radius:var(--radius); cursor:pointer;
+  transition:background var(--transition);
+}
+.tl-block:hover { background:rgba(255,255,255,.72); }
+.tl-block.active { background:rgba(255,255,255,.88); outline:1px solid color-mix(in srgb, var(--border-2) 68%, transparent); box-shadow:var(--shadow-card); }
+[data-theme="dark"] .tl-block:hover { background:rgba(255,255,255,.04); }
+[data-theme="dark"] .tl-block.active { background:rgba(255,255,255,.06); }
+.tl-label { font-family:var(--mono); font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:2px; }
+.tl-sub { font-size:11px; color:var(--tx-2); text-align:center; line-height:1.3; }
+.tl-arrow { color:var(--tx-3); font-size:14px; flex-shrink:0; padding:0 3px; align-self:center; }
+
+/* ─── TOOLTIP ────────────────────────────────────────────────────── */
+#tooltip {
+  position:fixed; z-index:600; background:var(--surface);
+  border:1px solid color-mix(in srgb, var(--border-2) 70%, transparent); border-radius:14px;
+  padding:9px 12px; max-width:260px;
+  box-shadow:var(--shadow-soft);
+  pointer-events:none; opacity:0; transition:opacity .1s;
+  font-size:12px; line-height:1.5; color:var(--tx-2);
+}
+#tooltip.show { opacity:1; }
+.tt-title { font-family:var(--mono); font-size:11px; font-weight:700; color:var(--tx); margin-bottom:4px; }
+
+/* ─── DETAIL PANEL ───────────────────────────────────────────────── */
+#detail {
+  position:fixed; top:44px; right:0; bottom:72px; width:320px; z-index:350;
+  background:color-mix(in srgb, var(--bg) 85%, white); border-left:1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  backdrop-filter: blur(14px);
+  transform:translateX(100%); transition:transform .22s cubic-bezier(.4,0,.2,1);
+  overflow-y:auto; padding:20px 16px;
+}
+[data-theme="dark"] #detail { background:rgba(10,10,10,.88); border-left-color:#262626; }
+#detail.open { transform:translateX(0); }
+#detail-close {
+  position:absolute; top:10px; right:10px; width:22px; height:22px;
+  border:1px solid var(--border); border-radius:9px; background:var(--surface);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:12px; color:var(--tx-3); transition:all var(--transition);
+}
+#detail-close:hover { color:var(--tx); }
+#detail-title {
+  font-family:var(--mono); font-size:12px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.08em; color:var(--tx); margin-bottom:12px; padding-right:28px;
+  padding-bottom:10px; border-bottom:1px solid var(--border);
+}
+.dt-section { margin-bottom:14px; }
+.dt-sec-label {
+  font-family:var(--mono); font-size:9px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.12em; color:var(--tx-3); margin-bottom:5px;
+}
+.dt-item {
+  display:flex; gap:6px; align-items:baseline; padding:2px 0;
+  border-bottom:1px solid var(--border); font-size:12px; color:var(--tx); line-height:1.4;
+}
+.dt-item:last-child { border-bottom:none; }
+.dt-prio { font-family:var(--mono); font-size:11px; flex-shrink:0; }
+.dt-note { font-size:11px; color:var(--tx-2); margin-left:auto; flex-shrink:0; }
+.dt-metric {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:8px 10px; margin-bottom:6px; font-size:12px; color:var(--tx-2); line-height:1.5;
+  box-shadow:var(--shadow-card);
+}
+[data-theme="dark"] .dt-metric { border-color:#262626; }
+.dt-metric strong { color:var(--tx); display:block; font-size:11px; font-weight:600; margin-bottom:2px; }
+
+/* ─── CALLOUT LABELS ─────────────────────────────────────────────── */
+.callout-label { pointer-events:none; }
+.feat-dot-group .callout-label { opacity:0; transition:opacity .15s; }
+.feat-dot-group:hover .callout-label { opacity:1; }
+.feat-dot-group.label-always .callout-label { opacity:1; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="hd">
+  <div class="hd-brand"><span class="hd-dot"></span>BUSY BAR</div>
+  <div class="hd-sep"></div>
+  <span style="font-family:var(--mono);font-size:9px;color:var(--tx-2);letter-spacing:.04em;padding-right:10px;">Product Strategy</span>
+  <div class="hd-sep"></div>
+  <button class="tab-btn active" onclick="switchTab('map')">Схема</button>
+  <button class="tab-btn" onclick="switchTab('roadmap')">Роадмап</button>
+  <div class="hd-right">
+    <button class="zoom-btn" onclick="zoom(.88)">−</button>
+    <span id="zoom-val">100%</span>
+    <button class="zoom-btn" onclick="zoom(1.14)">+</button>
+    <button class="zoom-btn" onclick="zoomReset()" title="Reset">⊙</button>
+    <div class="hd-sep"></div>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">Dark</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div id="main">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <button class="focus-toggle" id="focus-toggle" onclick="toggleFocusMode()">
+      <span class="focus-toggle-dot"></span>
+      <span>Focus</span>
+    </button>
+    <div class="focus-copy" id="focus-copy">
+      <div class="focus-copy-kicker">Critical Path</div>
+      <div class="focus-copy-title">Focus Constellation</div>
+      <div class="focus-copy-body">Ritual → Presence → Platform → Intelligence. A semantic product spine from hardware to ecosystem.</div>
+    </div>
+    <div class="sb-label">Стейкхолдеры</div>
+    <div id="sb-list"></div>
+    <div class="sb-div"></div>
+    <div class="sb-label">Кольца</div>
+    <div id="ring-legend"></div>
+  </div>
+
+  <!-- CENTER -->
+  <div id="center">
+    <svg id="diagram" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="roadmap-view" style="display:none;height:100%;overflow-x:auto;overflow-y:hidden;padding:28px 32px;">
+      <div class="rm-cols" id="rm-cols" style="display:flex;gap:0;height:100%;min-width:max-content;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div id="timeline"></div>
+
+<!-- TOOLTIP -->
+<div id="tooltip"><div class="tt-title" id="tt-title"></div><div id="tt-body"></div></div>
+
+<!-- DETAIL -->
+<div id="detail">
+  <div id="detail-close" onclick="closeDetail()">×</div>
+  <div id="detail-title"></div>
+  <div id="detail-body"></div>
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────
+const RINGS = [
+  {
+    id:'r0', label:'Ring 0', sub:'Core · Сейчас', short:'Core',
+    color:'var(--r0-stroke)', dim:'var(--r0-fill)', r:105,
+    gate: null,
+    features:[
+      {id:'0.1', short:'Pomodoro Timer'},
+      {id:'0.2', short:'Status Button'},
+      {id:'0.3', short:'iOS App'},
+      {id:'0.4', short:'Android App'},
+      {id:'0.5', short:'Apple Watch'},
+      {id:'0.6', short:'Wear OS'},
+      {id:'0.7', short:'Focus Sessions'},
+      {id:'0.8', short:'App Blocking'},
+      {id:'0.9',  short:'HTTP API + MQTT'},
+      {id:'0.10', short:'SDK Py/TS/Go'},
+      {id:'0.11', short:'OBS Auto-detect'},
+      {id:'0.12', short:'WiFi 6 + Matter'},
+      {id:'0.13', short:'LED Matrix'},
+      {id:'0.14', short:'OLED Display'},
+      {id:'0.15', short:'Themes & UI'},
+    ],
+    groups:[
+      { label:'Устройство', feats:[
+        {p:'●', name:'LED матрица 72×16px, RGB'},
+        {p:'●', name:'Pomodoro + кастомный таймер'},
+        {p:'●', name:'Кнопка ручной смены статуса'},
+        {p:'●', name:'OLED back display'},
+        {p:'●', name:'WiFi 6 + Matter (сертиф. Feb 2026)'},
+        {p:'●', name:'HTTP API + MQTT'},
+        {p:'●', name:'SDK: Python / TypeScript / Go'},
+        {p:'●', name:'OBS / mic auto-detection "ON CALL"'},
+      ]},
+      { label:'BUSY App', feats:[
+        {p:'●', name:'iOS App — таймер, темы, Apple Watch sync'},
+        {p:'●', name:'Android App — Pomodoro, Wear OS'},
+        {p:'●', name:'Focus Sessions standalone'},
+        {p:'●', name:'App Blocking базовый'},
+        {p:'●', name:'Темы и кастомизация'},
+      ]},
+    ],
+    metrics:[]
+  },
+  {
+    id:'r1', label:'Ring 1', sub:'Auto Presence + Focus Memory · 0–9 мес', short:'Software',
+    color:'var(--red)', dim:'var(--red-dim)', r:205,
+    gate:'Gate: 30-day retention ≥ 40%',
+    features:[
+      {id:'1.1',  short:'Google Calendar', phase:'1.0'},
+      {id:'1.2',  short:'Zoom / Meet', phase:'1.0'},
+      {id:'1.3',  short:'App Blocking', phase:'1.5'},
+      {id:'1.4',  short:'App Tracking', phase:'1.5'},
+      {id:'1.5',  short:'Focus Heatmap', phase:'1.5'},
+      {id:'1.6',  short:'Focus Score', phase:'1.5'},
+      {id:'1.7',  short:'Auto-Timesheet', phase:'1.5'},
+      {id:'1.8',  short:'Project Tags', phase:'1.5'},
+      {id:'1.9',  short:'macOS App', phase:'1.0'},
+      {id:'1.10', short:'Interruption Cost', phase:'1.5'},
+      {id:'1.11', short:'Family URL', phase:'1.0'},
+      {id:'1.12', short:'Slack Sync', phase:'1.0'},
+    ],
+    groups:[
+      { label:'Ring 1 — Auto Presence', phase:'1.0', feats:[
+        {p:'●', name:'Google Calendar → автостатус', note:'За 2 мин до встречи'},
+        {p:'●', name:'Outlook Calendar → автостатус'},
+        {p:'●', name:'Zoom / Meet / Teams → автодетект'},
+        {p:'●', name:'Slack bidirectional sync'},
+        {p:'◐', name:'Smart transitions (cooling)'},
+        {p:'●', name:'Override: "я работаю" без встречи'},
+      ]},
+      { label:'Ring 1 — Shared Presence', phase:'1.0', feats:[
+        {p:'●', name:'Shared URL (busy.app/status/name)', note:'Без установки приложения'},
+        {p:'◐', name:'Кнопка "Нужно поговорить" → ping'},
+        {p:'○', name:'Team Presence View (opt-in)'},
+      ]},
+      { label:'Ring 1 — Desktop App', phase:'1.0', feats:[
+        {p:'●', name:'macOS app (menubar)'},
+        {p:'●', name:'Windows app (system tray)'},
+        {p:'●', name:'Background sync, автозапуск'},
+        {p:'◐', name:'Hotkeys (⌥⌘B)'},
+      ]},
+      { label:'Ring 1.5 — Focus Memory', phase:'1.5', feats:[
+        {p:'●', name:'App tracking во время BUSY-сессий', note:'Только когда девайс "занят"'},
+        {p:'●', name:'Auto-timesheet: Productive / Neutral / Distracting'},
+        {p:'●', name:'Тэг проекта перед сессией', note:'Основа для биллинга'},
+        {p:'●', name:'App blocking (macOS Focus API)', note:'Приоритет'},
+        {p:'●', name:'Стоимость прерываний — сделать видимой'},
+      ]},
+      { label:'Ring 1.5 — Analytics Layer', phase:'1.5', feats:[
+        {p:'●', name:'Daily Focus Heatmap'},
+        {p:'●', name:'Session breakdown: deep/meet/distracted'},
+        {p:'◐', name:'Focus Score (0–100)'},
+        {p:'◐', name:'Best Hours паттерн'},
+        {p:'○', name:'Weekly Streak'},
+      ]},
+    ],
+    metrics:[
+      {label:'North Star', val:'30-day retention ≥ 40%'},
+      {label:'Kill metric', val:'Retention < 20% → STOP'},
+      {label:'Calendar connected', val:'≥ 60% пользователей'},
+      {label:'App Store', val:'≥ 4.5 ★'},
+    ]
+  },
+  {
+    id:'r2', label:'Ring 2', sub:'Open Platform + Team/AI-Adjacent · 9–24 мес', short:'Platform',
+    color:'var(--or)', dim:'var(--or-dim)', r:310,
+    gate:'Gate: 200+ apps в Library, 30% active 3rd party',
+    features:[
+      {id:'2.1',  short:'Cross-Device Track', phase:'2.5'},
+      {id:'2.2',  short:'Toggl Export', phase:'2.5'},
+      {id:'2.3',  short:'Developer Portal', phase:'2.0'},
+      {id:'2.4',  short:'App Library', phase:'2.0'},
+      {id:'2.5',  short:'AI Agent Monitor', phase:'2.5'},
+      {id:'2.6',  short:'Home Assistant', phase:'2.0'},
+      {id:'2.7',  short:'HomeKit / Matter', phase:'2.0'},
+      {id:'2.8',  short:'OBS Plugin', phase:'2.0'},
+      {id:'2.9',  short:'Slack Bot Free', phase:'2.5'},
+      {id:'2.10', short:'Team Dashboard', phase:'2.5'},
+    ],
+    groups:[
+      { label:'Ring 2 — Developer Platform', phase:'2.0', feats:[
+        {p:'●', name:'Developer Portal (docs.busy.app)'},
+        {p:'●', name:'App Library — галерея с install в 1 клик'},
+        {p:'◐', name:'Webhook система'},
+        {p:'◐', name:'GitHub CI/CD интеграция', note:'Цвет по статусу сборки'},
+        {p:'●', name:'AI-агент монитор (Claude Code / Codex hooks)', note:'Физический сигнал'},
+      ]},
+      { label:'Ring 2 — Matter + Smart Home', phase:'2.0', feats:[
+        {p:'●', name:'Home Assistant нативная интеграция'},
+        {p:'●', name:'Apple HomeKit (через Matter)'},
+        {p:'●', name:'Google Home (через Matter)'},
+        {p:'◐', name:'Smart Home Recipe Builder'},
+        {p:'●', name:'OBS native plugin (сцена → цвет)'},
+      ]},
+      { label:'Ring 2.5 — Time Tracking', phase:'2.5', feats:[
+        {p:'●', name:'Экспорт таймшита: CSV / JSON'},
+        {p:'●', name:'Интеграция с Toggl', note:'Автозаполнение'},
+        {p:'◐', name:'Clockify / Harvest'},
+        {p:'◐', name:'Клиентские проекты и отчёты'},
+        {p:'●', name:'Cross-device tracking (Mac + iPhone + iPad)'},
+      ]},
+      { label:'Ring 2.5 — Team + Workflow', phase:'2.5', feats:[
+        {p:'●', name:'"BUSY for Teams" Slack Bot (бесплатный)', note:'Trojan horse'},
+        {p:'◐', name:'Team Dashboard для менеджера'},
+        {p:'◐', name:'Focus Windows — тихие часы команды'},
+      ]},
+    ],
+    metrics:[
+      {label:'App Library', val:'200+ интеграций'},
+      {label:'3rd party active', val:'30% пользователей'},
+      {label:'SDK GitHub stars', val:'≥ 5,000'},
+    ]
+  },
+  {
+    id:'r3', label:'Ring 3', sub:'Intelligence + Expansion · 18–36 мес', short:'Ecosystem',
+    color:'var(--bl)', dim:'var(--bl-dim)', r:415,
+    gate:'Gate: Ring 2 metrics + 50K units',
+    features:[
+      {id:'3.1', short:'AI Focus Coach'},
+      {id:'3.2', short:'Energy Prediction'},
+      {id:'3.3', short:'BUSY Mini ($99)'},
+      {id:'3.4', short:'Marketplace'},
+      {id:'3.5', short:'Focus Profile'},
+      {id:'3.6', short:'HSA/FSA ADHD'},
+      {id:'3.7', short:'Enterprise Tier'},
+      {id:'3.8', short:'Body Doubling'},
+    ],
+    groups:[
+      { label:'AI Layer', feats:[
+        {p:'●', name:'AI Focus Coach — персональные рекомендации'},
+        {p:'●', name:'Предсказание пиков энергии / лучших часов'},
+        {p:'●', name:'Инсайты по типу работы'},
+        {p:'◐', name:'Корреляция со сном (Apple Watch, Oura)'},
+      ]},
+      { label:'New Hardware', feats:[
+        {p:'◐', name:'BUSY Bar Mini ($99–129)', note:'Только после валидации'},
+        {p:'○', name:'BUSY Bar Pro (office, larger display)'},
+      ]},
+      { label:'Marketplace', feats:[
+        {p:'◐', name:'Платные анимации, revenue sharing'},
+        {p:'◐', name:'Premium интеграции'},
+        {p:'○', name:'Enterprise tier + fleet management'},
+      ]},
+      { label:'Culture Layer', feats:[
+        {p:'◐', name:'Focus Score как публичный профиль', note:'LinkedIn / X sharing'},
+        {p:'○', name:'HSA/FSA eligibility (ADHD)', note:'Медицинский девайс'},
+        {p:'○', name:'Focusmate / body-doubling интеграция'},
+      ]},
+    ],
+    metrics:[
+      {label:'Revenue target', val:'$12–18M/year steady state'},
+      {label:'Installed base', val:'50K+ units'},
+    ]
+  },
+];
+
+const STAKEHOLDERS = [
+  { id:'fw',   emoji:'◉', name:'Focus Worker',  role:'Основной пользователь', p:'P0', rings:['r0','r1','r2','r3'], angle:-68 },
+  { id:'dev',  emoji:'⌘',  name:'Developer',      role:'Open API builder',      p:'P1', rings:['r0','r2','r3'], angle:30 },
+  { id:'sh',   emoji:'⌂',  name:'Smart Home',     role:'Home automation',       p:'P2', rings:['r0','r2'], angle:105 },
+  { id:'str',  emoji:'◫',  name:'Стример',        role:'Content creator',       p:'P2', rings:['r0','r2'], angle:148 },
+  { id:'it',   emoji:'▣',  name:'IT Manager',     role:'Enterprise buyer',      p:'P3', rings:['r2'], angle:172 },
+  { id:'lead', emoji:'◬',  name:'Руководитель',   role:'Team lead / manager',   p:'P2', rings:['r1','r2'], angle:210 },
+  { id:'fam',  emoji:'◎', name:'Семья',          role:'Дома с работником',     p:'P1', rings:['r1'], angle:240 },
+  { id:'col',  emoji:'◌',  name:'Коллеги',        role:'Команда / офис',        p:'P1', rings:['r1','r2'], angle:265 },
+];
+
+const FOCUS_PATH = {
+  title:'Focus Constellation',
+  subtitle:'Ritual → Presence → Platform → Intelligence',
+  anchors:['r0:0.13', 'r1:1.9', 'r1:1.12', 'r2:2.4', 'r3:3.1', 'r3:3.5'],
+  nodes:[
+    'r0:0.1', 'r0:0.2', 'r0:0.12', 'r0:0.13',
+    'r1:1.1', 'r1:1.2', 'r1:1.9', 'r1:1.11', 'r1:1.12',
+    'r2:2.3', 'r2:2.4', 'r2:2.5', 'r2:2.6', 'r2:2.10',
+    'r3:3.1', 'r3:3.2', 'r3:3.3', 'r3:3.4', 'r3:3.5'
+  ],
+  edges:[
+    ['r0:0.1', 'r0:0.13', 'local'],
+    ['r0:0.2', 'r0:0.13', 'local'],
+    ['r0:0.12', 'r0:0.13', 'local'],
+    ['r0:0.13', 'r1:1.9', 'bridge'],
+    ['r1:1.1', 'r1:1.9', 'local'],
+    ['r1:1.2', 'r1:1.9', 'local'],
+    ['r1:1.9', 'r1:1.12', 'bridge'],
+    ['r1:1.9', 'r1:1.11', 'local'],
+    ['r1:1.12', 'r2:2.3', 'bridge'],
+    ['r2:2.3', 'r2:2.4', 'bridge'],
+    ['r2:2.4', 'r2:2.6', 'local'],
+    ['r2:2.4', 'r2:2.10', 'local'],
+    ['r2:2.4', 'r2:2.5', 'local'],
+    ['r2:2.4', 'r3:3.1', 'bridge'],
+    ['r3:3.1', 'r3:3.2', 'local'],
+    ['r3:3.1', 'r3:3.5', 'bridge'],
+    ['r2:2.4', 'r3:3.4', 'bridge'],
+    ['r3:3.4', 'r3:3.3', 'local']
+  ],
+  stakeholders:['fw', 'dev', 'fam', 'col', 'lead', 'sh'],
+  labels:[
+    ['r0:0.13', 'Ritual'],
+    ['r1:1.9', 'Hub'],
+    ['r1:1.12', 'Presence'],
+    ['r2:2.4', 'Platform'],
+    ['r3:3.1', 'Intelligence'],
+    ['r3:3.5', 'Identity']
+  ]
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────
+let activeTab    = 'map';
+let activeRing   = null;
+let activeStk    = null;
+let activeDotKey = null;
+let focusMode    = false;
+let svgZoom = 1, svgPanX = 0, svgPanY = 0;
+let isPanning = false, panStart = null;
+let panZoomBound = false;
+let dragMoved = false;
+let suppressClickUntil = 0;
+
+const CX = 620, CY = 500, STK_R = 530;
+const VW = 1240, VH = 1000;
+
+// Ring radii for schematic (overrides data r for drawing)
+const RING_RADII = { r0: 105, r1: 205, r2: 310, r3: 415 };
+
+// ─── SIDEBAR ──────────────────────────────────────────────────────────
+function buildSidebar() {
+  const list = document.getElementById('sb-list');
+  list.innerHTML = STAKEHOLDERS.map(s => `
+    <div class="sb-item" id="sbi-${s.id}" onclick="selectStk('${s.id}')">
+      <span class="sb-emoji">${s.emoji}</span>
+      <div class="sb-info">
+        <div class="sb-name">${s.name}</div>
+        <div class="sb-role">${s.role}</div>
+      </div>
+      <div class="sb-p ${s.p.toLowerCase()}">${s.p}</div>
+    </div>
+  `).join('');
+
+  const leg = document.getElementById('ring-legend');
+  leg.innerHTML = RINGS.map(r => `
+    <div class="legend-row">
+      <div class="leg-ring" style="border-color:${r.color};background:${r.dim}"></div>
+      <span class="leg-txt">${r.label} · ${r.short}</span>
+    </div>
+  `).join('');
+}
+
+// ─── SVG DIAGRAM ──────────────────────────────────────────────────────
+function buildDiagram() {
+  const svg = document.getElementById('diagram');
+  svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+
+  let html = `<g id="g-root" transform="translate(0,0) scale(1)">`;
+  const dotPositions = new Map();
+
+  // ── Faint dashed ring circumferences ─────────────────────────────
+  RINGS.forEach(r => {
+    const rad = RING_RADII[r.id];
+    html += `<circle cx="${CX}" cy="${CY}" r="${rad}"
+      fill="none" stroke="${r.color}" stroke-width="0.5"
+      stroke-dasharray="4,8" opacity="0.14"
+      style="pointer-events:none"/>`;
+  });
+
+  // ── Ring arc labels at -75° ────────────────────────────────────
+  RINGS.forEach((r, i) => {
+    const rad = RING_RADII[r.id];
+    const angleRad = (-75 * Math.PI) / 180;
+    const lx = CX + rad * Math.cos(angleRad);
+    const ly = CY + rad * Math.sin(angleRad);
+    html += `<text x="${lx}" y="${ly - 5}" text-anchor="middle"
+      font-family="var(--mono)" font-size="7.5" font-weight="600" letter-spacing=".1em"
+      fill="${r.color}" opacity="0.45" style="pointer-events:none"
+      text-transform="uppercase">RING ${i}</text>`;
+  });
+
+  // ── Center device ─────────────────────────────────────────────
+  const devW = 220, devH = 60;
+  const devX = CX - devW / 2;
+  const devY = CY - devH / 2;
+  html += `<rect x="${devX}" y="${devY}" width="${devW}" height="${devH}"
+    rx="10" ry="10"
+    fill="var(--surface)" stroke="var(--red)" stroke-width="1.5"
+    style="pointer-events:none"/>`;
+
+  // LED dots row
+  const ledCount = 18;
+  const ledSpacing = 10;
+  const ledStartX = CX - ((ledCount - 1) * ledSpacing) / 2;
+  const ledY = CY - 10;
+  for (let i = 0; i < ledCount; i++) {
+    html += `<circle cx="${ledStartX + i * ledSpacing}" cy="${ledY}" r="3"
+      fill="var(--red)" opacity="0.8" style="pointer-events:none"/>`;
+  }
+
+  // "BUSY BAR" label
+  html += `<text x="${CX}" y="${CY + 16}" text-anchor="middle"
+    font-family="var(--mono)" font-size="9" font-weight="600" letter-spacing="2"
+    fill="var(--tx-2)" style="pointer-events:none">BUSY BAR</text>`;
+
+  // ── Feature callout dots + leader lines + labels ───────────────
+  const anchorSet = new Set(FOCUS_PATH.anchors);
+
+  RINGS.forEach(ring => {
+    const rad = RING_RADII[ring.id];
+    const n = ring.features.length;
+    ring.features.forEach((feat, i) => {
+      const angleRad = ((2 * Math.PI) / n) * i - Math.PI / 2;
+      const cosA = Math.cos(angleRad);
+      const sinA = Math.sin(angleRad);
+
+      const fx = CX + rad * cosA;
+      const fy = CY + rad * sinA;
+
+      dotPositions.set(`${ring.id}:${feat.id}`, { x: fx, y: fy, ring: ring.id });
+
+      const dotKey = `${ring.id}:${feat.id}`;
+      const isAnchor = anchorSet.has(dotKey);
+      const isFocusNode = FOCUS_PATH.nodes.includes(dotKey);
+
+      // Leader line geometry
+      const leaderRadial = 16;
+      // end of radial segment
+      const lx1 = fx + cosA * leaderRadial;
+      const ly1 = fy + sinA * leaderRadial;
+      // horizontal elbow
+      const hLen = 24;
+      let lx2, textAnchor;
+      if (cosA > 0.15) {
+        lx2 = lx1 + hLen;
+        textAnchor = 'start';
+      } else if (cosA < -0.15) {
+        lx2 = lx1 - hLen;
+        textAnchor = 'end';
+      } else {
+        lx2 = lx1;
+        textAnchor = 'middle';
+      }
+      const ly2 = ly1;
+
+      // Text offsets for two lines
+      let tLine1Y, tLine2Y;
+      if (sinA > 0.2) {
+        // feature is below center — label below the elbow
+        tLine1Y = ly2 + 11;
+        tLine2Y = ly2 + 22;
+      } else if (sinA < -0.2) {
+        // feature above center — label above the elbow
+        tLine1Y = ly2 - 13;
+        tLine2Y = ly2 - 2;
+      } else {
+        // nearly horizontal
+        tLine1Y = ly2 - 4;
+        tLine2Y = ly2 + 7;
+      }
+
+      const alwaysLabel = isAnchor;
+      const groupClass = `feat-dot-group${alwaysLabel ? ' label-always' : ''}`;
+
+      html += `
+      <g class="${groupClass}" data-ring="${ring.id}" data-dot="${dotKey}"
+         style="cursor:inherit"
+         onmouseenter="showDotTooltip(event,'${dotKey}')"
+         onmouseleave="hideTooltip()"
+         onclick="selectDot(event,'${dotKey}')">
+
+        <!-- Dot -->
+        <circle class="feat-dot" data-ring="${ring.id}" data-dot="${dotKey}"
+          cx="${fx}" cy="${fy}" r="3.5"
+          fill="${ring.color}"
+          style="transition:r .12s,opacity .15s"/>
+
+        <!-- Leader line: radial segment -->
+        <line x1="${fx}" y1="${fy}" x2="${lx1}" y2="${ly1}"
+          stroke="${ring.color}" stroke-width="1" opacity="0.5"
+          style="pointer-events:none"/>
+
+        <!-- Leader line: horizontal elbow (only if not near-vertical) -->
+        ${Math.abs(cosA) > 0.15 ? `<line x1="${lx1}" y1="${ly1}" x2="${lx2}" y2="${ly2}"
+          stroke="${ring.color}" stroke-width="1" opacity="0.5"
+          style="pointer-events:none"/>` : ''}
+
+        <!-- Callout label -->
+        <g class="callout-label">
+          <text x="${lx2}" y="${tLine1Y}" text-anchor="${textAnchor}"
+            font-family="var(--mono)" font-size="8.5" font-weight="700"
+            fill="${ring.color}">${feat.id}</text>
+          <text x="${lx2}" y="${tLine2Y}" text-anchor="${textAnchor}"
+            font-family="var(--font)" font-size="9"
+            fill="var(--tx-2)">${feat.short}</text>
+        </g>
+      </g>`;
+    });
+  });
+
+  // ── Focus mode overlay ────────────────────────────────────────
+  if (focusMode) {
+    html += `<g class="focus-path-layer" style="pointer-events:none">`;
+
+    // Bridge edges as red lines
+    FOCUS_PATH.edges.forEach(([from, to, kind]) => {
+      if (kind !== 'bridge') return;
+      const a = dotPositions.get(from);
+      const b = dotPositions.get(to);
+      if (!a || !b) return;
+      html += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"
+        stroke="var(--red)" stroke-width="2" stroke-linecap="round" opacity="0.7"/>`;
+    });
+
+    // Pulse ring at center
+    html += `<circle cx="${CX}" cy="${CY}" r="28" fill="none" stroke="var(--red)" stroke-width="1.5" opacity="0.4">
+      <animate attributeName="r" values="28;50;28" dur="2.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0;0.5" dur="2.4s" repeatCount="indefinite"/>
+    </circle>`;
+
+    // Hub circle
+    html += `<circle cx="${CX}" cy="${CY}" r="20"
+      fill="var(--bg)" stroke="var(--red)" stroke-width="1.5"/>`;
+    html += `<text x="${CX}" y="${CY + 4}" text-anchor="middle"
+      font-family="var(--mono)" font-size="7" font-weight="700" letter-spacing=".08em"
+      fill="var(--red)">HUB</text>`;
+    html += `<text x="${CX}" y="${CY + 38}" text-anchor="middle"
+      font-family="var(--mono)" font-size="8" font-weight="700" letter-spacing=".1em"
+      fill="var(--red)" opacity="0.8">STATUS ENGINE</text>`;
+
+    html += `</g>`;
+  }
+
+  // ── Stakeholder nodes ─────────────────────────────────────────
+  STAKEHOLDERS.forEach(s => {
+    const rad = (s.angle * Math.PI) / 180;
+    const sx = CX + STK_R * Math.cos(rad);
+    const sy = CY + STK_R * Math.sin(rad);
+
+    // Connection lines
+    s.rings.forEach(rid => {
+      const ring = RINGS.find(r => r.id === rid);
+      const ringRad = RING_RADII[rid];
+      const ex = CX + ringRad * Math.cos(rad);
+      const ey = CY + ringRad * Math.sin(rad);
+      html += `<line class="conn-line conn-${s.id} conn-ring-${rid}"
+        x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}"
+        stroke="${ring.color}" stroke-width="1" stroke-dasharray="4,3"
+        opacity=".2" style="pointer-events:none;transition:opacity .15s"/>`;
+    });
+
+    html += `<circle class="stk-node" data-stk="${s.id}"
+      cx="${sx}" cy="${sy}" r="20"
+      fill="var(--bg)" stroke="var(--border-2)" stroke-width="1.5"
+      style="cursor:inherit;transition:all .15s"
+      onmouseenter="showTooltip(event,'${s.id}')"
+      onmouseleave="hideTooltip()"
+      onclick="selectStk('${s.id}')"/>`;
+
+    html += `<text x="${sx}" y="${sy + 5}" text-anchor="middle"
+      font-family="var(--mono)" font-size="14" font-weight="700"
+      letter-spacing="0" fill="var(--tx-2)" style="pointer-events:none">${s.emoji}</text>`;
+
+    const labelOffset = sy > CY ? 37 : -30;
+    html += `<text x="${sx}" y="${sy + labelOffset}" text-anchor="middle"
+      font-family="var(--font)" font-size="10" font-weight="600"
+      fill="var(--tx-2)" style="pointer-events:none">${s.name}</text>`;
+  });
+
+  html += `</g>`;
+  svg.innerHTML = html;
+  setupPanZoom();
+}
+
+// ─── DOT INTERACTIONS ─────────────────────────────────────────────────
+function selectDot(e, dotKey) {
+  if (Date.now() < suppressClickUntil) { e.preventDefault(); e.stopPropagation(); return; }
+  e.stopPropagation();
+  activeDotKey = dotKey === activeDotKey ? null : dotKey;
+  activeRing   = null;
+  activeStk    = null;
+  updateHighlight();
+  if (activeDotKey) openDotDetail(activeDotKey);
+  else closeDetail();
+}
+
+function showDotTooltip(e, dotKey) {
+  const [rid, fid] = dotKey.split(':');
+  const ring = RINGS.find(r => r.id === rid);
+  const feat = ring ? ring.features.find(f => f.id === fid) : null;
+  if (!feat) return;
+  document.getElementById('tt-title').textContent = `${feat.id} · ${feat.short}`;
+  document.getElementById('tt-body').textContent  = ring.label + ' · ' + ring.sub;
+  document.getElementById('tooltip').classList.add('show');
+  moveTT(e);
+  const dotEl = document.querySelector(`.feat-dot[data-dot="${dotKey}"]`);
+  if (dotEl) dotEl.setAttribute('r', '6');
+}
+
+function hideTooltip() {
+  document.getElementById('tooltip').classList.remove('show');
+  document.querySelectorAll('.feat-dot').forEach(el => {
+    if (el.dataset.dot === activeDotKey) return;
+    const isFocusAnchor = focusMode && FOCUS_PATH.anchors.includes(el.dataset.dot);
+    el.setAttribute('r', isFocusAnchor ? '7.5' : '3.5');
+  });
+}
+
+function openDotDetail(dotKey) {
+  const [rid, fid] = dotKey.split(':');
+  const ring = RINGS.find(r => r.id === rid);
+  const feat = ring ? ring.features.find(f => f.id === fid) : null;
+  if (!feat || !ring) return;
+
+  let matchedFeat = null;
+  for (const g of ring.groups) {
+    for (const f of g.feats) {
+      if (f.name.toLowerCase().includes(feat.short.toLowerCase().split(' ')[0].toLowerCase())) {
+        matchedFeat = f; break;
+      }
+    }
+    if (matchedFeat) break;
+  }
+
+  document.getElementById('detail-title').textContent = `${feat.id} · ${feat.short}`;
+  let html = `<div class="dt-metric" style="margin-bottom:10px">
+    <strong>Ring</strong><span style="color:${ring.color}">${ring.label}</span> · ${ring.sub}
+  </div>`;
+  if (feat.phase) {
+    html += `<div class="dt-metric" style="margin-bottom:10px"><strong>Phase</strong>${feat.phase}
+      ${feat.phase === '1.0' ? ' · Auto Presence' : ''}
+      ${feat.phase === '1.5' ? ' · Focus Memory' : ''}
+      ${feat.phase === '2.0' ? ' · Open Platform' : ''}
+      ${feat.phase === '2.5' ? ' · Team + AI-Adjacent' : ''}
+    </div>`;
+  }
+  if (matchedFeat) {
+    html += `<div class="dt-metric" style="margin-bottom:10px">
+      <strong>Priority</strong>${matchedFeat.p} ${matchedFeat.name}
+      ${matchedFeat.note ? `<div style="margin-top:3px;font-size:11px;color:var(--tx-3)">${matchedFeat.note}</div>` : ''}
+    </div>`;
+  }
+  html += `<div class="dt-section"><div class="dt-sec-label">Ring overview</div>`;
+  if (ring.gate) html += `<div class="dt-item">${ring.gate}</div>`;
+  html += `</div>`;
+
+  if (ring.id === 'r1' || ring.id === 'r2') {
+    const phaseOrder = ring.id === 'r1'
+      ? [['1.0','Ring 1 — Auto Presence'],['1.5','Ring 1.5 — Focus Memory']]
+      : [['2.0','Ring 2 — Open Platform'],['2.5','Ring 2.5 — Team + AI-Adjacent']];
+    phaseOrder.forEach(([phaseId, phaseLabel]) => {
+      const phaseFeats = ring.features.filter(f => f.phase === phaseId);
+      if (!phaseFeats.length) return;
+      html += `<div class="dt-section"><div class="dt-sec-label">${phaseLabel}</div>`;
+      phaseFeats.forEach(f => {
+        html += `<div class="dt-item" style="${f.id === fid ? 'font-weight:600;color:var(--tx)' : ''}">
+          <span class="dt-prio" style="color:${ring.color}">${f.id}</span>${f.short}
+        </div>`;
+      });
+      html += `</div>`;
+    });
+  } else {
+    html += `<div class="dt-section"><div class="dt-sec-label">All features in ${ring.label}</div>`;
+    ring.features.forEach(f => {
+      html += `<div class="dt-item" style="${f.id === fid ? 'font-weight:600;color:var(--tx)' : ''}">
+        <span class="dt-prio" style="color:${ring.color}">${f.id}</span>${f.short}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  if (ring.metrics.length) {
+    html += `<div class="dt-section"><div class="dt-sec-label">Метрики</div>`;
+    ring.metrics.forEach(m => html += `<div class="dt-metric"><strong>${m.label}</strong>${m.val}</div>`);
+    html += `</div>`;
+  }
+  document.getElementById('detail-body').innerHTML = html;
+  document.getElementById('detail').classList.add('open');
+}
+
+// ─── ROADMAP VIEW ─────────────────────────────────────────────────────
+function buildRoadmap() {
+  const cols = document.getElementById('rm-cols');
+  cols.innerHTML = RINGS.map(r => `
+    <div style="width:270px;flex-shrink:0;display:flex;flex-direction:column;
+      border-right:1px solid color-mix(in srgb, var(--border) 72%, transparent);
+      padding:0 20px;overflow-y:auto;">
+      <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid color-mix(in srgb, var(--border) 72%, transparent);">
+        <div style="font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:${r.color};margin-bottom:3px;">${r.label}</div>
+        <div style="font-size:11px;color:var(--tx-2);">${r.sub}</div>
+        ${r.gate ? `<div style="font-family:var(--mono);font-size:9px;color:var(--tx-3);margin-top:5px;padding:4px 8px;background:rgba(255,255,255,.82);border-radius:999px;display:inline-block;border:1px solid color-mix(in srgb, var(--border) 76%, transparent);">${r.gate}</div>` : ''}
+      </div>
+      ${r.groups.map(g => `
+        <div style="margin-bottom:14px;">
+          <div style="font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-3);margin-bottom:5px;">${g.label}</div>
+          ${g.feats.map(f => `
+            <div style="display:flex;align-items:flex-start;gap:7px;padding:7px 8px;border-radius:12px;margin-bottom:3px;cursor:default;">
+              <span style="font-family:var(--mono);font-size:11px;flex-shrink:0">${f.p}</span>
+              <div>
+                <div style="font-size:12px;color:var(--tx);line-height:1.4;">${f.name}</div>
+                ${f.note ? `<div style="font-size:11px;color:var(--tx-2);margin-top:1px;">${f.note}</div>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('')}
+      ${r.metrics.length ? `
+        <div style="height:1px;background:color-mix(in srgb, var(--border) 78%, transparent);margin:8px 0 12px;"></div>
+        <div style="font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-3);margin-bottom:8px;">Метрики</div>
+        ${r.metrics.map(m => `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:7px 9px;margin-bottom:5px;font-size:11px;color:var(--tx-2);"><strong style="color:var(--tx);display:block;font-size:10px;font-weight:600;margin-bottom:2px;">${m.label}</strong>${m.val}</div>`).join('')}
+      ` : ''}
+    </div>
+  `).join('');
+}
+
+// ─── TIMELINE ─────────────────────────────────────────────────────────
+function buildTimeline() {
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = RINGS.map((r, i) => `
+    ${i > 0 ? '<div class="tl-arrow">→</div>' : ''}
+    <div class="tl-block ${i===0?'active':''}" id="tlb-${r.id}" onclick="highlightRing('${r.id}')">
+      <div class="tl-label" style="color:${r.color}">${r.label}</div>
+      <div class="tl-sub">${r.short}</div>
+    </div>
+  `).join('');
+}
+
+// ─── FOCUS MODE ───────────────────────────────────────────────────────
+function toggleFocusMode() {
+  focusMode = !focusMode;
+  syncFocusUI();
+  if (activeTab === 'map') buildDiagram();
+  updateHighlight();
+}
+
+function syncFocusUI() {
+  document.getElementById('focus-toggle')?.classList.toggle('active', focusMode);
+  document.getElementById('focus-copy')?.classList.toggle('show', focusMode);
+}
+
+// ─── INTERACTIONS ─────────────────────────────────────────────────────
+function selectRing(rid) {
+  if (Date.now() < suppressClickUntil) return;
+  activeRing   = rid === activeRing ? null : rid;
+  activeStk    = null;
+  activeDotKey = null;
+  updateHighlight();
+  if (activeRing) openRingDetail(activeRing);
+  else closeDetail();
+  document.querySelectorAll('.tl-block').forEach(b => b.classList.remove('active'));
+  if (activeRing) document.getElementById('tlb-'+activeRing)?.classList.add('active');
+}
+
+function highlightRing(rid) { selectRing(rid); }
+
+function selectStk(sid) {
+  if (Date.now() < suppressClickUntil) return;
+  activeStk    = sid === activeStk ? null : sid;
+  activeRing   = null;
+  activeDotKey = null;
+  updateHighlight();
+  if (activeStk) openStkDetail(activeStk);
+  else closeDetail();
+  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
+  if (activeStk) document.getElementById('sbi-'+activeStk)?.classList.add('active');
+}
+
+function updateHighlight() {
+  const allDotGroups = document.querySelectorAll('.feat-dot-group');
+  const allNodes     = document.querySelectorAll('.stk-node');
+  const allLines     = document.querySelectorAll('.conn-line');
+  const allSbi       = document.querySelectorAll('.sb-item');
+  const focusDots    = new Set(FOCUS_PATH.nodes);
+  const focusAnchors = new Set(FOCUS_PATH.anchors);
+  const focusStakeholders = new Set(FOCUS_PATH.stakeholders);
+
+  if (!activeRing && !activeStk && !activeDotKey) {
+    if (focusMode) {
+      allDotGroups.forEach(el => {
+        const dk = el.dataset.dot;
+        el.style.opacity = focusDots.has(dk) ? '1' : '0.07';
+        // anchor dots get larger
+        const dotEl = el.querySelector('.feat-dot');
+        if (dotEl) dotEl.setAttribute('r', focusAnchors.has(dk) ? '7.5' : (focusDots.has(dk) ? '3.5' : '3.5'));
+      });
+      allNodes.forEach(el => { el.style.opacity = focusStakeholders.has(el.dataset.stk) ? '1' : '.16'; });
+      allLines.forEach(el => {
+        const isFocusS = [...focusStakeholders].some(sid => el.classList.contains('conn-'+sid));
+        const isFocusR = [...focusDots].some(dk => el.classList.contains('conn-ring-'+dk.split(':')[0]));
+        el.setAttribute('opacity', isFocusS && isFocusR ? '.42' : '.04');
+      });
+      allSbi.forEach(el => {
+        const sid = el.id.replace('sbi-','');
+        el.classList.toggle('dimmed', !focusStakeholders.has(sid));
+      });
+    } else {
+      allDotGroups.forEach(el => { el.style.opacity = '1'; });
+      allNodes.forEach(el     => { el.style.opacity = '1'; });
+      allLines.forEach(el     => { el.style.opacity = ''; el.setAttribute('opacity','.2'); });
+      allSbi.forEach(el       => el.classList.remove('dimmed'));
+      document.querySelectorAll('.feat-dot').forEach(el => el.setAttribute('r','3.5'));
+    }
+    return;
+  }
+
+  if (activeDotKey) {
+    const [rid] = activeDotKey.split(':');
+    allDotGroups.forEach(el => {
+      el.style.opacity = el.dataset.dot === activeDotKey ? '1' : (el.dataset.ring === rid ? '0.5' : '0.12');
+    });
+    allNodes.forEach(el => { el.style.opacity = '0.4'; });
+    allLines.forEach(el => { el.style.opacity = ''; el.setAttribute('opacity','.06'); });
+    allSbi.forEach(el => el.classList.remove('dimmed'));
+    document.querySelectorAll('.feat-dot').forEach(el => {
+      el.setAttribute('r', el.dataset.dot === activeDotKey ? '6' : '3.5');
+    });
+    return;
+  }
+
+  if (activeRing) {
+    const stksInRing = STAKEHOLDERS.filter(s => s.rings.includes(activeRing)).map(s => s.id);
+    allDotGroups.forEach(el => {
+      el.style.opacity = el.dataset.ring === activeRing ? '1' : '0.12';
+    });
+    allNodes.forEach(el => el.style.opacity = stksInRing.includes(el.dataset.stk) ? '1' : '.2');
+    allLines.forEach(el => {
+      el.setAttribute('opacity', el.classList.contains('conn-ring-'+activeRing) ? '.7' : '.04');
+    });
+    allSbi.forEach(el => {
+      el.classList.toggle('dimmed', !stksInRing.includes(el.id.replace('sbi-','')));
+    });
+    document.querySelectorAll('.feat-dot').forEach(el => el.setAttribute('r','3.5'));
+    return;
+  }
+
+  if (activeStk) {
+    const stk = STAKEHOLDERS.find(s => s.id === activeStk);
+    allDotGroups.forEach(el => {
+      el.style.opacity = stk.rings.includes(el.dataset.ring) ? '1' : '0.12';
+    });
+    allNodes.forEach(el => el.style.opacity = el.dataset.stk === activeStk ? '1' : '.2');
+    allLines.forEach(el => {
+      el.setAttribute('opacity', el.classList.contains('conn-'+activeStk) ? '.9' : '.04');
+    });
+    allSbi.forEach(el => el.classList.remove('dimmed'));
+    document.querySelectorAll('.feat-dot').forEach(el => el.setAttribute('r','3.5'));
+  }
+}
+
+function openRingDetail(rid) {
+  const r = RINGS.find(x => x.id === rid);
+  document.getElementById('detail-title').textContent = `${r.label} · ${r.short}`;
+  let html = '';
+  if (r.gate) html += `<div class="dt-metric" style="margin-bottom:12px"><strong>Gate</strong>${r.gate}</div>`;
+  r.groups.forEach(g => {
+    html += `<div class="dt-section"><div class="dt-sec-label">${g.label}</div>`;
+    g.feats.forEach(f => {
+      html += `<div class="dt-item"><span class="dt-prio">${f.p}</span>${f.name}${f.note ? `<span class="dt-note">${f.note}</span>` : ''}</div>`;
+    });
+    html += `</div>`;
+  });
+  if (r.metrics.length) {
+    html += `<div class="dt-section"><div class="dt-sec-label">Метрики</div>`;
+    r.metrics.forEach(m => html += `<div class="dt-metric"><strong>${m.label}</strong>${m.val}</div>`);
+    html += `</div>`;
+  }
+  document.getElementById('detail-body').innerHTML = html;
+  document.getElementById('detail').classList.add('open');
+}
+
+function openStkDetail(sid) {
+  const s = STAKEHOLDERS.find(x => x.id === sid);
+  document.getElementById('detail-title').textContent = `${s.emoji} ${s.name}`;
+  const ringNames = s.rings.map(rid => {
+    const r = RINGS.find(x => x.id === rid);
+    return `<span style="color:${r.color}">${r.label}</span>`;
+  }).join(', ');
+  document.getElementById('detail-body').innerHTML = `
+    <div class="dt-metric"><strong>Роль</strong>${s.role}</div>
+    <div class="dt-metric"><strong>Приоритет</strong>${s.p}</div>
+    <div class="dt-metric"><strong>Кольца</strong>${ringNames}</div>
+  `;
+  document.getElementById('detail').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail').classList.remove('open');
+  activeRing = null; activeStk = null; activeDotKey = null;
+  updateHighlight();
+  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tl-block').forEach(el => el.classList.remove('active'));
+}
+
+// ─── TOOLTIP ──────────────────────────────────────────────────────────
+function showTooltip(e, id) {
+  const ring = RINGS.find(r => r.id === id);
+  const stk  = STAKEHOLDERS.find(s => s.id === id);
+  const tt   = document.getElementById('tooltip');
+  if (ring) {
+    document.getElementById('tt-title').textContent = `${ring.label} · ${ring.sub}`;
+    document.getElementById('tt-body').textContent  = ring.gate || '';
+  } else if (stk) {
+    document.getElementById('tt-title').textContent = `${stk.emoji} ${stk.name}`;
+    document.getElementById('tt-body').textContent  = stk.role;
+  }
+  tt.classList.add('show');
+  moveTT(e);
+}
+function moveTT(e) {
+  const tt = document.getElementById('tooltip');
+  tt.style.left = (e.clientX + 14) + 'px';
+  tt.style.top  = (e.clientY - 8)  + 'px';
+}
+document.addEventListener('mousemove', moveTT);
+
+// ─── TAB SWITCHING ────────────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
+  document.getElementById('diagram').style.display       = tab === 'map'     ? 'block' : 'none';
+  document.getElementById('roadmap-view').style.display  = tab === 'roadmap' ? 'block' : 'none';
+  if (tab === 'map') buildDiagram();
+}
+
+// ─── PAN / ZOOM ───────────────────────────────────────────────────────
+function applyTransform(animate) {
+  const g = document.getElementById('g-root');
+  if (!g) return;
+  g.style.transformOrigin = `${CX}px ${CY}px`;
+  const tv = `translate(${svgPanX}px,${svgPanY}px) scale(${svgZoom})`;
+  if (animate) {
+    g.style.transition = 'transform .18s cubic-bezier(.25,.46,.45,.94)';
+    g.style.transform = tv;
+    setTimeout(() => { g.style.transition = ''; }, 200);
+  } else {
+    g.style.transition = '';
+    g.style.transform = tv;
+  }
+  document.getElementById('zoom-val').textContent = Math.round(svgZoom * 100) + '%';
+}
+function zoom(factor) { svgZoom = Math.min(3, Math.max(.3, svgZoom * factor)); applyTransform(true); }
+function zoomReset() { svgZoom = 1; svgPanX = 0; svgPanY = 0; applyTransform(true); }
+
+function setupPanZoom() {
+  const svg = document.getElementById('diagram');
+  if (!panZoomBound) {
+    svg.addEventListener('mousedown', e => {
+      if (activeTab !== 'map') return;
+      if (e.button !== 0) return;
+      isPanning = true; dragMoved = false;
+      svg.classList.add('panning');
+      panStart = { x: e.clientX - svgPanX, y: e.clientY - svgPanY };
+      e.preventDefault();
+    }, true);
+    svg.addEventListener('click', e => {
+      if (Date.now() < suppressClickUntil) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+    window.addEventListener('mousemove', e => {
+      if (!isPanning) return;
+      const nx = e.clientX - panStart.x, ny = e.clientY - panStart.y;
+      if (Math.abs(nx - svgPanX) > 2 || Math.abs(ny - svgPanY) > 2) dragMoved = true;
+      svgPanX = nx; svgPanY = ny;
+      applyTransform();
+    });
+    window.addEventListener('mouseup', () => {
+      if (dragMoved) suppressClickUntil = Date.now() + 120;
+      isPanning = false; dragMoved = false;
+      document.getElementById('diagram')?.classList.remove('panning');
+    });
+    svg.addEventListener('wheel', e => {
+      if (activeTab !== 'map') return;
+      e.preventDefault();
+      const delta = -e.deltaY;
+      const factor = 1 + Math.min(Math.abs(delta), 120) / 120 * 0.08;
+      zoom(delta > 0 ? factor : 1 / factor);
+    }, { passive: false });
+    panZoomBound = true;
+  }
+}
+
+// ─── THEME ────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isDark ? 'Dark' : 'Light';
+  if (activeTab === 'map') buildDiagram();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────
+buildSidebar();
+buildDiagram();
+buildRoadmap();
+buildTimeline();
+syncFocusUI();
+</script>
+</body>
+</html>

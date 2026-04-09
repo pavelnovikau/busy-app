@@ -1,0 +1,40 @@
+{
+  "title": "Focus Constellation",
+  "subtitle": "Ritual \u2192 Presence \u2192 Platform \u2192 Intelligence",
+  "anchors": ["r0:0.1", "r1:1.9", "r1:1.12", "r2:2.4", "r3:3.1", "r3:3.5"],
+  "anchorLabels": {
+    "r0:0.1":  "Ritual",
+    "r1:1.9":  "Hub",
+    "r1:1.12": "Presence",
+    "r2:2.4":  "Platform",
+    "r3:3.1":  "Intelligence",
+    "r3:3.5":  "Identity"
+  },
+  "nodes": [
+    "r0:0.1", "r0:0.2", "r0:0.12", "r0:0.13",
+    "r1:1.1", "r1:1.2", "r1:1.9", "r1:1.11", "r1:1.12",
+    "r2:2.3", "r2:2.4", "r2:2.5", "r2:2.6", "r2:2.10",
+    "r3:3.1", "r3:3.2", "r3:3.3", "r3:3.4", "r3:3.5"
+  ],
+  "edges": [
+    { "from": "r0:0.1",  "to": "r0:0.13", "type": "local" },
+    { "from": "r0:0.2",  "to": "r0:0.13", "type": "local" },
+    { "from": "r0:0.12", "to": "r0:0.13", "type": "local" },
+    { "from": "r0:0.13", "to": "r1:1.9",  "type": "bridge" },
+    { "from": "r1:1.1",  "to": "r1:1.9",  "type": "local" },
+    { "from": "r1:1.2",  "to": "r1:1.9",  "type": "local" },
+    { "from": "r1:1.9",  "to": "r1:1.12", "type": "bridge" },
+    { "from": "r1:1.9",  "to": "r1:1.11", "type": "local" },
+    { "from": "r1:1.12", "to": "r2:2.3",  "type": "bridge" },
+    { "from": "r2:2.3",  "to": "r2:2.4",  "type": "bridge" },
+    { "from": "r2:2.4",  "to": "r2:2.6",  "type": "local" },
+    { "from": "r2:2.4",  "to": "r2:2.10", "type": "local" },
+    { "from": "r2:2.4",  "to": "r2:2.5",  "type": "local" },
+    { "from": "r2:2.4",  "to": "r3:3.1",  "type": "bridge" },
+    { "from": "r3:3.1",  "to": "r3:3.2",  "type": "local" },
+    { "from": "r3:3.1",  "to": "r3:3.5",  "type": "bridge" },
+    { "from": "r2:2.4",  "to": "r3:3.4",  "type": "bridge" },
+    { "from": "r3:3.4",  "to": "r3:3.3",  "type": "local" }
+  ],
+  "stakeholders": ["fw", "dev", "fam", "col", "lead", "sh"]
+}

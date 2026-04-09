@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSY Bar · Product Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── BLUEPRINT ENGINEERING — RED PALETTE ─── */
+:root {
+  --bg:       #0E0808;
+  --bg-2:     #160D0D;
+  --surface:  #1E1111;
+  --border:   rgba(239,68,68,.16);
+  --border-2: rgba(239,68,68,.30);
+  --tx:       #FAF0F0;
+  --tx-2:     #C8A8A8;
+  --tx-3:     #7A5050;
+  --red:      #EF4444;
+  --red-dim:  rgba(239,68,68,.10);
+  --red-glow: 0 0 8px rgba(239,68,68,.35);
+  --grid:     rgba(239,68,68,.06);
+  --grid-maj: rgba(239,68,68,.12);
+  --mono: 'Geist Mono', monospace;
+  --sans: 'Geist', system-ui, sans-serif;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+html,body {
+  width:100%; height:100%; overflow:hidden;
+  background:var(--bg); color:var(--tx); font-family:var(--mono);
+}
+body {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(var(--grid-maj) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-maj) 1px, transparent 1px);
+  background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+  background-position: -1px -1px;
+}
+
+/* ─── HEADER ─── */
+#hd {
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  height:46px;
+  background:rgba(14,8,8,.94);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  display:flex; align-items:center; padding:0 18px; gap:0;
+}
+.hd-brand {
+  display:flex; align-items:center; gap:7px;
+  font-size:10px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--tx); padding-right:14px; flex-shrink:0;
+}
+.hd-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--red); box-shadow:var(--red-glow);
+}
+.hd-sep { width:1px; height:16px; background:var(--border); margin:0 4px; flex-shrink:0; }
+.hd-sub { font-size:9px; letter-spacing:.08em; color:var(--tx-3); padding-right:14px; flex-shrink:0; }
+.tab-btn {
+  font-size:9px; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+  padding:0 12px; height:46px; border:none; background:transparent;
+  color:var(--tx-3); cursor:pointer; position:relative; transition:color .1s;
+  white-space:nowrap;
+}
+.tab-btn:hover { color:var(--tx-2); }
+.tab-btn.active { color:var(--red); }
+.tab-btn.active::after {
+  content:''; position:absolute; bottom:0; left:0; right:0;
+  height:1px; background:var(--red);
+}
+.hd-right { margin-left:auto; display:flex; align-items:center; gap:6px; flex-shrink:0; }
+.focus-btn {
+  font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  padding:0 10px; height:24px;
+  border:1px solid var(--border); border-radius:2px;
+  background:transparent; color:var(--tx-3); cursor:pointer;
+  transition:all .1s; display:flex; align-items:center; gap:5px;
+}
+.focus-btn:hover { border-color:var(--red); color:var(--tx-2); }
+.focus-btn.on { background:var(--red-dim); border-color:var(--red); color:var(--red); }
+.focus-dot {
+  width:4px; height:4px; border-radius:50%; background:currentColor;
+  opacity:.5; transition:all .1s;
+}
+.focus-btn.on .focus-dot { opacity:1; box-shadow:0 0 4px var(--red); }
+.hd-tag { font-size:8px; letter-spacing:.1em; color:var(--tx-3); }
+
+/* ─── VIEWS WRAPPER ─── */
+#views {
+  position:fixed; top:46px; left:0; right:0; bottom:0; overflow:hidden;
+}
+
+/* ─── SCHEMATIC VIEW ─── */
+#sv {
+  position:absolute; inset:0;
+  overflow:auto; cursor:crosshair;
+}
+#schematic {
+  display:flex; align-items:stretch;
+  min-height:100%; position:relative; min-width:max-content;
+}
+
+/* ─── ZONE ─── */
+.zone {
+  width:290px; flex-shrink:0;
+  display:flex; flex-direction:column;
+  border-right:1px solid var(--border);
+}
+.zone:last-child { border-right:none; }
+
+.zone-hd {
+  position:sticky; top:0; z-index:20;
+  background:rgba(14,8,8,.96);
+  border-bottom:1px solid var(--border);
+  padding:14px 14px 12px;
+  backdrop-filter:blur(8px);
+}
+.zone-ref {
+  font-size:8px; font-weight:600; letter-spacing:.22em;
+  color:var(--red); opacity:.6; display:block; margin-bottom:3px;
+}
+.zone-name {
+  font-size:12px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--tx); display:block; margin-bottom:2px;
+}
+.zone-time {
+  font-size:9px; color:var(--tx-3); display:block; letter-spacing:.03em;
+}
+.zone-gate {
+  margin-top:8px; padding-top:7px; border-top:1px solid rgba(239,68,68,.08);
+  display:block;
+}
+.zone-gate-kw {
+  font-size:7px; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--red); opacity:.6; display:block; margin-bottom:2px;
+}
+.zone-gate-txt {
+  font-size:9px; color:var(--tx-3); line-height:1.45; display:block;
+}
+
+/* ─── GATE DIVIDER ─── */
+.gate-div {
+  width:32px; flex-shrink:0; position:relative;
+  border-right:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+}
+.gate-div-line {
+  position:absolute; top:0; bottom:0; left:50%; width:1px;
+  background:linear-gradient(to bottom, transparent, var(--border-2) 20%, var(--border-2) 80%, transparent);
+}
+.gate-div-txt {
+  writing-mode:vertical-lr; transform:rotate(180deg);
+  font-size:6px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--red); opacity:.45;
+  background:var(--bg); padding:6px 0; position:relative; z-index:1;
+}
+
+/* ─── FEATURE GROUP ─── */
+.feat-group {
+  border:1px solid rgba(239,68,68,.10);
+  margin:10px 10px 0;
+  position:relative;
+}
+.feat-group:last-child { margin-bottom:14px; }
+.group-ref {
+  position:absolute; top:-7px; left:8px;
+  font-size:7px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--red); opacity:.55;
+  background:var(--bg); padding:0 4px;
+}
+.group-hd {
+  padding:7px 10px 5px;
+  font-size:8px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--tx-3);
+  display:flex; align-items:center; gap:6px;
+  border-bottom:1px solid rgba(239,68,68,.07);
+}
+.group-phase {
+  font-size:7px; padding:1px 4px;
+  border:1px solid rgba(239,68,68,.18);
+  color:var(--red); opacity:.6; letter-spacing:.1em;
+}
+
+/* ─── FEATURE ROW ─── */
+.feat-row {
+  display:flex; align-items:center;
+  padding:5px 10px 5px 8px; gap:6px;
+  cursor:pointer; transition:background .08s;
+  border-bottom:1px solid rgba(239,68,68,.04);
+  position:relative;
+}
+.feat-row:last-child { border-bottom:none; }
+.feat-row:hover { background:rgba(239,68,68,.06); }
+
+/* Focus states — applied when parent has .focus-on */
+.focus-on .feat-row           { opacity:.2; }
+.focus-on .feat-row.f-node    { opacity:1; background:rgba(239,68,68,.05); }
+.focus-on .feat-row.f-anchor  {
+  opacity:1; background:rgba(239,68,68,.12);
+  border-bottom-color:rgba(239,68,68,.12);
+}
+.focus-on .feat-row.f-anchor::before {
+  content:''; position:absolute; left:0; top:0; bottom:0;
+  width:2px; background:var(--red); box-shadow:var(--red-glow);
+}
+.focus-on .feat-row.f-anchor .feat-id  { color:var(--red); }
+.focus-on .feat-row.f-anchor .feat-name { color:var(--tx); }
+.focus-on .feat-row.f-node .feat-id    { color:var(--red); opacity:.7; }
+.focus-on .feat-row.f-node .feat-name  { color:var(--tx-2); }
+
+.feat-id   { font-size:8px; color:var(--tx-3); min-width:26px; flex-shrink:0; letter-spacing:.03em; }
+.feat-prio { font-size:9px; color:var(--tx-3); width:10px; flex-shrink:0; }
+.feat-name { font-family:var(--sans); font-size:11.5px; color:var(--tx-2); flex:1; line-height:1.3; }
+.feat-row:hover .feat-name { color:var(--tx); }
+
+.feat-anch-tag {
+  font-size:7px; letter-spacing:.1em; text-transform:uppercase;
+  padding:1px 4px; border:1px solid rgba(239,68,68,.4);
+  color:var(--red); background:var(--red-dim); flex-shrink:0; display:none;
+}
+.focus-on .f-anchor .feat-anch-tag { display:block; }
+
+/* ─── CONNECTION SVG ─── */
+#conn-svg {
+  position:absolute; top:0; left:0; pointer-events:none; z-index:30;
+  overflow:visible;
+}
+.c-trace {
+  stroke:var(--red); stroke-width:1.5; fill:none;
+  opacity:0; transition:opacity .22s;
+  stroke-linejoin:round;
+}
+.c-dot {
+  fill:var(--red); stroke:var(--bg); stroke-width:1.5;
+  opacity:0; transition:opacity .22s;
+}
+.focus-on .c-trace { opacity:.7; }
+.focus-on .c-dot   { opacity:1; }
+
+/* ─── INSIGHTS VIEW ─── */
+#iv {
+  position:absolute; inset:0; display:none;
+  overflow-y:auto; padding:40px 48px; cursor:default;
+}
+#iv.visible { display:block; }
+.ins-wrap { max-width:720px; }
+.ins-sec { margin-bottom:32px; }
+.ins-sec-hd {
+  font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--tx); padding-left:10px; border-left:2px solid var(--red);
+  margin-bottom:12px;
+}
+.ins-card {
+  background:rgba(30,17,17,.8); border:1px solid var(--border);
+  border-radius:2px; padding:14px 16px; margin-bottom:10px;
+  transition:border-color .1s;
+}
+.ins-card:hover { border-color:var(--border-2); }
+.ins-title { font-family:var(--sans); font-size:14px; font-weight:600; color:var(--tx); margin-bottom:6px; }
+.ins-body  { font-family:var(--sans); font-size:13px; color:var(--tx-2); line-height:1.65; }
+.ins-body strong { color:var(--tx); font-weight:600; }
+.ins-tag {
+  display:inline-block; font-size:8px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase;
+  padding:1px 5px; border-radius:1px; margin:0 4px 0 0;
+}
+.t-red { background:rgba(239,68,68,.12); color:var(--red); }
+.t-or  { background:rgba(234,82,18,.12); color:#EA5212; }
+.t-bl  { background:rgba(67,133,190,.12); color:#4385BE; }
+.t-gr  { background:rgba(102,128,11,.12); color:#66800B; }
+
+/* ─── DETAIL PANEL ─── */
+#detail {
+  position:fixed; top:46px; right:0; bottom:0; width:300px; z-index:400;
+  background:rgba(12,6,6,.97); border-left:1px solid var(--border);
+  backdrop-filter:blur(14px);
+  transform:translateX(100%); transition:transform .18s;
+  overflow-y:auto; padding:18px 16px;
+}
+#detail.open { transform:translateX(0); }
+#d-close {
+  position:absolute; top:10px; right:10px;
+  width:20px; height:20px;
+  border:1px solid var(--border); background:transparent;
+  color:var(--tx-3); cursor:pointer; font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .1s;
+}
+#d-close:hover { border-color:var(--red); color:var(--tx); }
+#d-id   { font-size:9px; letter-spacing:.2em; color:var(--red); opacity:.7; margin-bottom:3px; }
+#d-name { font-family:var(--sans); font-size:15px; font-weight:600; color:var(--tx); padding-right:28px; margin-bottom:3px; }
+#d-ring { font-size:9px; color:var(--tx-3); letter-spacing:.05em; padding-bottom:12px; border-bottom:1px solid var(--border); margin-bottom:14px; }
+.d-row  { display:flex; gap:8px; padding:5px 0; border-bottom:1px solid rgba(239,68,68,.05); align-items:baseline; }
+.d-row:last-child { border-bottom:none; }
+.d-lbl  { font-size:8px; letter-spacing:.12em; text-transform:uppercase; color:var(--tx-3); min-width:64px; flex-shrink:0; padding-top:2px; }
+.d-val  { font-family:var(--sans); font-size:11.5px; color:var(--tx-2); line-height:1.5; }
+
+/* ─── LEGEND ─── */
+#legend {
+  position:fixed; bottom:16px; left:20px; z-index:100;
+  display:flex; align-items:center; gap:14px;
+  font-size:8px; letter-spacing:.1em; color:var(--tx-3);
+  background:rgba(14,8,8,.88); border:1px solid var(--border);
+  padding:5px 12px; border-radius:2px; backdrop-filter:blur(8px);
+}
+.leg-item { display:flex; align-items:center; gap:5px; }
+.leg-dot  { width:5px; height:5px; border-radius:50%; background:var(--red); }
+.leg-line { width:14px; height:1.5px; background:var(--red); opacity:.7; }
+.leg-box  { width:8px; height:8px; border:1px solid rgba(239,68,68,.35); }
+.leg-anch { width:8px; height:8px; border:1px solid var(--red); background:rgba(239,68,68,.12); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="hd">
+  <div class="hd-brand">
+    <div class="hd-dot"></div>BUSY BAR
+  </div>
+  <div class="hd-sep"></div>
+  <span class="hd-sub">Product Architecture</span>
+  <div class="hd-sep"></div>
+  <button class="tab-btn active" onclick="switchView('schematic')">Schematic</button>
+  <button class="tab-btn" onclick="switchView('insights')">Insights</button>
+  <div class="hd-right">
+    <button class="focus-btn" id="focus-btn" onclick="toggleFocus()">
+      <div class="focus-dot"></div>Focus Constellation
+    </button>
+    <div class="hd-sep"></div>
+    <span class="hd-tag">v2026-Q1</span>
+  </div>
+</div>
+
+<!-- VIEWS -->
+<div id="views">
+  <div id="sv">
+    <div id="schematic">
+      <svg id="conn-svg"></svg>
+    </div>
+  </div>
+  <div id="iv">
+    <div class="ins-wrap" id="ins-inner"></div>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div id="detail">
+  <button id="d-close" onclick="closeDetail()">×</button>
+  <div id="d-id"></div>
+  <div id="d-name"></div>
+  <div id="d-ring"></div>
+  <div id="d-body"></div>
+</div>
+
+<!-- LEGEND -->
+<div id="legend">
+  <div class="leg-item"><div class="leg-anch"></div>Anchor</div>
+  <div class="leg-item"><div class="leg-box"></div>Node</div>
+  <div class="leg-item"><div class="leg-line"></div>Bridge</div>
+  <div class="leg-item" style="margin-left:4px">● Built &nbsp;◐ Planned &nbsp;○ Future</div>
+</div>
+
+<script>
+// ─── FEATURE CATALOGUE ────────────────────────────────────────────
+const F = {
+  '0.1':  { name:'Pomodoro Timer',        ring:'r0', prio:'●' },
+  '0.2':  { name:'Status Button',         ring:'r0', prio:'●' },
+  '0.3':  { name:'iOS App',               ring:'r0', prio:'●' },
+  '0.4':  { name:'Android App',           ring:'r0', prio:'●' },
+  '0.5':  { name:'Apple Watch',           ring:'r0', prio:'●' },
+  '0.6':  { name:'Wear OS',               ring:'r0', prio:'●' },
+  '0.7':  { name:'Focus Sessions',        ring:'r0', prio:'●' },
+  '0.8':  { name:'App Blocking (basic)',  ring:'r0', prio:'●' },
+  '0.9':  { name:'HTTP API + MQTT',       ring:'r0', prio:'●' },
+  '0.10': { name:'SDK Py/TS/Go',          ring:'r0', prio:'●' },
+  '0.11': { name:'OBS Auto-detect',       ring:'r0', prio:'●' },
+  '0.12': { name:'WiFi 6 + Matter',       ring:'r0', prio:'●' },
+  '0.13': { name:'LED Matrix 72×16',      ring:'r0', prio:'●' },
+  '0.14': { name:'OLED Display',          ring:'r0', prio:'●' },
+  '0.15': { name:'Themes & UI',           ring:'r0', prio:'●' },
+
+  '1.1':  { name:'Google Calendar',       ring:'r1', prio:'●', phase:'1.0' },
+  '1.2':  { name:'Zoom / Meet / Teams',   ring:'r1', prio:'●', phase:'1.0' },
+  '1.3':  { name:'App Blocking (macOS)',  ring:'r1', prio:'●', phase:'1.5' },
+  '1.4':  { name:'App Tracking',          ring:'r1', prio:'●', phase:'1.5' },
+  '1.5':  { name:'Focus Heatmap',         ring:'r1', prio:'●', phase:'1.5' },
+  '1.6':  { name:'Focus Score',           ring:'r1', prio:'◐', phase:'1.5' },
+  '1.7':  { name:'Auto-Timesheet',        ring:'r1', prio:'●', phase:'1.5' },
+  '1.8':  { name:'Project Tags',          ring:'r1', prio:'◐', phase:'1.5' },
+  '1.9':  { name:'macOS App (menubar)',    ring:'r1', prio:'●', phase:'1.0' },
+  '1.10': { name:'Interruption Cost',     ring:'r1', prio:'●', phase:'1.5' },
+  '1.11': { name:'Family URL',            ring:'r1', prio:'●', phase:'1.0' },
+  '1.12': { name:'Slack Sync',            ring:'r1', prio:'●', phase:'1.0' },
+
+  '2.1':  { name:'Cross-Device Track',    ring:'r2', prio:'◐', phase:'2.5' },
+  '2.2':  { name:'Toggl Export',          ring:'r2', prio:'●', phase:'2.5' },
+  '2.3':  { name:'Developer Portal',      ring:'r2', prio:'●', phase:'2.0' },
+  '2.4':  { name:'App Library',           ring:'r2', prio:'●', phase:'2.0' },
+  '2.5':  { name:'AI Agent Monitor',      ring:'r2', prio:'◐', phase:'2.5' },
+  '2.6':  { name:'Home Assistant',        ring:'r2', prio:'●', phase:'2.0' },
+  '2.7':  { name:'HomeKit / Matter',      ring:'r2', prio:'●', phase:'2.0' },
+  '2.8':  { name:'OBS Plugin',            ring:'r2', prio:'●', phase:'2.0' },
+  '2.9':  { name:'Slack Bot Free',        ring:'r2', prio:'●', phase:'2.5' },
+  '2.10': { name:'Team Dashboard',        ring:'r2', prio:'◐', phase:'2.5' },
+
+  '3.1':  { name:'AI Focus Coach',        ring:'r3', prio:'●' },
+  '3.2':  { name:'Energy Prediction',     ring:'r3', prio:'●' },
+  '3.3':  { name:'BUSY Mini ($99–129)',   ring:'r3', prio:'◐' },
+  '3.4':  { name:'Marketplace',           ring:'r3', prio:'◐' },
+  '3.5':  { name:'Focus Profile (public)',ring:'r3', prio:'◐' },
+  '3.6':  { name:'HSA/FSA (ADHD)',        ring:'r3', prio:'○' },
+  '3.7':  { name:'Enterprise Tier',       ring:'r3', prio:'○' },
+  '3.8':  { name:'Body Doubling',         ring:'r3', prio:'○' },
+};
+
+// ─── SCHEMATIC LAYOUT ─────────────────────────────────────────────
+const ZONES = [
+  {
+    id:'r0', ref:'R0 · CORE', label:'CORE', time:'Hardware Platform · Now',
+    gate:null,
+    groups:[
+      { label:'Display System', ref:'DS', feats:['0.13','0.14','0.1','0.2'] },
+      { label:'Connectivity',   ref:'CN', feats:['0.12','0.9','0.10','0.11'] },
+      { label:'Mobile Apps',    ref:'MA', feats:['0.3','0.4','0.5','0.6','0.7','0.8','0.15'] },
+    ]
+  },
+  {
+    id:'r1', ref:'R1 · SOFTWARE', label:'SOFTWARE', time:'Auto Presence · 0–9 months',
+    gate:'Retention ≥ 40% (30-day)',
+    groups:[
+      { label:'Auto Presence', ref:'AP', phase:'1.0', feats:['1.9','1.1','1.2','1.12','1.11'] },
+      { label:'Focus Memory',  ref:'FM', phase:'1.5', feats:['1.3','1.4','1.10','1.5','1.6','1.7','1.8'] },
+    ]
+  },
+  {
+    id:'r2', ref:'R2 · PLATFORM', label:'PLATFORM', time:'Open Platform · 9–24 months',
+    gate:'200+ apps · 30% 3rd-party · 50K units',
+    groups:[
+      { label:'Developer Platform', ref:'DP', phase:'2.0', feats:['2.3','2.4','2.6','2.7','2.8'] },
+      { label:'Team + AI-Adjacent', ref:'TA', phase:'2.5', feats:['2.1','2.2','2.5','2.9','2.10'] },
+    ]
+  },
+  {
+    id:'r3', ref:'R3 · ECOSYSTEM', label:'ECOSYSTEM', time:'Intelligence · 18–36 months',
+    gate:null,
+    groups:[
+      { label:'AI Intelligence',    ref:'AI', feats:['3.1','3.2'] },
+      { label:'Hardware Expansion', ref:'HX', feats:['3.3'] },
+      { label:'Marketplace',        ref:'MK', feats:['3.4'] },
+      { label:'Culture + Identity', ref:'CI', feats:['3.5','3.6','3.7','3.8'] },
+    ]
+  },
+];
+
+// ─── FOCUS CONSTELLATION ──────────────────────────────────────────
+const FOCUS = {
+  anchors: new Set(['0.13','1.9','1.12','2.4','3.1','3.5']),
+  nodes:   new Set(['0.1','0.2','0.12','1.1','1.2','1.9','1.11','1.12','2.3','2.4','2.5','2.6','2.10','3.1','3.2','3.3','3.4','3.5']),
+  bridges: [ ['0.13','1.9'], ['1.12','2.3'], ['2.4','3.1'], ['2.4','3.4'] ]
+};
+
+// ─── INSIGHTS DATA ────────────────────────────────────────────────
+const INSIGHTS = [
+  { h:'Что нашли в рисёрче', cards:[
+    { tl:'Готово',    tc:'t-gr',  title:'SDK уже существует', body:'Python / TypeScript / Go SDK анонсированы с Day 1. Ring 2 developer platform начинается сегодня — нужно документировать и продвигать, не строить с нуля.' },
+    { tl:'Готово',    tc:'t-gr',  title:'Matter сертифицирован 17 Feb 2026', body:'CSA ID: CSA260HLMAT50041-24. Apple HomeKit и Google Home работают уже сейчас. Ни у одного конкурента нет WiFi + Matter.' },
+    { tl:'Важно',     tc:'t-or',  title:'Реальные цены ниже пресс-релизов', body:'Пресса: $249. Официальный магазин: $219. Early Bird: $179. Переход к $199 SKU не болезненный.' },
+    { tl:'Риск',      tc:'t-red', title:'App blocking — хрупкая фича', body:'iOS Screen Time API нестабилен. <strong>macOS Focus Modes API (Ring 1) — стабильный приоритет.</strong> iOS/Android Hardcore mode = под вопросом.' },
+  ]},
+  { h:'Нераскрытые возможности', cards:[
+    { tl:'Новое',     tc:'t-bl',  title:'Стоимость прерываний', body:'Stanford: 1 context switch = 23 мин восстановления. 8 прерываний = 3 часа потерь. BUSY Bar знает каждый прерванный таймер — это аргумент для команды.' },
+    { tl:'Уникально', tc:'t-bl',  title:'Кросс-девайс таймшит', body:'Mac + iPhone + iPad = единый честный таймшит. Нет ни у кого из конкурентов. Qbserve / RescueTime трекают только один девайс.' },
+    { tl:'Новое',     tc:'t-bl',  title:'Физический монитор AI-агентов', body:'Claude Code / Codex hook → физический сигнал. Видно из любой точки комнаты. Новый статус: "агент работает, я занят".' },
+    { tl:'Сегмент',   tc:'t-or',  title:'ADHD как медицинский девайс', body:'HSA/FSA eligibility снижает цену с $219 до ~$160 и открывает канал через telehealth.' },
+  ]},
+  { h:'Стратегический смысл', cards:[
+    { tl:'Core',  tc:'t-red', title:'Суверенитет над вниманием — настоящая цель', body:'Не "продуктивность". Люди хотят доказательство что их время принадлежит им. BUSY Bar решает задачу <strong>контроля над собственной жизнью</strong>.' },
+    { tl:'Моут',  tc:'t-gr',  title:'Конкуренты не могут скопировать экосистему', body:'Luxafor / Kuando — USB HID, заморожены в момент покупки. BUSY Bar эволюционирует через OTA. За 18-24 месяца — installed base + community + brand.' },
+  ]},
+];
+
+// ─── STATE ────────────────────────────────────────────────────────
+let focusOn = false;
+
+// ─── BUILD SCHEMATIC ──────────────────────────────────────────────
+function buildSchematic() {
+  const sc = document.getElementById('schematic');
+  const svg = document.getElementById('conn-svg');
+  sc.innerHTML = '';
+  sc.appendChild(svg);
+
+  ZONES.forEach((zone, zi) => {
+    if (zi > 0) {
+      const gd = document.createElement('div');
+      gd.className = 'gate-div';
+      gd.innerHTML = `<div class="gate-div-line"></div><div class="gate-div-txt">GATE</div>`;
+      sc.appendChild(gd);
+    }
+
+    const z = document.createElement('div');
+    z.className = 'zone';
+    z.id = 'z-' + zone.id;
+
+    const hd = document.createElement('div');
+    hd.className = 'zone-hd';
+    hd.innerHTML = `
+      <span class="zone-ref">${zone.ref}</span>
+      <span class="zone-name">${zone.label}</span>
+      <span class="zone-time">${zone.time}</span>
+      ${zone.gate ? `<span class="zone-gate"><span class="zone-gate-kw">Gate →</span><span class="zone-gate-txt">${zone.gate}</span></span>` : ''}
+    `;
+    z.appendChild(hd);
+
+    zone.groups.forEach((grp, gi) => {
+      const g = document.createElement('div');
+      g.className = 'feat-group';
+      g.innerHTML = `
+        <div class="group-ref">${grp.ref}</div>
+        <div class="group-hd">
+          ${grp.label}
+          ${grp.phase ? `<span class="group-phase">${grp.phase}</span>` : ''}
+        </div>
+      `;
+      grp.feats.forEach(fid => {
+        const feat = F[fid];
+        if (!feat) return;
+        const isA = FOCUS.anchors.has(fid);
+        const isN = FOCUS.nodes.has(fid);
+        const row = document.createElement('div');
+        row.className = `feat-row${isA ? ' f-anchor' : isN ? ' f-node' : ''}`;
+        row.dataset.feat = fid;
+        row.onclick = () => openDetail(fid);
+        row.innerHTML = `
+          <span class="feat-id">${fid}</span>
+          <span class="feat-prio">${feat.prio}</span>
+          <span class="feat-name">${feat.name}</span>
+          ${isA ? '<span class="feat-anch-tag">Anchor</span>' : ''}
+        `;
+        g.appendChild(row);
+      });
+      z.appendChild(g);
+    });
+
+    sc.appendChild(z);
+  });
+
+  requestAnimationFrame(drawConnections);
+}
+
+// ─── DRAW CONNECTIONS ─────────────────────────────────────────────
+function pos(id) {
+  const el = document.querySelector(`[data-feat="${id}"]`);
+  if (!el) return null;
+  const sc = document.getElementById('schematic');
+  const sv = document.getElementById('sv');
+  const sr = sc.getBoundingClientRect();
+  const er = el.getBoundingClientRect();
+  const sl = sv.scrollLeft, st = sv.scrollTop;
+  return {
+    left:  er.left  - sr.left + sl,
+    right: er.right - sr.left + sl,
+    midY:  (er.top + er.bottom)/2 - sr.top + st
+  };
+}
+
+function drawConnections() {
+  const sc  = document.getElementById('schematic');
+  const svg = document.getElementById('conn-svg');
+  const w   = sc.scrollWidth, h = sc.scrollHeight;
+  svg.setAttribute('width', w);
+  svg.setAttribute('height', h);
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+
+  let out = '';
+  FOCUS.bridges.forEach(([a, b]) => {
+    const pa = pos(a), pb = pos(b);
+    if (!pa || !pb) return;
+    const mx = (pa.right + pb.left) / 2;
+    // Elbow trace: right → across → down/up → across → left
+    const d = `M${pa.right},${pa.midY} L${mx},${pa.midY} L${mx},${pb.midY} L${pb.left},${pb.midY}`;
+    out += `<path class="c-trace" d="${d}"/>`;
+    out += `<circle class="c-dot" cx="${pa.right}" cy="${pa.midY}" r="3"/>`;
+    out += `<circle class="c-dot" cx="${pb.left}"  cy="${pb.midY}" r="3"/>`;
+    // Corner dots at bends
+    out += `<circle class="c-dot" cx="${mx}" cy="${pa.midY}" r="1.5" opacity="0.5"/>`;
+    out += `<circle class="c-dot" cx="${mx}" cy="${pb.midY}" r="1.5" opacity="0.5"/>`;
+  });
+  svg.innerHTML = out;
+}
+
+// ─── FOCUS TOGGLE ─────────────────────────────────────────────────
+function toggleFocus() {
+  focusOn = !focusOn;
+  document.getElementById('focus-btn').classList.toggle('on', focusOn);
+  document.getElementById('sv').classList.toggle('focus-on', focusOn);
+  if (focusOn) requestAnimationFrame(drawConnections);
+}
+
+// ─── VIEW SWITCH ──────────────────────────────────────────────────
+function switchView(v) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('sv').style.display  = v === 'schematic' ? 'block' : 'none';
+  document.getElementById('iv').classList.toggle('visible', v === 'insights');
+  document.getElementById('legend').style.display = v === 'schematic' ? 'flex' : 'none';
+}
+
+// ─── DETAIL PANEL ─────────────────────────────────────────────────
+const RING_NAMES = {
+  r0:'Ring 0 — Core Hardware',
+  r1:'Ring 1 — Software Platform',
+  r2:'Ring 2 — Open Platform',
+  r3:'Ring 3 — Ecosystem'
+};
+function openDetail(id) {
+  const f = F[id];
+  if (!f) return;
+  const isA = FOCUS.anchors.has(id);
+  const isN = FOCUS.nodes.has(id);
+  document.getElementById('d-id').textContent   = id;
+  document.getElementById('d-name').textContent = f.name;
+  document.getElementById('d-ring').textContent = RING_NAMES[f.ring] || f.ring;
+  document.getElementById('d-body').innerHTML = `
+    <div class="d-row">
+      <div class="d-lbl">Priority</div>
+      <div class="d-val">${f.prio === '●' ? 'High — Ship' : f.prio === '◐' ? 'Medium — Plan' : 'Low — Future'}</div>
+    </div>
+    ${f.phase ? `<div class="d-row"><div class="d-lbl">Phase</div><div class="d-val">${f.phase}</div></div>` : ''}
+    <div class="d-row">
+      <div class="d-lbl">Constellation</div>
+      <div class="d-val">${isA ? '★ Anchor — critical path node' : isN ? '◦ Node — supporting' : '— not in path'}</div>
+    </div>
+  `;
+  document.getElementById('detail').classList.add('open');
+}
+function closeDetail() {
+  document.getElementById('detail').classList.remove('open');
+}
+
+// ─── BUILD INSIGHTS ───────────────────────────────────────────────
+function buildInsights() {
+  document.getElementById('ins-inner').innerHTML = INSIGHTS.map(s => `
+    <div class="ins-sec">
+      <div class="ins-sec-hd">${s.h}</div>
+      ${s.cards.map(c => `
+        <div class="ins-card">
+          <div class="ins-title"><span class="ins-tag ${c.tc}">${c.tl}</span>${c.title}</div>
+          <div class="ins-body">${c.body}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+// ─── SCROLL + RESIZE → REDRAW ─────────────────────────────────────
+document.getElementById('sv').addEventListener('scroll', drawConnections);
+window.addEventListener('resize', () => { drawConnections(); });
+
+// ─── INIT ─────────────────────────────────────────────────────────
+buildSchematic();
+buildInsights();
+</script>
+</body>
+</html>

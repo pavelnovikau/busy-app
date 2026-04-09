@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSY Bar · Transit Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:   #F8F7F3;
+  --bg-2: #EEECE5;
+  --bd:   #DDD9CF;
+  --tx:   #111111;
+  --tx-2: #5A5550;
+  --tx-3: #B0AC9F;
+  --sans: 'Geist', system-ui, sans-serif;
+  --mono: 'Geist Mono', monospace;
+  --red: #C8001A; --orange: #D45F00; --blue: #1A5EA6; --green: #2B7A3C;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); }
+
+#hd {
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  height:46px; background:rgba(248,247,243,.96); border-bottom:1px solid var(--bd);
+  backdrop-filter:blur(10px);
+  display:flex; align-items:center; padding:0 22px; gap:0;
+}
+.hd-brand {
+  font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.15em; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; padding-right:14px;
+}
+.hd-dot { width:7px; height:7px; border-radius:50%; background:var(--red); }
+.hd-sep { width:1px; height:16px; background:var(--bd); margin:0 4px; }
+.hd-lbl { font-family:var(--mono); font-size:9px; color:var(--tx-3); letter-spacing:.07em; padding-right:14px; }
+.tab {
+  font-family:var(--mono); font-size:9px; font-weight:600; letter-spacing:.11em; text-transform:uppercase;
+  padding:0 13px; height:46px; border:none; background:transparent;
+  color:var(--tx-3); cursor:pointer; position:relative; transition:color .1s;
+}
+.tab:hover { color:var(--tx-2); }
+.tab.on { color:var(--tx); }
+.tab.on::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--red); }
+.hd-r { margin-left:auto; display:flex; align-items:center; gap:8px; }
+.hl-btn {
+  font-family:var(--mono); font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  padding:0 10px; height:25px; border:1.5px solid var(--bd); border-radius:3px;
+  background:transparent; color:var(--tx-3); cursor:pointer; transition:all .1s;
+  display:flex; align-items:center; gap:5px;
+}
+.hl-btn:hover { border-color:var(--red); color:var(--tx-2); }
+.hl-btn.on { background:rgba(200,0,26,.07); border-color:var(--red); color:var(--red); }
+.hl-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+#views { position:fixed; top:46px; left:0; right:0; bottom:0; }
+#map-view {
+  position:absolute; inset:0;
+  overflow-x:auto; overflow-y:auto;
+  background:var(--bg);
+}
+#map-svg { display:block; min-width:1400px; min-height:520px; }
+
+#ins-view { position:absolute; inset:0; display:none; overflow-y:auto; padding:40px 48px; }
+#ins-view.on { display:block; }
+.is-wrap { max-width:700px; }
+.is-sec { margin-bottom:30px; }
+.is-hd { font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--tx); padding-left:10px; border-left:2px solid var(--red); margin-bottom:12px; }
+.is-card { background:#fff; border:1px solid var(--bd); border-radius:3px; padding:14px 16px; margin-bottom:10px; }
+.is-card:hover { border-color:var(--tx-3); }
+.is-title { font-family:var(--sans); font-size:14px; font-weight:600; color:var(--tx); margin-bottom:5px; }
+.is-body  { font-family:var(--sans); font-size:13px; color:var(--tx-2); line-height:1.65; }
+.is-body strong { color:var(--tx); font-weight:600; }
+.itag { display:inline-block; font-family:var(--mono); font-size:8px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:1px 5px; border-radius:2px; margin:0 4px 0 0; }
+.tr { background:rgba(200,0,26,.08); color:var(--red); }
+.to { background:rgba(212,95,0,.08); color:var(--orange); }
+.tb { background:rgba(26,94,166,.08); color:var(--blue); }
+.tg { background:rgba(43,122,60,.08); color:var(--green); }
+
+#dp {
+  position:fixed; top:46px; right:0; bottom:0; width:310px; z-index:400;
+  background:rgba(248,247,243,.98); border-left:1px solid var(--bd);
+  backdrop-filter:blur(12px);
+  transform:translateX(100%); transition:transform .18s; overflow-y:auto; padding:20px 18px;
+}
+#dp.open { transform:translateX(0); }
+#dp-x {
+  position:absolute; top:12px; right:12px; width:22px; height:22px;
+  border:1px solid var(--bd); border-radius:2px; background:transparent;
+  color:var(--tx-3); cursor:pointer; font-size:12px;
+  display:flex; align-items:center; justify-content:center; transition:all .1s;
+}
+#dp-x:hover { border-color:var(--red); color:var(--tx); }
+#dp-lines { display:flex; gap:5px; margin-bottom:8px; }
+.dp-line-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+#dp-id   { font-family:var(--mono); font-size:8px; letter-spacing:.16em; color:var(--tx-3); margin-bottom:3px; }
+#dp-name { font-family:var(--sans); font-size:16px; font-weight:600; color:var(--tx); padding-right:30px; margin-bottom:3px; }
+#dp-ring { font-family:var(--mono); font-size:9px; color:var(--tx-3); padding-bottom:12px; border-bottom:1px solid var(--bd); margin-bottom:14px; }
+.dp-r { display:flex; gap:8px; padding:5px 0; border-bottom:1px solid rgba(0,0,0,.04); align-items:baseline; }
+.dp-r:last-child { border-bottom:none; }
+.dp-l { font-family:var(--mono); font-size:8px; letter-spacing:.1em; text-transform:uppercase; color:var(--tx-3); min-width:60px; flex-shrink:0; padding-top:2px; }
+.dp-v { font-family:var(--sans); font-size:12px; color:var(--tx-2); line-height:1.5; }
+</style>
+</head>
+<body>
+
+<div id="hd">
+  <div class="hd-brand"><div class="hd-dot"></div>BUSY BAR</div>
+  <div class="hd-sep"></div>
+  <span class="hd-lbl">Product Strategy</span>
+  <div class="hd-sep"></div>
+  <button class="tab on" onclick="switchTab('map',this)">Transit Map</button>
+  <button class="tab" onclick="switchTab('ins',this)">Insights</button>
+  <div class="hd-r">
+    <button class="hl-btn" id="hl" onclick="toggleHL()">
+      <div class="hl-dot"></div>Focus Line
+    </button>
+    <div class="hd-sep"></div>
+    <span style="font-family:var(--mono);font-size:8px;color:var(--tx-3);letter-spacing:.1em">2026 Q1</span>
+  </div>
+</div>
+
+<div id="views">
+<div id="map-view">
+<svg id="map-svg" viewBox="0 0 1400 520" xmlns="http://www.w3.org/2000/svg">
+
+<!-- ═══ ZONE BANDS ═══════════════════════════════════════════════════ -->
+<rect x="0"    y="0" width="260"  height="520" fill="#F2F1EC"/>
+<rect x="260"  y="0" width="310"  height="520" fill="#F8F7F3"/>
+<rect x="570"  y="0" width="310"  height="520" fill="#F2F1EC"/>
+<rect x="880"  y="0" width="520"  height="520" fill="#F8F7F3"/>
+<!-- zone dividers -->
+<line x1="260" y1="0" x2="260" y2="520" stroke="#DDD9CF" stroke-width="1"/>
+<line x1="570" y1="0" x2="570" y2="520" stroke="#DDD9CF" stroke-width="1"/>
+<line x1="880" y1="0" x2="880" y2="520" stroke="#DDD9CF" stroke-width="1"/>
+<!-- zone labels -->
+<text x="130"  y="490" text-anchor="middle" font-family="'Geist Mono',monospace" font-size="9" font-weight="600" letter-spacing="1.4" fill="#B0AC9F">R0 · CORE</text>
+<text x="415"  y="490" text-anchor="middle" font-family="'Geist Mono',monospace" font-size="9" font-weight="600" letter-spacing="1.4" fill="#B0AC9F">R1 · SOFTWARE</text>
+<text x="725"  y="490" text-anchor="middle" font-family="'Geist Mono',monospace" font-size="9" font-weight="600" letter-spacing="1.4" fill="#B0AC9F">R2 · PLATFORM</text>
+<text x="1070" y="490" text-anchor="middle" font-family="'Geist Mono',monospace" font-size="9" font-weight="600" letter-spacing="1.4" fill="#B0AC9F">R3 · ECOSYSTEM</text>
+<!-- zone time labels -->
+<text x="130"  y="504" text-anchor="middle" font-family="'Geist',sans-serif" font-size="8.5" fill="#C8C4BB">Hardware · Now</text>
+<text x="415"  y="504" text-anchor="middle" font-family="'Geist',sans-serif" font-size="8.5" fill="#C8C4BB">0 – 9 months</text>
+<text x="725"  y="504" text-anchor="middle" font-family="'Geist',sans-serif" font-size="8.5" fill="#C8C4BB">9 – 24 months</text>
+<text x="1070" y="504" text-anchor="middle" font-family="'Geist',sans-serif" font-size="8.5" fill="#C8C4BB">18 – 36 months</text>
+
+<!-- ═══ LINE PATHS ═══════════════════════════════════════════════════ -->
+
+<!-- GREEN LINE — Smart Home (y=390) -->
+<path d="M95,390 L142,390 M218,390 L628,390 M698,390 L756,390 M840,390 L1400,390"
+  stroke="#2B7A3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+<!-- BLUE LINE — Platform (y=290) -->
+<!-- SDK→API at y=290 · rises to AppLib (700,130) via curve · then AIMonitor at (760,290) · Marketplace at (960,290) -->
+<path d="M95,290 L134,290 M194,290 L570,290 C630,290 660,210 700,130 C740,210 750,270 780,290 L960,290 M1040,290 L1400,290"
+  stroke="#1A5EA6" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+<!-- ORANGE LINE — Presence (y=200) -->
+<!-- StatusBtn(110,200) · curves UP to macOS(330,130) · runs parallel · curves UP to Slack(490,130) · curves DOWN to SlackBot(650,200) · TeamDash(720,200) -->
+<path d="M95,200 L110,200 C180,200 250,130 330,130 C375,130 435,130 490,130 C530,130 580,200 650,200 L720,200 M800,200 L1400,200"
+  stroke="#D45F00" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+<!-- RED LINE — Focus Constellation (y=130) -->
+<path d="M95,130 L1220,130"
+  stroke="#C8001A" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+
+<!-- Branch: Family URL off macOS App -->
+<path d="M330,130 L390,185" stroke="#D45F00" stroke-width="3" stroke-dasharray="5,3" fill="none"/>
+<!-- Branch: Cross-Device Track off Timesheet area -->
+<path d="M540,290 L540,250" stroke="#1A5EA6" stroke-width="2.5" stroke-dasharray="4,3" fill="none"/>
+<!-- Branch: OBS Plugin off Home Asst area -->
+<path d="M698,390 L698,348" stroke="#2B7A3C" stroke-width="2.5" stroke-dasharray="4,3" fill="none"/>
+<!-- Branch: Energy Prediction continues right of AI Coach -->
+<path d="M930,130 L995,80" stroke="#C8001A" stroke-width="3" stroke-dasharray="4,3" fill="none"/>
+<!-- Branch: BUSY Mini off Marketplace -->
+<path d="M960,290 L910,345" stroke="#1A5EA6" stroke-width="2.5" stroke-dasharray="4,3" fill="none"/>
+
+<!-- ═══ STATIONS ══════════════════════════════════════════════════════ -->
+<!-- Calling convention: cx,cy, r, fill, stroke, strokeW, data-id -->
+
+<!-- ── RED LINE stations ── -->
+<!-- 0.1 Pomodoro Timer — ANCHOR / Ritual -->
+<circle cx="118" cy="130" r="9" fill="white" stroke="#C8001A" stroke-width="2.5" data-id="0.1" class="st" onclick="openDP('0.1')" style="cursor:pointer"/>
+<circle cx="118" cy="130" r="3.5" fill="#C8001A" style="pointer-events:none"/>
+<!-- 0.13 LED Matrix — node -->
+<circle cx="200" cy="130" r="6" fill="white" stroke="#C8001A" stroke-width="2" data-id="0.13" class="st" onclick="openDP('0.13')" style="cursor:pointer"/>
+<!-- 1.9 macOS App — ANCHOR (transfer R+O) -->
+<circle cx="330" cy="130" r="11" fill="white" stroke="#C8001A" stroke-width="3" data-id="1.9" class="st tf" onclick="openDP('1.9')" style="cursor:pointer"/>
+<circle cx="330" cy="130" r="4.5" fill="#C8001A" style="pointer-events:none"/>
+<!-- 1.12 Slack Sync — ANCHOR (transfer R+O) -->
+<circle cx="490" cy="130" r="11" fill="white" stroke="#C8001A" stroke-width="3" data-id="1.12" class="st tf" onclick="openDP('1.12')" style="cursor:pointer"/>
+<circle cx="490" cy="130" r="4.5" fill="#C8001A" style="pointer-events:none"/>
+<!-- 2.4 App Library — ANCHOR (transfer R+B) -->
+<circle cx="700" cy="130" r="12" fill="white" stroke="#C8001A" stroke-width="3" data-id="2.4" class="st tf" onclick="openDP('2.4')" style="cursor:pointer"/>
+<circle cx="700" cy="130" r="5" fill="#C8001A" style="pointer-events:none"/>
+<!-- 3.1 AI Focus Coach — ANCHOR -->
+<circle cx="930" cy="130" r="9" fill="white" stroke="#C8001A" stroke-width="2.5" data-id="3.1" class="st" onclick="openDP('3.1')" style="cursor:pointer"/>
+<circle cx="930" cy="130" r="3.5" fill="#C8001A" style="pointer-events:none"/>
+<!-- 3.5 Focus Profile — ANCHOR -->
+<circle cx="1095" cy="130" r="9" fill="white" stroke="#C8001A" stroke-width="2.5" data-id="3.5" class="st" onclick="openDP('3.5')" style="cursor:pointer"/>
+<circle cx="1095" cy="130" r="3.5" fill="#C8001A" style="pointer-events:none"/>
+<!-- 3.2 Energy Prediction — branch node -->
+<circle cx="995" cy="80"  r="5.5" fill="white" stroke="#C8001A" stroke-width="2" data-id="3.2" class="st" onclick="openDP('3.2')" style="cursor:pointer"/>
+
+<!-- ── ORANGE LINE stations ── -->
+<circle cx="110" cy="200" r="6"  fill="white" stroke="#D45F00" stroke-width="2" data-id="0.2"  class="st" onclick="openDP('0.2')"  style="cursor:pointer"/>
+<!-- macOS App transfer already drawn red above -->
+<!-- Family URL — branch -->
+<circle cx="390" cy="185" r="5.5" fill="white" stroke="#D45F00" stroke-width="2" data-id="1.11" class="st" onclick="openDP('1.11')" style="cursor:pointer"/>
+<!-- Slack Sync transfer already drawn red above -->
+<circle cx="652" cy="200" r="6"  fill="white" stroke="#D45F00" stroke-width="2" data-id="2.9"  class="st" onclick="openDP('2.9')"  style="cursor:pointer"/>
+<circle cx="722" cy="200" r="6"  fill="white" stroke="#D45F00" stroke-width="2" data-id="2.10" class="st" onclick="openDP('2.10')" style="cursor:pointer"/>
+<!-- Interruption Cost (Ring 1) on Presence line -->
+<circle cx="448" cy="200" r="6"  fill="white" stroke="#D45F00" stroke-width="2" data-id="1.10" class="st" onclick="openDP('1.10')" style="cursor:pointer"/>
+
+<!-- ── BLUE LINE stations ── -->
+<circle cx="138" cy="290" r="6"  fill="white" stroke="#1A5EA6" stroke-width="2" data-id="0.10" class="st" onclick="openDP('0.10')" style="cursor:pointer"/>
+<circle cx="196" cy="290" r="6"  fill="white" stroke="#1A5EA6" stroke-width="2" data-id="0.9"  class="st" onclick="openDP('0.9')"  style="cursor:pointer"/>
+<!-- Dev Portal — on the rising segment -->
+<circle cx="625" cy="220" r="6"  fill="white" stroke="#1A5EA6" stroke-width="2" data-id="2.3"  class="st" onclick="openDP('2.3')"  style="cursor:pointer"/>
+<!-- App Library transfer — already drawn red above, add blue ring -->
+<circle cx="700" cy="130" r="15" fill="none" stroke="#1A5EA6" stroke-width="2" stroke-dasharray="3,3" style="pointer-events:none"/>
+<!-- AI Agent Monitor -->
+<circle cx="783" cy="290" r="6"  fill="white" stroke="#1A5EA6" stroke-width="2" data-id="2.5"  class="st" onclick="openDP('2.5')"  style="cursor:pointer"/>
+<circle cx="962" cy="290" r="6"  fill="white" stroke="#1A5EA6" stroke-width="2" data-id="3.4"  class="st" onclick="openDP('3.4')"  style="cursor:pointer"/>
+<!-- BUSY Mini branch terminal -->
+<circle cx="912" cy="347" r="5.5" fill="white" stroke="#1A5EA6" stroke-width="2" data-id="3.3"  class="st" onclick="openDP('3.3')"  style="cursor:pointer"/>
+<!-- Toggl, Cross-Device on blue -->
+<circle cx="540" cy="250" r="5.5" fill="white" stroke="#1A5EA6" stroke-width="2" data-id="2.1"  class="st" onclick="openDP('2.1')"  style="cursor:pointer"/>
+
+<!-- ── GREEN LINE stations ── -->
+<circle cx="144" cy="390" r="6"  fill="white" stroke="#2B7A3C" stroke-width="2" data-id="0.12" class="st" onclick="openDP('0.12')" style="cursor:pointer"/>
+<circle cx="220" cy="390" r="6"  fill="white" stroke="#2B7A3C" stroke-width="2" data-id="0.11" class="st" onclick="openDP('0.11')" style="cursor:pointer"/>
+<circle cx="632" cy="390" r="6"  fill="white" stroke="#2B7A3C" stroke-width="2" data-id="2.6"  class="st" onclick="openDP('2.6')"  style="cursor:pointer"/>
+<circle cx="700" cy="390" r="6"  fill="white" stroke="#2B7A3C" stroke-width="2" data-id="2.7"  class="st" onclick="openDP('2.7')"  style="cursor:pointer"/>
+<circle cx="698" cy="348" r="5.5" fill="white" stroke="#2B7A3C" stroke-width="2" data-id="2.8"  class="st" onclick="openDP('2.8')"  style="cursor:pointer"/>
+<circle cx="758" cy="390" r="6"  fill="white" stroke="#2B7A3C" stroke-width="2" data-id="3.6"  class="st" onclick="openDP('3.6')"  style="cursor:pointer"/>
+
+<!-- ═══ LABELS (rotated 42°) ════════════════════════════════════════ -->
+
+<!-- Red line labels — anchors above, nodes mixed -->
+<g transform="rotate(-42 118 130)"><text x="118" y="117" text-anchor="start" font-family="'Geist',sans-serif" font-size="11" font-weight="700" fill="#111111">Pomodoro Timer</text></g>
+<g transform="rotate(-42 118 130)"><text x="118" y="107" text-anchor="start" font-family="'Geist Mono',monospace" font-size="8" fill="#C8001A" letter-spacing=".4">Ritual</text></g>
+
+<g transform="rotate(-42 200 130)"><text x="200" y="119" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555" >LED Matrix</text></g>
+
+<g transform="rotate(-42 330 130)"><text x="330" y="115" text-anchor="start" font-family="'Geist',sans-serif" font-size="11" font-weight="700" fill="#111">macOS App</text></g>
+<g transform="rotate(-42 330 130)"><text x="330" y="105" text-anchor="start" font-family="'Geist Mono',monospace" font-size="8" fill="#C8001A" letter-spacing=".4">Hub</text></g>
+
+<g transform="rotate(-42 490 130)"><text x="490" y="115" text-anchor="start" font-family="'Geist',sans-serif" font-size="11" font-weight="700" fill="#111">Slack Sync</text></g>
+<g transform="rotate(-42 490 130)"><text x="490" y="105" text-anchor="start" font-family="'Geist Mono',monospace" font-size="8" fill="#C8001A" letter-spacing=".4">Presence</text></g>
+
+<g transform="rotate(-42 700 130)"><text x="700" y="112" text-anchor="start" font-family="'Geist',sans-serif" font-size="12" font-weight="700" fill="#111">App Library</text></g>
+<g transform="rotate(-42 700 130)"><text x="700" y="101" text-anchor="start" font-family="'Geist Mono',monospace" font-size="8" fill="#C8001A" letter-spacing=".4">Platform</text></g>
+
+<g transform="rotate(-42 930 130)"><text x="930" y="115" text-anchor="start" font-family="'Geist',sans-serif" font-size="11" font-weight="700" fill="#111">AI Focus Coach</text></g>
+<g transform="rotate(-42 930 130)"><text x="930" y="105" text-anchor="start" font-family="'Geist Mono',monospace" font-size="8" fill="#C8001A" letter-spacing=".4">Intelligence</text></g>
+
+<g transform="rotate(-42 1095 130)"><text x="1095" y="115" text-anchor="start" font-family="'Geist',sans-serif" font-size="11" font-weight="700" fill="#111">Focus Profile</text></g>
+<g transform="rotate(-42 1095 130)"><text x="1095" y="105" text-anchor="start" font-family="'Geist Mono',monospace" font-size="8" fill="#C8001A" letter-spacing=".4">Identity</text></g>
+
+<g transform="rotate(-42 995 80)"><text x="995" y="72" text-anchor="start" font-family="'Geist',sans-serif" font-size="9.5" fill="#555">Energy Prediction</text></g>
+
+<!-- Orange line labels -->
+<g transform="rotate(-42 110 200)"><text x="110" y="190" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">Status Button</text></g>
+<g transform="rotate(-42 390 185)"><text x="390" y="175" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">Family URL</text></g>
+<g transform="rotate(-42 448 200)"><text x="448" y="190" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">Interruption Cost</text></g>
+<g transform="rotate(-42 652 200)"><text x="652" y="190" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">Slack Bot</text></g>
+<g transform="rotate(-42 722 200)"><text x="722" y="190" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">Team Dashboard</text></g>
+
+<!-- Blue line labels -->
+<g transform="rotate(-42 138 290)"><text x="138" y="280" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">SDK Py/TS/Go</text></g>
+<g transform="rotate(-42 196 290)"><text x="196" y="280" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">HTTP API</text></g>
+<g transform="rotate(-42 625 220)"><text x="625" y="210" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">Dev Portal</text></g>
+<g transform="rotate(-42 783 290)"><text x="783" y="280" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">AI Agent Monitor</text></g>
+<g transform="rotate(-42 962 290)"><text x="962" y="280" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">Marketplace</text></g>
+<g transform="rotate(-42 540 250)"><text x="540" y="242" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">Cross-Device</text></g>
+<g transform="rotate(-42 912 347)"><text x="912" y="338" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">BUSY Mini</text></g>
+
+<!-- Green line labels -->
+<g transform="rotate(-42 144 390)"><text x="144" y="380" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">WiFi 6 + Matter</text></g>
+<g transform="rotate(-42 220 390)"><text x="220" y="380" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">OBS Auto-detect</text></g>
+<g transform="rotate(-42 632 390)"><text x="632" y="380" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">Home Assistant</text></g>
+<g transform="rotate(-42 700 390)"><text x="700" y="380" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">HomeKit/Matter</text></g>
+<g transform="rotate(-42 698 348)"><text x="698" y="338" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">OBS Plugin</text></g>
+<g transform="rotate(-42 758 390)"><text x="758" y="380" text-anchor="start" font-family="'Geist',sans-serif" font-size="10" fill="#555">HSA/FSA ADHD</text></g>
+
+<!-- ═══ LEGEND ════════════════════════════════════════════════════════ -->
+<rect x="1248" y="332" width="140" height="148" rx="3" fill="rgba(248,247,243,.96)" stroke="#DDD9CF" stroke-width="1"/>
+<text x="1262" y="352" font-family="'Geist Mono',monospace" font-size="8" font-weight="700" letter-spacing="1.4" fill="#B0AC9F">LINES</text>
+<!-- Red -->
+<line x1="1262" y1="368" x2="1286" y2="368" stroke="#C8001A" stroke-width="3.5"/>
+<text x="1294" y="372" font-family="'Geist',sans-serif" font-size="10" fill="#111">Focus Path</text>
+<!-- Orange -->
+<line x1="1262" y1="388" x2="1286" y2="388" stroke="#D45F00" stroke-width="3.5"/>
+<text x="1294" y="392" font-family="'Geist',sans-serif" font-size="10" fill="#111">Presence</text>
+<!-- Blue -->
+<line x1="1262" y1="408" x2="1286" y2="408" stroke="#1A5EA6" stroke-width="3.5"/>
+<text x="1294" y="412" font-family="'Geist',sans-serif" font-size="10" fill="#111">Platform</text>
+<!-- Green -->
+<line x1="1262" y1="428" x2="1286" y2="428" stroke="#2B7A3C" stroke-width="3.5"/>
+<text x="1294" y="432" font-family="'Geist',sans-serif" font-size="10" fill="#111">Smart Home</text>
+<!-- Station markers -->
+<text x="1262" y="452" font-family="'Geist Mono',monospace" font-size="8" font-weight="700" letter-spacing="1.4" fill="#B0AC9F">STATIONS</text>
+<circle cx="1271" cy="464" r="7" fill="white" stroke="#555" stroke-width="2"/>
+<circle cx="1271" cy="464" r="2.5" fill="#555"/>
+<text x="1284" y="468" font-family="'Geist',sans-serif" font-size="9.5" fill="#555">Transfer</text>
+<circle cx="1271" cy="480" r="5.5" fill="white" stroke="#555" stroke-width="1.8"/>
+<text x="1284" y="484" font-family="'Geist',sans-serif" font-size="9.5" fill="#555">Station</text>
+
+</svg>
+</div>
+
+<div id="ins-view">
+<div class="is-wrap" id="is-inner"></div>
+</div>
+</div>
+
+<div id="dp">
+  <button id="dp-x" onclick="closeDP()">×</button>
+  <div id="dp-lines"></div>
+  <div id="dp-id"></div>
+  <div id="dp-name"></div>
+  <div id="dp-ring"></div>
+  <div id="dp-body"></div>
+</div>
+
+<script>
+const FEATURES = {
+  '0.1':  {n:'Pomodoro Timer',        r:'r0',p:'●', lines:['red'],         role:'Ritual — the act of beginning focus'},
+  '0.2':  {n:'Status Button',         r:'r0',p:'●', lines:['orange'],      role:'Manual override & presence signal'},
+  '0.9':  {n:'HTTP API + MQTT',       r:'r0',p:'●', lines:['blue'],        role:'Open integration foundation'},
+  '0.10': {n:'SDK Py/TS/Go',          r:'r0',p:'●', lines:['blue'],        role:'Developer entry point'},
+  '0.11': {n:'OBS Auto-detect',       r:'r0',p:'●', lines:['green'],       role:'Auto-status for streamers'},
+  '0.12': {n:'WiFi 6 + Matter',       r:'r0',p:'●', lines:['green'],       role:'IoT certification, Feb 2026'},
+  '0.13': {n:'LED Matrix 72×16',      r:'r0',p:'●', lines:['red'],         role:'Physical focus signal output'},
+  '0.14': {n:'OLED Display',          r:'r0',p:'●', lines:['red'],         role:'Back display for device'},
+  '0.3':  {n:'iOS App',               r:'r0',p:'●', lines:[],              role:'Mobile focus companion'},
+  '0.4':  {n:'Android App',           r:'r0',p:'●', lines:[],              role:'Mobile focus companion'},
+  '0.5':  {n:'Apple Watch',           r:'r0',p:'●', lines:[],              role:'Wearable sync'},
+  '0.6':  {n:'Wear OS',               r:'r0',p:'●', lines:[],              role:'Wearable sync'},
+  '0.7':  {n:'Focus Sessions',        r:'r0',p:'●', lines:[],              role:'Standalone focus mode'},
+  '0.8':  {n:'App Blocking (basic)',  r:'r0',p:'●', lines:[],              role:'iOS Screen Time / Android'},
+  '0.15': {n:'Themes & UI',           r:'r0',p:'●', lines:[],              role:'Customization'},
+  '1.1':  {n:'Google Calendar',       r:'r1',p:'●', lines:['red'],         role:'Auto-status from calendar events', ph:'1.0'},
+  '1.2':  {n:'Zoom / Meet / Teams',   r:'r1',p:'●', lines:['red'],         role:'Auto-detect active calls', ph:'1.0'},
+  '1.3':  {n:'App Blocking (macOS)',  r:'r1',p:'●', lines:[],              role:'Focus Modes API — stable', ph:'1.5'},
+  '1.4':  {n:'App Tracking',          r:'r1',p:'●', lines:[],              role:'During BUSY sessions only', ph:'1.5'},
+  '1.5':  {n:'Focus Heatmap',         r:'r1',p:'●', lines:[],              role:'Daily focus visualization', ph:'1.5'},
+  '1.6':  {n:'Focus Score',           r:'r1',p:'◐', lines:[],              role:'0–100 focus quality index', ph:'1.5'},
+  '1.7':  {n:'Auto-Timesheet',        r:'r1',p:'●', lines:[],              role:'Productive/Neutral/Distracted', ph:'1.5'},
+  '1.8':  {n:'Project Tags',          r:'r1',p:'◐', lines:[],              role:'Pre-session tagging for billing', ph:'1.5'},
+  '1.9':  {n:'macOS App (menubar)',   r:'r1',p:'●', lines:['red','orange'], role:'Hub — digital/physical bridge', ph:'1.0'},
+  '1.10': {n:'Interruption Cost',     r:'r1',p:'●', lines:['orange'],      role:'Stanford: 23 min per switch', ph:'1.5'},
+  '1.11': {n:'Family URL',            r:'r1',p:'●', lines:['orange'],      role:'busy.app/status/name — no app needed', ph:'1.0'},
+  '1.12': {n:'Slack Sync',            r:'r1',p:'●', lines:['red','orange'], role:'Bidirectional status bridge', ph:'1.0'},
+  '2.1':  {n:'Cross-Device Track',    r:'r2',p:'◐', lines:['blue'],        role:'Mac+iPhone+iPad unified timesheet', ph:'2.5'},
+  '2.2':  {n:'Toggl Export',          r:'r2',p:'●', lines:[],              role:'Auto-fill time tracking tools', ph:'2.5'},
+  '2.3':  {n:'Developer Portal',      r:'r2',p:'●', lines:['blue'],        role:'docs.busy.app — community hub', ph:'2.0'},
+  '2.4':  {n:'App Library',           r:'r2',p:'●', lines:['red','blue'],  role:'Platform — 1-click install gallery', ph:'2.0'},
+  '2.5':  {n:'AI Agent Monitor',      r:'r2',p:'◐', lines:['blue'],        role:'Claude Code/Codex physical signal', ph:'2.5'},
+  '2.6':  {n:'Home Assistant',        r:'r2',p:'●', lines:['green'],       role:'Native HA integration', ph:'2.0'},
+  '2.7':  {n:'HomeKit / Matter',      r:'r2',p:'●', lines:['green'],       role:'Apple Home + Google Home', ph:'2.0'},
+  '2.8':  {n:'OBS Plugin',            r:'r2',p:'●', lines:['green'],       role:'Scene → BUSY Bar color', ph:'2.0'},
+  '2.9':  {n:'Slack Bot Free',        r:'r2',p:'●', lines:['orange'],      role:'Trojan horse for team adoption', ph:'2.5'},
+  '2.10': {n:'Team Dashboard',        r:'r2',p:'◐', lines:['orange'],      role:'Manager presence overview', ph:'2.5'},
+  '3.1':  {n:'AI Focus Coach',        r:'r3',p:'●', lines:['red'],         role:'Intelligence — personalized insights'},
+  '3.2':  {n:'Energy Prediction',     r:'r3',p:'●', lines:['red'],         role:'Best hours, peak energy mapping'},
+  '3.3':  {n:'BUSY Mini ($99–129)',   r:'r3',p:'◐', lines:['blue'],        role:'Only after 50K units + retention gate'},
+  '3.4':  {n:'Marketplace',           r:'r3',p:'◐', lines:['blue'],        role:'Paid animations, premium integrations'},
+  '3.5':  {n:'Focus Profile (public)',r:'r3',p:'◐', lines:['red'],         role:'Identity — LinkedIn/X sharing'},
+  '3.6':  {n:'HSA/FSA (ADHD)',        r:'r3',p:'○', lines:['green'],       role:'Medical eligibility → $160 effective price'},
+  '3.7':  {n:'Enterprise Tier',       r:'r3',p:'○', lines:['orange'],      role:'Fleet management, IT admin'},
+  '3.8':  {n:'Body Doubling',         r:'r3',p:'○', lines:[],              role:'Focusmate integration'},
+};
+
+const LINE_COLORS = {red:'#C8001A', orange:'#D45F00', blue:'#1A5EA6', green:'#2B7A3C'};
+const LINE_NAMES  = {red:'Focus Path', orange:'Presence', blue:'Platform', green:'Smart Home'};
+const RING_NAMES  = {r0:'Ring 0 — Core Hardware', r1:'Ring 1 — Software Platform', r2:'Ring 2 — Open Platform', r3:'Ring 3 — Ecosystem'};
+const ANCHORS     = new Set(['0.1','1.9','1.12','2.4','3.1','3.5']);
+
+const INSIGHTS = [
+  {h:'Рисёрч изменил предположения', cards:[
+    {tc:'tg',tl:'Готово',    title:'SDK уже существует',               body:'Python/TypeScript/Go SDK — Day 1. Ring 2 = Developer Portal + community, не сам SDK.'},
+    {tc:'tg',tl:'Готово',    title:'Matter сертифицирован 17 Feb 2026',body:'CSA ID: CSA260HLMAT50041-24. HomeKit и Google Home работают сейчас. Ни у кого из конкурентов нет WiFi + Matter.'},
+    {tc:'to',tl:'Важно',     title:'Цены ниже пресс-релизов',          body:'Пресса $249, магазин $219, Early Bird $179. Переход к $199 — не болезненный.'},
+    {tc:'tr',tl:'Риск',      title:'App Blocking хрупкая',             body:'iOS Screen Time нестабилен. <strong>macOS Focus Modes API (Ring 1) — стабильный приоритет.</strong> iOS/Android hardcore — под вопросом.'},
+  ]},
+  {h:'Нераскрытые возможности', cards:[
+    {tc:'tb',tl:'Новое',     title:'Стоимость прерываний',             body:'Stanford: 23 мин на каждый context switch. 8 прерываний = 3 часа потерь. BUSY Bar знает каждый прерванный таймер.'},
+    {tc:'tb',tl:'Уникально', title:'Кросс-девайс таймшит',            body:'Mac + iPhone + iPad = единый честный таймшит. Нет ни у кого из конкурентов.'},
+    {tc:'tb',tl:'Новое',     title:'Физический монитор AI-агентов',    body:'Claude Code/Codex hook → физический сигнал виден из любой точки комнаты.'},
+    {tc:'to',tl:'Сегмент',   title:'ADHD как медицинский девайс',      body:'HSA/FSA снижает цену $219 → ~$160, открывает telehealth-канал.'},
+  ]},
+  {h:'Стратегический смысл', cards:[
+    {tc:'tr',tl:'Core', title:'Суверенитет над вниманием', body:'Не "продуктивность". Люди хотят доказательство что их время принадлежит им. BUSY Bar — <strong>инструмент контроля над своей жизнью</strong>.'},
+    {tc:'tg',tl:'Моут', title:'Экосистема не копируется',  body:'Luxafor/Kuando = USB HID. BUSY Bar эволюционирует через OTA. 18-24 месяца → installed base + community + brand trust.'},
+  ]},
+];
+
+let hlOn = false;
+
+function toggleHL() {
+  hlOn = !hlOn;
+  document.getElementById('hl').classList.toggle('on', hlOn);
+  const svg = document.getElementById('map-svg');
+  if (hlOn) {
+    // Dim non-Focus stations
+    svg.querySelectorAll('.st').forEach(el => {
+      const id = el.dataset.id;
+      const f = FEATURES[id];
+      const onFocus = f && f.lines.includes('red');
+      el.style.opacity = onFocus ? '1' : '0.2';
+    });
+    // Dim labels
+    svg.querySelectorAll('text').forEach(el => { el.style.opacity = '0.25'; });
+    // Show Focus line labels
+    const focusIds = ['0.1','0.13','1.9','1.12','2.4','3.1','3.5','3.2'];
+    svg.querySelectorAll('g').forEach(g => {
+      const t = g.querySelector('text');
+      if (!t) return;
+      // heuristic: if g contains a text with anchor-name text, keep visible
+    });
+    // easier: keep all text visible, just fade non-focus circles
+  } else {
+    svg.querySelectorAll('.st').forEach(el => { el.style.opacity = '1'; });
+    svg.querySelectorAll('text').forEach(el => { el.style.opacity = '1'; });
+  }
+}
+
+function openDP(id) {
+  const f = FEATURES[id];
+  if (!f) return;
+  const isA = ANCHORS.has(id);
+  // Line dots
+  const linesHTML = f.lines.map(l => `<div class="dp-line-dot" style="background:${LINE_COLORS[l]}" title="${LINE_NAMES[l]}"></div>`).join('');
+  document.getElementById('dp-lines').innerHTML = linesHTML || '<div style="font-family:var(--mono);font-size:8px;color:var(--tx-3)">—</div>';
+  document.getElementById('dp-id').textContent = id;
+  document.getElementById('dp-name').textContent = f.n;
+  document.getElementById('dp-ring').textContent = RING_NAMES[f.r];
+  document.getElementById('dp-body').innerHTML = `
+    <div class="dp-r"><div class="dp-l">Priority</div><div class="dp-v">${f.p==='●'?'High — Ship':f.p==='◐'?'Medium — Plan':'Low — Future'}</div></div>
+    ${f.ph?`<div class="dp-r"><div class="dp-l">Phase</div><div class="dp-v">${f.ph}</div></div>`:''}
+    <div class="dp-r"><div class="dp-l">Lines</div><div class="dp-v">${f.lines.map(l=>LINE_NAMES[l]).join(', ')||'—'}</div></div>
+    ${isA?`<div class="dp-r"><div class="dp-l">Role</div><div class="dp-v" style="color:var(--red)">★ Focus Constellation Anchor</div></div>`:''}
+    <div class="dp-r"><div class="dp-l">Context</div><div class="dp-v">${f.role}</div></div>
+  `;
+  document.getElementById('dp').classList.add('open');
+}
+function closeDP() { document.getElementById('dp').classList.remove('open'); }
+
+function switchTab(t, btn) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('map-view').style.display = t==='map' ? 'block' : 'none';
+  document.getElementById('ins-view').classList.toggle('on', t==='ins');
+}
+
+function buildInsights() {
+  document.getElementById('is-inner').innerHTML = INSIGHTS.map(s => `
+    <div class="is-sec">
+      <div class="is-hd">${s.h}</div>
+      ${s.cards.map(c=>`
+        <div class="is-card">
+          <div class="is-title"><span class="itag ${c.tc}">${c.tl}</span>${c.title}</div>
+          <div class="is-body">${c.body}</div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+buildInsights();
+</script>
+</body>
+</html>

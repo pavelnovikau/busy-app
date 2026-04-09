@@ -1,0 +1,26 @@
+[
+  {
+    "ring": "r1",
+    "code": "1.0",
+    "label": "Auto Presence",
+    "angleDeg": { "start": -90, "end": 60 }
+  },
+  {
+    "ring": "r1",
+    "code": "1.5",
+    "label": "Focus Memory",
+    "angleDeg": { "start": 60, "end": 210 }
+  },
+  {
+    "ring": "r2",
+    "code": "2.0",
+    "label": "Open Platform",
+    "angleDeg": { "start": -90, "end": 90 }
+  },
+  {
+    "ring": "r2",
+    "code": "2.5",
+    "label": "Team + AI-Adjacent",
+    "angleDeg": { "start": 90, "end": 270 }
+  }
+]
