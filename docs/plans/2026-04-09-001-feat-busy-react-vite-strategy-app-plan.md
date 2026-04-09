@@ -650,6 +650,29 @@ interface Prototype {
 
 ---
 
+## Post-Implementation Review — 2026-04-09
+
+Источник: `docs/plans/2026-04-09-002-busy-react-vite-implementation-review.md`
+
+### Исправлено (P1)
+
+- [x] **Lint** — `button.tsx`: добавлен `// eslint-disable-next-line react-refresh/only-export-components`. `npm run lint` зелёный.
+- [x] **Roadmap/prototype mapping** — исправлен некорректный маппинг фаз→прототипов. `roadmap.json` обновлён: p0→[], p1.0→[focus-heatmap], p1.5→[energy-prediction], p2.0→[team-flow-dashboard], p2.5→[focus-profile], p3→[ai-focus-mentor, body-doubling-room, ai-coach-chat, focus-profile-page]. В `prototypes.json` добавлено поле `phase`, исправлен `ring` для energy-prediction (r3→r1).
+- [x] **Prototype gallery filtering** — добавлены фильтры по Ring, Phase и Stakeholder в `PrototypesPage.tsx`. Счётчик `N/total screens`.
+
+### Исправлено (P2)
+
+- [x] **Data hooks** — создан `src/lib/data.ts` с `getRings()`, `getFeatures()`, `getStakeholders()`, `getRoadmap()`, `getPrototypes()` и др. `StrategyPage`, `RoadmapPage` мигрированы на data layer.
+- [x] **Contextual controls на Strategy** — добавлены ring legend (цвет + название + horizon + gate) и stakeholder filter chips. При выборе стейкхолдера фичи вне его rings dimmed. Constellation mode и stakeholder mode взаимоисключают.
+
+### Не исправлено (P2/P3 — отложено)
+
+- [ ] **features.json expansion** — добавить `title`, `summary`, `whyNow`, `phaseNarrative`, `stakeholders`, `dependencies` к каждой фиче. Сейчас только короткое имя + ring + priority.
+- [ ] **Inline styles** — план декларировал token-first без inline styles, реальность идёт через inline styles + CSS vars. Рефакторинг отложен (не критично для демо).
+- [ ] **Visual parity с strategy.html** — richer detail panels, stakeholder context rail depth, focus-mode polish. Отложено.
+
+---
+
 ## Технические решения и обоснования
 
 ### Почему shadcn, а не Material UI / Radix напрямую

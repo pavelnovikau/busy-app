@@ -6,7 +6,8 @@
     "ring": "r1",
     "stakeholders": [
       "fw"
-    ]
+    ],
+    "phase": "1.0"
   },
   {
     "id": "ai-focus-mentor",
@@ -15,16 +16,18 @@
     "ring": "r3",
     "stakeholders": [
       "fw"
-    ]
+    ],
+    "phase": "3"
   },
   {
     "id": "energy-prediction",
     "title": "Energy Prediction",
     "description": "Календарь с AI-предсказанием окон фокуса и лучших часов",
-    "ring": "r3",
+    "ring": "r1",
     "stakeholders": [
       "fw"
-    ]
+    ],
+    "phase": "1.5"
   },
   {
     "id": "team-flow-dashboard",
@@ -34,7 +37,8 @@
     "stakeholders": [
       "fw",
       "lead"
-    ]
+    ],
+    "phase": "2.0"
   },
   {
     "id": "focus-profile",
@@ -45,7 +49,8 @@
       "fw",
       "fam",
       "col"
-    ]
+    ],
+    "phase": "2.5"
   },
   {
     "id": "body-doubling-room",
@@ -54,7 +59,8 @@
     "ring": "r3",
     "stakeholders": [
       "fw"
-    ]
+    ],
+    "phase": "3"
   },
   {
     "id": "ai-coach-chat",
@@ -63,7 +69,8 @@
     "ring": "r3",
     "stakeholders": [
       "fw"
-    ]
+    ],
+    "phase": "3"
   },
   {
     "id": "focus-profile-page",
@@ -74,6 +81,7 @@
       "fw",
       "fam",
       "col"
-    ]
+    ],
+    "phase": "3"
   }
 ]

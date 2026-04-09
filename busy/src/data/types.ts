@@ -104,6 +104,7 @@ export interface Prototype {
   title: string;
   description: string;
   ring: RingId;
+  phase: string;       // roadmap phase: '1.0' | '1.5' | '2.0' | '2.5' | '3'
   stakeholders: string[];
 }
 

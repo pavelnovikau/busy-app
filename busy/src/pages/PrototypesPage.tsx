@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import prototypesData from '@data/prototypes.json'
+import { getPrototypes } from '@lib/data'
 import type { Prototype } from '@data/types'
 import { FocusHeatmap } from '@components/proto/FocusHeatmap'
 import { AIFocusMentor } from '@components/proto/AIFocusMentor'
@@ -11,7 +11,7 @@ import { BodyDoublingRoom } from '@components/proto/BodyDoublingRoom'
 import { AICoachChat } from '@components/proto/AICoachChat'
 import { FocusProfilePage } from '@components/proto/FocusProfilePage'
 
-const prototypes = prototypesData as Prototype[]
+const prototypes = getPrototypes()
 
 const ringLabel: Record<string, string> = {
   r0: 'Ring 0 · Core',
@@ -21,17 +21,25 @@ const ringLabel: Record<string, string> = {
 }
 
 const ringColorVar: Record<string, string> = {
-  r0: 'var(--ring-0)',
-  r1: 'var(--ring-1)',
-  r2: 'var(--ring-2)',
-  r3: 'var(--ring-3)',
+  r0: 'var(--ring-0)', r1: 'var(--ring-1)', r2: 'var(--ring-2)', r3: 'var(--ring-3)',
 }
 
 const ringDimVar: Record<string, string> = {
-  r0: 'var(--ring-0-dim)',
-  r1: 'var(--ring-1-dim)',
-  r2: 'var(--ring-2-dim)',
-  r3: 'var(--ring-3-dim)',
+  r0: 'var(--ring-0-dim)', r1: 'var(--ring-1-dim)', r2: 'var(--ring-2-dim)', r3: 'var(--ring-3-dim)',
+}
+
+const phaseLabel: Record<string, string> = {
+  '1.0': 'Phase 1.0',
+  '1.5': 'Phase 1.5',
+  '2.0': 'Phase 2.0',
+  '2.5': 'Phase 2.5',
+  '3':   'Phase 3',
+}
+
+const stakeholderLabel: Record<string, string> = {
+  fw: 'Focus Worker', dev: 'Developer', sh: 'Smart Home',
+  str: 'Стример', it: 'IT Manager', lead: 'Руководитель',
+  fam: 'Семья', col: 'Коллеги',
 }
 
 const protoComponents: Record<string, React.ComponentType> = {
@@ -45,18 +53,55 @@ const protoComponents: Record<string, React.ComponentType> = {
   'focus-profile-page': FocusProfilePage,
 }
 
-const ALL_RINGS = ['r0', 'r1', 'r2', 'r3'] as const
-const RING_FILTER_LABELS: Record<string, string> = {
-  r0: 'Ring 0', r1: 'Ring 1', r2: 'Ring 2', r3: 'Ring 3',
+// All unique stakeholders that appear in prototypes
+const allStakeholders = [...new Set(prototypes.flatMap((p) => p.stakeholders))]
+const allPhases = [...new Set(prototypes.map((p) => p.phase))].sort()
+const allRings = [...new Set(prototypes.map((p) => p.ring))].sort()
+
+type FilterChipProps = {
+  label: string
+  active: boolean
+  color?: string
+  dimColor?: string
+  onClick: () => void
+}
+
+function FilterChip({ label, active, color, dimColor, onClick }: FilterChipProps) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        fontFamily: 'var(--font-mono)',
+        fontSize: 'var(--text-xs)',
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+        padding: '3px 10px',
+        borderRadius: 'var(--radius-full)',
+        border: `1px solid ${active && color ? color : 'var(--border)'}`,
+        background: active ? (dimColor ?? 'var(--surface-2)') : 'transparent',
+        color: active ? (color ?? 'var(--tx)') : 'var(--tx-3)',
+        cursor: 'pointer',
+        transition: 'var(--transition-fast)',
+      }}
+    >
+      {label}
+    </button>
+  )
 }
 
 export default function PrototypesPage() {
   const [activeRing, setActiveRing] = useState<string | null>(null)
+  const [activePhase, setActivePhase] = useState<string | null>(null)
+  const [activeStakeholder, setActiveStakeholder] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
 
-  const filtered = activeRing
-    ? prototypes.filter((p) => p.ring === activeRing)
-    : prototypes
+  const filtered = prototypes.filter((p: Prototype) => {
+    if (activeRing && p.ring !== activeRing) return false
+    if (activePhase && p.phase !== activePhase) return false
+    if (activeStakeholder && !p.stakeholders.includes(activeStakeholder)) return false
+    return true
+  })
 
   return (
     <div>
@@ -67,7 +112,7 @@ export default function PrototypesPage() {
           alignItems: 'baseline',
           gap: 'var(--space-4)',
           padding: 'var(--space-4) 0',
-          marginBottom: 'var(--space-5)',
+          marginBottom: 'var(--space-4)',
         }}
       >
         <h1
@@ -84,172 +129,179 @@ export default function PrototypesPage() {
           Prototypes
         </h1>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--tx-3)' }}>
-          {prototypes.length} screens
+          {filtered.length}/{prototypes.length} screens
         </span>
       </div>
 
-      {/* Ring filter tabs */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 'var(--space-2)',
-          marginBottom: 'var(--space-6)',
-        }}
-      >
-        <button
-          onClick={() => setActiveRing(null)}
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 'var(--text-xs)',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            padding: '4px 12px',
-            borderRadius: 'var(--radius-full)',
-            border: '1px solid var(--border-2)',
-            background: activeRing === null ? 'var(--tx)' : 'transparent',
-            color: activeRing === null ? 'var(--bg)' : 'var(--tx-2)',
-            cursor: 'pointer',
-          }}
-        >
-          All
-        </button>
-        {ALL_RINGS.map((r) => (
-          <button
-            key={r}
-            onClick={() => setActiveRing(activeRing === r ? null : r)}
+      {/* Filters */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', marginBottom: 'var(--space-6)' }}>
+        {/* Ring filter */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 60 }}>Ring</span>
+          <FilterChip label="All" active={activeRing === null} onClick={() => setActiveRing(null)} />
+          {allRings.map((r) => (
+            <FilterChip
+              key={r}
+              label={`Ring ${r.replace('r', '')}`}
+              active={activeRing === r}
+              color={ringColorVar[r]}
+              dimColor={ringDimVar[r]}
+              onClick={() => setActiveRing(activeRing === r ? null : r)}
+            />
+          ))}
+        </div>
+
+        {/* Phase filter */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 60 }}>Phase</span>
+          <FilterChip label="All" active={activePhase === null} onClick={() => setActivePhase(null)} />
+          {allPhases.map((ph) => (
+            <FilterChip
+              key={ph}
+              label={phaseLabel[ph] ?? `Phase ${ph}`}
+              active={activePhase === ph}
+              onClick={() => setActivePhase(activePhase === ph ? null : ph)}
+            />
+          ))}
+        </div>
+
+        {/* Stakeholder filter */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 60 }}>User</span>
+          <FilterChip label="All" active={activeStakeholder === null} onClick={() => setActiveStakeholder(null)} />
+          {allStakeholders.map((s) => (
+            <FilterChip
+              key={s}
+              label={stakeholderLabel[s] ?? s}
+              active={activeStakeholder === s}
+              onClick={() => setActiveStakeholder(activeStakeholder === s ? null : s)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Grid */}
+      <AnimatePresence mode="popLayout">
+        {filtered.length === 0 ? (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             style={{
+              padding: 'var(--space-12)',
+              textAlign: 'center',
               fontFamily: 'var(--font-mono)',
-              fontSize: 'var(--text-xs)',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              padding: '4px 12px',
-              borderRadius: 'var(--radius-full)',
-              border: `1px solid ${activeRing === r ? ringColorVar[r] : 'var(--border)'}`,
-              background: activeRing === r ? ringDimVar[r] : 'transparent',
-              color: activeRing === r ? ringColorVar[r] : 'var(--tx-3)',
-              cursor: 'pointer',
+              fontSize: 'var(--text-sm)',
+              color: 'var(--tx-3)',
             }}
           >
-            {RING_FILTER_LABELS[r]}
-          </button>
-        ))}
-      </div>
+            Нет экранов для выбранных фильтров
+          </motion.div>
+        ) : (
+          <motion.div
+            key="grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+              gap: 'var(--space-5)',
+            }}
+          >
+            {filtered.map((proto, i) => {
+              const Component = protoComponents[proto.id]
+              if (!Component) return null
+              const ringColor = ringColorVar[proto.ring]
+              const ringDim = ringDimVar[proto.ring]
 
-      {/* Prototype grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-          gap: 'var(--space-5)',
-        }}
-      >
-        {filtered.map((proto, i) => {
-          const Component = protoComponents[proto.id]
-          if (!Component) return null
-          const ringColor = ringColorVar[proto.ring]
-          const ringDim = ringDimVar[proto.ring]
-
-          return (
-            <motion.div
-              key={proto.id}
-              layoutId={`proto-card-${proto.id}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: i * 0.06, ease: 'easeOut' }}
-              onClick={() => setExpanded(expanded === proto.id ? null : proto.id)}
-              style={{
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-lg)',
-                overflow: 'hidden',
-                background: 'var(--surface)',
-                cursor: 'pointer',
-              }}
-            >
-              {/* Ring label strip */}
-              <div
-                style={{
-                  padding: 'var(--space-2) var(--space-4)',
-                  borderBottom: '1px solid var(--border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  background: ringDim,
-                }}
-              >
-                <span
+              return (
+                <motion.div
+                  key={proto.id}
+                  layoutId={`proto-card-${proto.id}`}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3, delay: i * 0.05, ease: 'easeOut' }}
+                  onClick={() => setExpanded(expanded === proto.id ? null : proto.id)}
                   style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 'var(--text-xs)',
-                    fontWeight: 600,
-                    color: ringColor,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-lg)',
+                    overflow: 'hidden',
+                    background: 'var(--surface)',
+                    cursor: 'pointer',
                   }}
                 >
-                  {ringLabel[proto.ring]}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 'var(--text-xs)',
-                    color: 'var(--tx-3)',
-                  }}
-                >
-                  {proto.id}
-                </span>
-              </div>
+                  {/* Top strip: ring + phase */}
+                  <div
+                    style={{
+                      padding: 'var(--space-2) var(--space-4)',
+                      borderBottom: '1px solid var(--border)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      background: ringDim,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 'var(--text-xs)',
+                        fontWeight: 600,
+                        color: ringColor,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                      }}
+                    >
+                      {ringLabel[proto.ring]}
+                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)' }}>
+                        {phaseLabel[proto.phase] ?? proto.phase}
+                      </span>
+                      {proto.stakeholders.map((s) => (
+                        <span
+                          key={s}
+                          title={stakeholderLabel[s]}
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: 9,
+                            color: 'var(--tx-3)',
+                            background: 'var(--surface)',
+                            border: '1px solid var(--border)',
+                            borderRadius: 'var(--radius-full)',
+                            padding: '1px 6px',
+                          }}
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Component preview */}
-              <div
-                style={{
-                  overflow: 'hidden',
-                  maxHeight: expanded === proto.id ? 'none' : 320,
-                  transition: 'max-height var(--transition-slow)',
-                }}
-              >
-                <Component />
-              </div>
+                  {/* Preview */}
+                  <div style={{ overflow: 'hidden', maxHeight: 320 }}>
+                    <Component />
+                  </div>
 
-              {/* Footer: title + description */}
-              <div
-                style={{
-                  padding: 'var(--space-3) var(--space-4)',
-                  borderTop: '1px solid var(--border)',
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 700,
-                    color: 'var(--tx)',
-                    marginBottom: 'var(--space-1)',
-                  }}
-                >
-                  {proto.title}
-                </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: 'var(--text-xs)',
-                    color: 'var(--tx-3)',
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {proto.description}
-                </div>
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
+                  {/* Footer */}
+                  <div style={{ padding: 'var(--space-3) var(--space-4)', borderTop: '1px solid var(--border)' }}>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--tx)', marginBottom: 'var(--space-1)' }}>
+                      {proto.title}
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', lineHeight: 1.4 }}>
+                      {proto.description}
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Expanded overlay */}
       <AnimatePresence>
         {expanded && (() => {
-          const proto = prototypes.find((p) => p.id === expanded)
+          const proto = prototypes.find((p: Prototype) => p.id === expanded)
           const Component = proto ? protoComponents[proto.id] : null
           if (!proto || !Component) return null
           return (
@@ -278,7 +330,7 @@ export default function PrototypesPage() {
                   borderRadius: 'var(--radius-lg)',
                   border: '1px solid var(--border)',
                   overflow: 'hidden',
-                  maxWidth: 500,
+                  maxWidth: 520,
                   width: '100%',
                 }}
               >
