@@ -2,6 +2,7 @@ type PageHeaderProps = {
   title: string
   meta?: string
   description?: string
+  subtitle?: React.ReactNode
   eyebrow?: string
   marginBottom?: string
   descriptionMaxWidth?: number
@@ -11,6 +12,7 @@ export default function PageHeader({
   title,
   meta,
   description,
+  subtitle,
   eyebrow,
   marginBottom = 'var(--space-6)',
   descriptionMaxWidth = 620,
@@ -40,18 +42,19 @@ export default function PageHeader({
           justifyContent: 'space-between',
           flexWrap: 'wrap',
           gap: 'var(--space-3)',
-          marginBottom: description ? 'var(--space-2)' : 0,
+          marginBottom: subtitle || description ? 'var(--space-2)' : 0,
         }}
       >
         <h1
           style={{
             fontFamily: 'var(--font-pixel)',
-            fontSize: 'var(--text-2xl)',
-            fontWeight: 600,
+            fontSize: 'var(--text-3xl)',
+            fontWeight: 700,
             textTransform: 'uppercase',
-            letterSpacing: '0.05em',
+            letterSpacing: '0.04em',
             color: 'var(--tx)',
             margin: 0,
+            lineHeight: 1.15,
           }}
         >
           {title}
@@ -69,6 +72,12 @@ export default function PageHeader({
           </span>
         ) : null}
       </div>
+
+      {subtitle ? (
+        <div style={{ marginBottom: description ? 'var(--space-2)' : 0 }}>
+          {subtitle}
+        </div>
+      ) : null}
 
       {description ? (
         <p

@@ -14,9 +14,43 @@ export default function AboutPage() {
       }}
     >
       <PageHeader
-        title="About"
-        meta="fictional strategy artifact"
-        description="This site is a speculative BUSY strategy environment: roadmap, ring logic, prototype concepts, and design system gathered into one interface."
+        title="BUSY"
+        subtitle={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+            <a
+              href="https://busy.bar/"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 600,
+                color: 'var(--sl)',
+                textDecoration: 'none',
+                letterSpacing: '0.04em',
+              }}
+            >
+              busy.bar
+            </a>
+            <span style={{ color: 'var(--tx-3)', fontSize: 'var(--text-xs)' }}>·</span>
+            <a
+              href="https://busy.app/"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 600,
+                color: 'var(--sl)',
+                textDecoration: 'none',
+                letterSpacing: '0.04em',
+              }}
+            >
+              busy.app
+            </a>
+          </div>
+        }
+        description="A speculative strategy environment: roadmap, ring logic, prototype concepts, and design system gathered into one interface."
       />
 
       <section
