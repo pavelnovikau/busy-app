@@ -280,7 +280,7 @@ export default function StrategyPage() {
             eyebrow="BUSY BAR"
             title="STRATEGY"
             description="4 кольца · стейкхолдеры · фокусный контур"
-            marginBottom={0}
+            marginBottom="0"
             descriptionMaxWidth={320}
           />
         </div>
