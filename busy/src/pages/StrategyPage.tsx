@@ -273,6 +273,19 @@ export default function StrategyPage() {
           }}
         />
       )}
+      {/* Page title — floats to the right of the sidebar on desktop */}
+      {!isCompact && (
+        <div style={{ position: 'fixed', top: 12, left: 234, zIndex: 29, pointerEvents: 'none' }}>
+          <PageHeader
+            eyebrow="BUSY BAR"
+            title="STRATEGY"
+            description="4 кольца · стейкхолдеры · фокусный контур"
+            marginBottom={0}
+            descriptionMaxWidth={320}
+          />
+        </div>
+      )}
+
       {showSidebar && (
         <div
           style={{
@@ -292,13 +305,6 @@ export default function StrategyPage() {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-        <PageHeader
-          eyebrow="BUSY BAR"
-          title="Стратегия"
-          description="4 кольца · стейкхолдеры · фокусный контур"
-          marginBottom="var(--space-3)"
-          descriptionMaxWidth={220}
-        />
 
         <div style={divider} />
 
@@ -397,21 +403,33 @@ export default function StrategyPage() {
                 <div
                   style={{
                     margin: 'var(--space-2) 0',
-                    padding: 'var(--space-3)',
-                    background: 'var(--surface-2)',
+                    padding: 'var(--space-2) var(--space-3)',
+                    background: 'var(--bg-2)',
+                    border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-md)',
                   }}
                 >
-                  <div style={{ ...sectionLabel, marginBottom: 'var(--space-2)' }}>Боли</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                    {sh.painPoints.map((pt, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
-                        <span style={{ color: 'var(--tx-3)', fontSize: 'var(--text-xs)', marginTop: 2, flexShrink: 0 }}>—</span>
-                        <span style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', color: 'var(--tx-2)', lineHeight: 1.6 }}>
-                          {pt}
-                        </span>
-                      </div>
-                    ))}
+                  <div style={{ ...sectionLabel, marginBottom: 'var(--space-1)' }}>Боли</div>
+                  <div style={{ position: 'relative' }}>
+                    <div
+                      className="pain-scroll"
+                      style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 160, overflowY: 'scroll' }}
+                    >
+                      {sh.painPoints.map((pt, i) => (
+                        <div key={i} style={{ display: 'flex', gap: 5, alignItems: 'flex-start' }}>
+                          <span style={{ color: 'var(--tx-3)', fontSize: 10, marginTop: 1, flexShrink: 0 }}>—</span>
+                          <span style={{ fontFamily: 'var(--font-sans)', fontSize: 10, color: 'var(--tx)', lineHeight: 1.5 }}>
+                            {pt}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Gradient fade to hint scrollability */}
+                    <div style={{
+                      position: 'absolute', bottom: 0, left: 0, right: 0, height: 20,
+                      background: 'linear-gradient(to bottom, transparent, var(--bg-2))',
+                      pointerEvents: 'none',
+                    }} />
                   </div>
                 </div>
               </motion.div>
@@ -511,30 +529,6 @@ export default function StrategyPage() {
           })}
         </div>
 
-        <div style={divider} />
-
-        {/* Subphase legend */}
-        <div>
-          <div style={sectionLabel}>Подфазы</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: '2px var(--space-1)' }}>
-              <svg width={10} height={10}>
-                <circle cx={5} cy={5} r={4} fill="var(--ring-1)" />
-              </svg>
-              <span style={{ fontFamily: 'var(--font-sans)', fontSize: 10.5, color: 'var(--tx-2)' }}>
-                1.0 / 2.0 — основной цикл
-              </span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: '2px var(--space-1)' }}>
-              <svg width={10} height={10}>
-                <circle cx={5} cy={5} r={3.5} fill="var(--bg)" stroke="var(--ring-1)" strokeWidth={1.5} />
-              </svg>
-              <span style={{ fontFamily: 'var(--font-sans)', fontSize: 10.5, color: 'var(--tx-2)' }}>
-                1.5 / 2.5 — расширение цикла
-              </span>
-            </div>
-          </div>
-        </div>
         </div>
       )}
 

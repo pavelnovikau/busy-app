@@ -89,7 +89,7 @@ export default function RoadmapPage() {
   return (
     <div style={{ maxWidth: 980, margin: '0 auto', textAlign: 'left' }}>
       <PageHeader
-        title="Роадмап"
+        title="ROADMAP"
         meta="4 кольца · 6 фаз · сейчас → 36 мес"
         marginBottom="var(--space-6)"
       />

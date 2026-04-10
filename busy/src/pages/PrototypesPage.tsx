@@ -442,7 +442,7 @@ export default function PrototypesPage() {
   return (
     <div style={{ ...prototypePaletteVars, textAlign: 'left', maxWidth: 1240, margin: '0 auto' }}>
       <PageHeader
-        title="Прототипы"
+        title="PROTOTYPES"
         meta={`${filtered.length}/${prototypes.length} ключевых экранов`}
         description="Здесь остались только те концепты, которые лучше всего объясняют, почему BUSY не похож на очередной focus-app."
         marginBottom="var(--space-5)"

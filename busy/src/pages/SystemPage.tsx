@@ -132,7 +132,7 @@ export default function SystemPage() {
   return (
     <div style={{ maxWidth: 1080, margin: '0 auto' }}>
       <PageHeader
-        title="Система дизайна"
+        title="DESIGN"
         meta="токены · типографика · компоненты"
         marginBottom="var(--space-8)"
       />

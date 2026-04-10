@@ -74,7 +74,7 @@ function FeatureNode({
 
   return (
     <motion.g
-      style={{ cursor: "pointer" }}
+      style={{ cursor: "pointer", outline: "none" }}
       initial={false}
       animate={{ opacity: dimmed ? 0.12 : 1 }}
       transition={{ duration: 0.3 }}

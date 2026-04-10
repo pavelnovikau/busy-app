@@ -14,7 +14,7 @@ export default function AboutPage() {
       }}
     >
       <PageHeader
-        title="BUSY"
+        title="ABOUT"
         subtitle={
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
             <a
@@ -25,7 +25,7 @@ export default function AboutPage() {
                 fontFamily: 'var(--font-mono)',
                 fontSize: 'var(--text-sm)',
                 fontWeight: 600,
-                color: 'var(--sl)',
+                color: 'var(--or)',
                 textDecoration: 'none',
                 letterSpacing: '0.04em',
               }}
@@ -41,7 +41,7 @@ export default function AboutPage() {
                 fontFamily: 'var(--font-mono)',
                 fontSize: 'var(--text-sm)',
                 fontWeight: 600,
-                color: 'var(--sl)',
+                color: 'var(--or)',
                 textDecoration: 'none',
                 letterSpacing: '0.04em',
               }}
@@ -94,7 +94,7 @@ export default function AboutPage() {
             href="https://busy.bar/"
             target="_blank"
             rel="noreferrer"
-            style={{ color: 'var(--sl)', textDecoration: 'none' }}
+            style={{ color: 'var(--or)', textDecoration: 'none' }}
           >
             BUSY Bar
           </a>{' '}
@@ -103,7 +103,7 @@ export default function AboutPage() {
             href="https://busy.app/"
             target="_blank"
             rel="noreferrer"
-            style={{ color: 'var(--sl)', textDecoration: 'none' }}
+            style={{ color: 'var(--or)', textDecoration: 'none' }}
           >
             BUSY App
           </a>
@@ -252,7 +252,7 @@ export default function AboutPage() {
               href="https://busy.bar/"
               target="_blank"
               rel="noreferrer"
-              style={{ color: 'var(--sl)', textDecoration: 'none' }}
+              style={{ color: 'var(--or)', textDecoration: 'none' }}
             >
               BUSY Bar
             </a>{' '}
@@ -261,7 +261,7 @@ export default function AboutPage() {
               href="https://busy.app/"
               target="_blank"
               rel="noreferrer"
-              style={{ color: 'var(--sl)', textDecoration: 'none' }}
+              style={{ color: 'var(--or)', textDecoration: 'none' }}
             >
               BUSY App
             </a>{' '}
@@ -309,7 +309,7 @@ export default function AboutPage() {
             href="https://busy.bar/"
             target="_blank"
             rel="noreferrer"
-            style={{ color: 'var(--sl)', textDecoration: 'none' }}
+            style={{ color: 'var(--or)', textDecoration: 'none' }}
           >
             BUSY Bar
           </a>{' '}
@@ -318,7 +318,7 @@ export default function AboutPage() {
             href="https://busy.app/"
             target="_blank"
             rel="noreferrer"
-            style={{ color: 'var(--sl)', textDecoration: 'none' }}
+            style={{ color: 'var(--or)', textDecoration: 'none' }}
           >
             BUSY App
           </a>{' '}

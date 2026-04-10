@@ -37,7 +37,7 @@ export default function InsightsPage() {
   return (
     <div style={{ textAlign: 'left', maxWidth: 980, margin: '0 auto' }}>
       <PageHeader
-        title="Инсайты"
+        title="INSIGHTS"
         description="Что нашли в рисёрче и почему это меняет исходные предположения."
       />
 
