@@ -4,6 +4,8 @@ export type RingId = 'r0' | 'r1' | 'r2' | 'r3';
 
 export type Phase = '1.0' | '1.5' | '2.0' | '2.5';
 
+export type RoadmapPhaseId = 'p0' | 'p1.0' | 'p1.5' | 'p2.0' | 'p2.5' | 'p3';
+
 export type Priority = '●' | '◐' | '○';
 
 export type StakeholderPriority = 'P0' | 'P1' | 'P2' | 'P3';
@@ -28,6 +30,7 @@ export interface Ring {
 export interface Feature {
   id: string;
   short: string;
+  description: string;
   ring: RingId;
   phase: Phase | null;
   priority: Priority;
@@ -44,6 +47,7 @@ export interface Stakeholder {
   priority: StakeholderPriority;
   rings: RingId[];
   angleDeg: number;
+  painPoints: string[];
 }
 
 // ── Focus Constellation ───────────────────────────────────────────
@@ -86,11 +90,15 @@ export interface Milestone {
 }
 
 export interface RoadmapPhase {
-  id: string;
+  id: RoadmapPhaseId;
   ring: RingId;
   label: string;
   horizon: string;
   monthsRange: [number, number];
+  intro: string;
+  outcome?: string;
+  uniqueFeatures?: string[];
+  whyDifferent?: string;
   gate: string | null;
   circuitBreakers: string[];
   prototypeIds: string[];
@@ -103,6 +111,8 @@ export interface Prototype {
   id: string;
   title: string;
   description: string;
+  roadmapPhaseId: RoadmapPhaseId;
+  featureId?: string | null;
   ring: RingId;
   phase: string;       // roadmap phase: '1.0' | '1.5' | '2.0' | '2.5' | '3'
   stakeholders: string[];
@@ -115,6 +125,7 @@ export interface InsightCard {
   tag: string;
   tagLabel: string;
   body: string;
+  ringRefs?: string[];
 }
 
 export interface InsightGroup {

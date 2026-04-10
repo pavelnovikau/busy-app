@@ -144,10 +144,10 @@ export default function SystemPage() {
             letterSpacing: '0.05em',
           }}
         >
-          Design System
+          Система дизайна
         </h1>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--tx-3)' }}>
-          tokens · typography · components
+          токены · типографика · компоненты
         </span>
       </div>
 
@@ -219,7 +219,102 @@ export default function SystemPage() {
         </div>
       </Section>
 
-      {/* ── 2. Ring Colors ── */}
+      {/* ── 2. Flexoki Palette ── */}
+      <Section title="Flexoki Palette" id="flexoki">
+        {/* Accent colors × 4 states */}
+        <div style={{ marginBottom: 'var(--space-7)' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', marginBottom: 'var(--space-4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            8 hues × 4 states (main · hover · active · bg tint)
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            {([
+              ['sl',  'Slate'],
+              ['re',  'Red'],
+              ['or',  'Orange'],
+              ['ye',  'Yellow'],
+              ['gr',  'Green'],
+              ['cy',  'Cyan'],
+              ['bl',  'Blue'],
+              ['pu',  'Purple'],
+              ['ma',  'Magenta'],
+            ] as const).map(([key, label]) => (
+              <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)',
+                  color: `var(--${key})`, width: 64, flexShrink: 0,
+                  fontWeight: 700, letterSpacing: '0.06em',
+                }}>
+                  --{key}
+                </span>
+                <span style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 52, flexShrink: 0 }}>
+                  {label}
+                </span>
+                {/* 4 state swatches */}
+                {[
+                  [`var(--${key})`,        'main'],
+                  [`var(--${key}-2)`,      'hover'],
+                  [`var(--${key}-active)`, 'active'],
+                  [`var(--${key}-bg)`,     'bg tint'],
+                ].map(([bg, stateLabel]) => (
+                  <div key={stateLabel} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    <div style={{
+                      width: 40, height: 28,
+                      background: bg,
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border)',
+                    }} />
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--tx-3)' }}>{stateLabel}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Extended 13-step ramps */}
+        <div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', marginBottom: 'var(--space-4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            Extended scale — 13 steps per hue (50 → 950)
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+            {([
+              ['red',     'Re'],
+              ['orange',  'Or'],
+              ['yellow',  'Ye'],
+              ['green',   'Gr'],
+              ['cyan',    'Cy'],
+              ['blue',    'Bl'],
+              ['purple',  'Pu'],
+              ['magenta', 'Ma'],
+            ] as const).map(([name, short]) => (
+              <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--tx-3)', width: 26, flexShrink: 0 }}>{short}</span>
+                <div style={{ display: 'flex', gap: 2 }}>
+                  {[50,100,150,200,300,400,500,600,700,800,850,900,950].map((step) => (
+                    <div
+                      key={step}
+                      title={`--${name}-${step}`}
+                      style={{
+                        width: 28, height: 22,
+                        background: `var(--${name}-${step})`,
+                        borderRadius: 2,
+                        flexShrink: 0,
+                      }}
+                    />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: 2, marginLeft: 2 }}>
+                  {[50,100,150,200,300,400,500,600,700,800,850,900,950].map((step) => (
+                    <span key={step} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--tx-3)', width: 28, textAlign: 'center' }}>{step}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* ── 3. Ring Colors ── */}
       <Section title="Ring Colors" id="ring-colors">
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-5)' }}>
           {[
@@ -252,8 +347,21 @@ export default function SystemPage() {
           </div>
           <div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', marginBottom: 'var(--space-3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Intent</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
-              {['--color-primary', '--color-success', '--color-warning', '--color-danger'].map((v) => <Swatch key={v} varName={v} />)}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+              {([
+                ['primary', '--color-primary', '--color-primary-hover', '--color-primary-active'],
+                ['success', '--color-success', '--color-success-hover', ''],
+                ['warning', '--color-warning', '--color-warning-hover', ''],
+                ['danger',  '--color-danger',  '--color-danger-hover',  ''],
+                ['info',    '--color-info',    '--color-info-hover',    ''],
+              ] as const).map(([label, main, hover, active]) => (
+                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 52, flexShrink: 0 }}>{label}</span>
+                  <Swatch varName={main} label="default" />
+                  <Swatch varName={hover} label="hover" />
+                  {active && <Swatch varName={active} label="active" />}
+                </div>
+              ))}
             </div>
           </div>
           <div>
@@ -309,9 +417,9 @@ export default function SystemPage() {
             ['--transition-fast', '100ms ease'],
             ['--transition-base', '200ms ease'],
             ['--transition-slow', '350ms ease'],
-            ['--constellation-edge-local', 'oklch(0.75 0.01 90) — subtle edge within ring'],
-            ['--constellation-edge-bridge', 'oklch(0.45 0.10 25) — cross-ring edge'],
-            ['--constellation-anchor', 'oklch(0.50 0.22 25) — anchor node highlight'],
+            ['--constellation-edge-local', 'cool gray — subtle edge within ring'],
+            ['--constellation-edge-bridge', 'var(--re-2) — cross-ring edge'],
+            ['--constellation-anchor', 'var(--re) — anchor node highlight'],
           ].map(([n, v]) => <TokenRow key={n} name={n} value={v} />)}
         </div>
       </Section>

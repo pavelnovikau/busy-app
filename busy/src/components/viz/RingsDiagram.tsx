@@ -21,16 +21,15 @@ function dividerLine(angleDeg: number, rInner: number, rOuter: number) {
 }
 
 const RING_COLORS = ['var(--ring-0)', 'var(--ring-1)', 'var(--ring-2)', 'var(--ring-3)']
-const RING_DIM_COLORS = [
-  'var(--ring-0-dim)',
-  'var(--ring-1-dim)',
-  'var(--ring-2-dim)',
-  'var(--ring-3-dim)',
-]
+
+// Stroke widths — keep in sync with --stroke-ring / --stroke-ring-active tokens in tokens.css
+const STROKE_RING = 1.5
+const STROKE_RING_ACTIVE = 3
 
 interface Props {
   children?: React.ReactNode
   focusMode?: boolean
+  activeRing?: string | null
 }
 
 /**
@@ -38,30 +37,15 @@ interface Props {
  * Does NOT own the <svg> element — that lives in ZoomableSVG.
  * Returns a React Fragment.
  */
-export default function RingsDiagram({ children, focusMode = false }: Props) {
+export default function RingsDiagram({ children, focusMode = false, activeRing }: Props) {
   return (
     <>
-      {/* Ring fills (dim backgrounds) */}
-      {rings.map((ring, index) => {
-        const r = RING_RADII[ring.id] ?? 0
-        return (
-          <motion.circle
-            key={`${ring.id}-fill`}
-            cx={CX}
-            cy={CY}
-            r={r}
-            fill={RING_DIM_COLORS[index]}
-            stroke="none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: focusMode ? 0.04 : 1 }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-          />
-        )
-      })}
 
       {/* Ring stroke circles */}
       {rings.map((ring, index) => {
         const r = RING_RADII[ring.id] ?? 0
+        const isActive = activeRing === ring.id
+        const isInactive = activeRing != null && !isActive
         return (
           <motion.circle
             key={ring.id}
@@ -70,10 +54,17 @@ export default function RingsDiagram({ children, focusMode = false }: Props) {
             r={r}
             fill="none"
             stroke={RING_COLORS[index]}
-            strokeWidth={1.5}
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ delay: index * 0.12, duration: 0.7, ease: 'easeOut' }}
+            initial={false}
+            animate={{
+              pathLength: 1,
+              opacity: isInactive ? 0.2 : 1,
+              strokeWidth: isActive ? STROKE_RING_ACTIVE : STROKE_RING,
+            }}
+            transition={{
+              pathLength: { delay: index * 0.12, duration: 0.7, ease: 'easeOut' },
+              opacity: { duration: 0.25 },
+              strokeWidth: { duration: 0.2 },
+            }}
           />
         )
       })}
@@ -92,7 +83,7 @@ export default function RingsDiagram({ children, focusMode = false }: Props) {
             stroke="var(--border-2)"
             strokeWidth={1}
             strokeDasharray="3 3"
-            initial={{ opacity: 0 }}
+            initial={false}
             animate={{ opacity: 0.55 }}
             transition={{ delay: 0.9, duration: 0.4 }}
           />

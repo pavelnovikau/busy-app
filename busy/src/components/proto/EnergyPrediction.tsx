@@ -36,7 +36,7 @@ const legendItems: { label: string; color: string }[] = [
 export function EnergyPrediction() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: 'easeOut' }}
       style={{
@@ -211,7 +211,6 @@ export function EnergyPrediction() {
         style={{
           background: 'var(--surface)',
           border: '1px solid var(--border)',
-          borderLeft: '3px solid var(--ring-3)',
           borderRadius: 'var(--radius-sm)',
           padding: 'var(--space-3)',
         }}

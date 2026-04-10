@@ -8,6 +8,7 @@ const loadFeatures = () =>
 
 const StrategyPage = lazy(() => import('./pages/StrategyPage'))
 const RoadmapPage = lazy(() => import('./pages/RoadmapPage'))
+const InsightsPage = lazy(() => import('./pages/InsightsPage'))
 const PrototypesPage = lazy(() => import('./pages/PrototypesPage'))
 const SystemPage = lazy(() => import('./pages/SystemPage'))
 
@@ -38,6 +39,7 @@ export default function App() {
           <Route element={<AppShell />}>
             <Route index element={<Suspense fallback={<PageFallback />}><StrategyPage /></Suspense>} />
             <Route path="roadmap" element={<Suspense fallback={<PageFallback />}><RoadmapPage /></Suspense>} />
+            <Route path="insights" element={<Suspense fallback={<PageFallback />}><InsightsPage /></Suspense>} />
             <Route path="prototypes" element={<Suspense fallback={<PageFallback />}><PrototypesPage /></Suspense>} />
             <Route path="system" element={<Suspense fallback={<PageFallback />}><SystemPage /></Suspense>} />
           </Route>

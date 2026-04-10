@@ -112,18 +112,23 @@ export function constellationEdgePath(
 
   if (sameRing) {
     const r = RING_RADII[fromRing] ?? 0
-    const dx = to.x - from.x
-    const dy = to.y - from.y
-    const dist = Math.sqrt(dx * dx + dy * dy)
-    const largeArc = dist > r ? 1 : 0
-    return `M ${from.x} ${from.y} A ${r} ${r} 0 ${largeArc} 1 ${to.x} ${to.y}`
+    // Compute angles of both nodes from center
+    const aFrom = Math.atan2(from.y - CY, from.x - CX)
+    const aTo = Math.atan2(to.y - CY, to.x - CX)
+    // Normalise difference to [-π, π] so we always take the shorter arc
+    let dAngle = aTo - aFrom
+    if (dAngle >  Math.PI) dAngle -= 2 * Math.PI
+    if (dAngle < -Math.PI) dAngle += 2 * Math.PI
+    // Control point: 20% outside ring radius at the arc midpoint angle
+    const aMid = aFrom + dAngle / 2
+    const bulge = r * 1.20
+    const ctrlX = CX + bulge * Math.cos(aMid)
+    const ctrlY = CY + bulge * Math.sin(aMid)
+    return `M ${from.x} ${from.y} Q ${ctrlX} ${ctrlY} ${to.x} ${to.y}`
   }
 
-  const mx = (from.x + to.x) / 2
-  const my = (from.y + to.y) / 2
-  const cx = mx + (CX - mx) * 0.3
-  const cy = my + (CY - my) * 0.3
-  return `M ${from.x} ${from.y} Q ${cx} ${cy} ${to.x} ${to.y}`
+  // Bridge (cross-ring): straight line — clean constellation look
+  return `M ${from.x} ${from.y} L ${to.x} ${to.y}`
 }
 
 // ── buildFeaturePositions ──────────────────────────────────────────

@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+# BUSY
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Интерактивный фронтенд для продукта `BUSY Bar`: стратегия колец, roadmap, исследовательские инсайты, галерея продуктовых прототипов и внутренняя страница дизайн-системы.
 
-Currently, two official plugins are available:
+## Что внутри
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `/` — стратегическая карта: кольца, стейкхолдеры, фокус-маршрут, детальные карточки фич
+- `/roadmap` — фазы развития продукта, гейты, circuit breakers и связанные фичи
+- `/insights` — выводы из ресёрча и стратегические наблюдения
+- `/prototypes` — кликабельные UI-прототипы, привязанные к каноническим фазам roadmap
+- `/system` — токены, типографика и базовые визуальные примитивы
 
-## React Compiler
+## Стек
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19
+- TypeScript
+- Vite
+- Motion
+- Tailwind v4 tokens bridge
 
-## Expanding the ESLint configuration
+## Запуск
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Сборка и проверка:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
+npm run lint
 ```
+
+## Структура данных
+
+- `src/data/features.json` — канон продуктовых фич по кольцам и фазам
+- `src/data/roadmap.json` — фазы roadmap, гейты и narrative
+- `src/data/prototypes.json` — прототипы, привязанные к `roadmapPhaseId` и `featureId`
+- `src/lib/data.ts` — тонкий слой нормализации, который синхронизирует roadmap и prototypes
+
+## Правила поддержки
+
+- Не дублируйте фазу и кольцо прототипа вручную в нескольких местах. Источник истины — `prototypes.json` + `features.json`.
+- Если меняется порядок или смысл фаз, сначала обновляйте `roadmap.json`, потом проверяйте стратегию и прототипы.
+- Перед любым merge проект должен проходить `npm run build` и `npm run lint`.
+
+## Текущее состояние
+
+Проект не содержит отдельного тестового раннера. Минимальный gate сейчас — ручная проверка рендера ключевых страниц плюс `build` и `lint`.

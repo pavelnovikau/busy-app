@@ -8,31 +8,49 @@ interface Props {
 function ConstellationToggle({ active, onToggle }: Props) {
   return (
     <motion.button
+      type="button"
       onClick={onToggle}
+      aria-pressed={active}
       style={{
         fontFamily: "var(--font-mono)",
-        fontSize: "var(--text-xs)",
+        fontSize: 11,
+        fontWeight: 700,
+        letterSpacing: "0.08em",
         textTransform: "uppercase",
-        letterSpacing: "0.05em",
         display: "inline-flex",
         alignItems: "center",
-        gap: 6,
-        padding: "6px 14px",
-        borderRadius: 9999,
-        border: active ? "1.5px solid transparent" : "1.5px solid var(--border-2)",
-        background: active ? "var(--ring-1)" : "transparent",
-        color: active ? "#fff" : "var(--tx-2)",
+        gap: 8,
+        padding: "8px 16px",
+        borderRadius: "var(--radius-full)",
+        border: `1px solid ${active ? "var(--focus-cta-hover)" : "color-mix(in srgb, var(--focus-cta) 60%, var(--border))"}`,
+        background: active
+          ? "linear-gradient(135deg, var(--focus-cta-hover), var(--focus-cta))"
+          : "linear-gradient(135deg, var(--focus-cta-bg), color-mix(in srgb, var(--focus-cta-bg) 55%, var(--surface)))",
+        color: active ? "white" : "var(--focus-cta-active)",
         cursor: "pointer",
         userSelect: "none",
         outline: "none",
+        boxShadow: active
+          ? "var(--focus-cta-shadow)"
+          : "var(--focus-cta-shadow-sm)",
+        backdropFilter: "blur(8px)",
+        transition: "background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease",
       }}
-      whileHover={{ scale: 1.04 }}
+      whileHover={{ scale: 1.05, y: -1 }}
       whileTap={{ scale: 0.97 }}
-      layout
       transition={{ type: "spring", stiffness: 500, damping: 30 }}
     >
-      <span style={{ fontSize: 10, lineHeight: 1 }}>◉</span>
-      Focus Constellation
+      <span
+        style={{
+          fontSize: 10,
+          lineHeight: 1,
+          color: active ? "rgba(255,255,255,0.95)" : "var(--focus-cta)",
+          textShadow: active ? "0 0 12px rgba(255,255,255,0.28)" : "none",
+        }}
+      >
+        ◉
+      </span>
+      Фокус
     </motion.button>
   )
 }

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { motion } from "motion/react"
 import type { Feature } from "@data/types"
 import { CX, CY } from "@lib/ring-geometry"
 
@@ -9,7 +9,11 @@ interface Props {
   y: number
   isAnchor?: boolean
   isConstellation?: boolean
+  showLabel?: boolean
   dimmed?: boolean
+  selected?: boolean
+  onSelect?: (feature: Feature) => void
+  onHover?: (info: { feature: Feature; x: number; y: number } | null) => void
 }
 
 const ringColorVar: Record<string, string> = {
@@ -19,8 +23,8 @@ const ringColorVar: Record<string, string> = {
   r3: "var(--ring-3)",
 }
 
-const DOT_R = 5.5
-const LABEL_OFFSET = 22
+const DOT_R = 5.5        // feature dot radius (SVG units, matches ring geometry)
+const LABEL_OFFSET = 22  // px offset from dot center to label baseline
 
 function FeatureNode({
   feature,
@@ -28,11 +32,14 @@ function FeatureNode({
   y,
   isAnchor = false,
   isConstellation = false,
+  showLabel = true,
   dimmed = false,
+  selected = false,
+  onSelect,
+  onHover,
 }: Props) {
   const [hovered, setHovered] = useState(false)
   const color = ringColorVar[feature.ring] ?? "var(--ring-0)"
-  const ringNum = feature.ring.replace("r", "")
 
   // Label direction: radially outward from center
   const ddx = x - CX
@@ -57,32 +64,29 @@ function FeatureNode({
   const isSecondary = feature.phase === "1.5" || feature.phase === "2.5"
   const r = isAnchor ? 8 : DOT_R
 
-  // Tooltip card offset
-  const tooltipX = x + (cosA >= 0 ? r + 6 : -(r + 6 + 120))
+  const handleSelect = () => onSelect?.(feature)
+
+  const handleKeyDown: React.KeyboardEventHandler<SVGGElement> = (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    handleSelect()
+  }
 
   return (
     <motion.g
       style={{ cursor: "pointer" }}
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: dimmed ? 0.12 : 1, scale: 1 }}
-      whileHover={{ scale: 1.25 }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      initial={false}
+      animate={{ opacity: dimmed ? 0.12 : 1 }}
+      transition={{ duration: 0.3 }}
+      role="button"
+      tabIndex={0}
+      aria-pressed={selected}
+      aria-label={`${feature.id}. ${feature.short}`}
+      onMouseEnter={() => { setHovered(true); onHover?.({ feature, x, y }) }}
+      onMouseLeave={() => { setHovered(false); onHover?.(null) }}
+      onClick={(e) => { e.stopPropagation(); handleSelect() }}
+      onKeyDown={handleKeyDown}
     >
-      {/* Glow filter for constellation nodes */}
-      {isConstellation && (
-        <defs>
-          <filter id={`glow-${feature.id}`}>
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-      )}
-
       {/* Anchor pulse ring */}
       {isAnchor && (
         <motion.circle
@@ -98,93 +102,65 @@ function FeatureNode({
         />
       )}
 
+      {/* Selection ring */}
+      {selected && (
+        <circle
+          cx={x}
+          cy={y}
+          r={r + 6}
+          fill="none"
+          stroke={color}
+          strokeWidth={1.5}
+          strokeDasharray="3 2"
+          opacity={0.9}
+        />
+      )}
+
       {/* Main dot — secondary phase: hollow (bg fill + color stroke) */}
-      <circle
+      <motion.circle
         cx={x}
         cy={y}
-        r={r}
+        animate={{ r: hovered ? r * 1.5 : r }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
         fill={isSecondary ? "var(--bg)" : color}
         stroke={color}
         strokeWidth={isSecondary ? 1.5 : 0}
-        filter={isConstellation ? `url(#glow-${feature.id})` : undefined}
+        filter={isConstellation ? `url(#glow-constellation)` : undefined}
       />
 
-      {/* Persistent label line 1: feature id */}
-      <text
-        x={lx}
-        y={ly + idDy}
-        textAnchor={anchor}
-        fontFamily="'Geist Mono Variable', monospace"
-        fontSize={8}
-        fontWeight={700}
-        fill={isSecondary ? "var(--tx-2)" : color}
-        opacity={isSecondary ? 0.72 : 1}
-        style={{ pointerEvents: "none", userSelect: "none" }}
-      >
-        {feature.id}
-      </text>
-
-      {/* Persistent label line 2: short name */}
-      <text
-        x={lx}
-        y={ly + nameDy}
-        textAnchor={anchor}
-        fontFamily="'Geist Variable', sans-serif"
-        fontSize={8.5}
-        fill="var(--tx-2)"
-        opacity={isSecondary ? 0.72 : 0.92}
-        style={{ pointerEvents: "none", userSelect: "none" }}
-      >
-        {feature.short}
-      </text>
-
-      {/* Hover tooltip — extra ring/phase/priority info */}
-      <AnimatePresence>
-        {hovered && (
-          <motion.g
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
+      {(showLabel || hovered) && (
+        <>
+          {/* Persistent label line 1: feature id */}
+          <text
+            x={lx}
+            y={ly + idDy}
+            textAnchor={anchor}
+            fontFamily="'Geist Mono Variable', monospace"
+            fontSize={8}
+            fontWeight={700}
+            fill={isSecondary ? "var(--tx-2)" : color}
+            opacity={isSecondary ? 0.72 : 1}
+            style={{ pointerEvents: "none", userSelect: "none" }}
           >
-            <rect
-              x={tooltipX}
-              y={y - 20}
-              width={120}
-              height={38}
-              rx={4}
-              fill="var(--surface)"
-              stroke={color}
-              strokeWidth={0.8}
-              style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.12))" }}
-            />
-            <text
-              x={tooltipX + 7}
-              y={y - 6}
-              textAnchor="start"
-              fontFamily="'Geist Mono Variable', monospace"
-              fontSize={8.5}
-              fontWeight={700}
-              fill={color}
-              style={{ pointerEvents: "none" }}
-            >
-              Ring {ringNum}{feature.phase ? ` · Phase ${feature.phase}` : ""}
-            </text>
-            <text
-              x={tooltipX + 7}
-              y={y + 9}
-              textAnchor="start"
-              fontFamily="'Geist Mono Variable', monospace"
-              fontSize={8}
-              fill="var(--tx-3)"
-              style={{ pointerEvents: "none" }}
-            >
-              {feature.priority}
-              {feature.problemCluster ? `  cluster ${feature.problemCluster}` : ""}
-            </text>
-          </motion.g>
-        )}
-      </AnimatePresence>
+            {feature.id}
+          </text>
+
+          {/* Persistent label line 2: short name */}
+          <text
+            x={lx}
+            y={ly + nameDy}
+            textAnchor={anchor}
+            fontFamily="'Geist Variable', sans-serif"
+            fontSize={8.5}
+            fill="var(--tx-2)"
+            opacity={isSecondary ? 0.72 : 0.92}
+            style={{ pointerEvents: "none", userSelect: "none" }}
+          >
+            {feature.short}
+          </text>
+        </>
+      )}
+
     </motion.g>
   )
 }

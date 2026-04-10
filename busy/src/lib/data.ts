@@ -18,11 +18,57 @@ import type {
   Subphase, RoadmapPhase, Prototype, InsightGroup,
 } from '@data/types'
 
-export function getRings(): Ring[]           { return ringsRaw as Ring[] }
-export function getFeatures(): Feature[]     { return featuresRaw as Feature[] }
-export function getStakeholders(): Stakeholder[] { return stakeholdersRaw as Stakeholder[] }
-export function getFocusPath(): FocusPath    { return focusPathRaw as FocusPath }
-export function getSubphases(): Subphase[]   { return subphasesRaw as Subphase[] }
-export function getRoadmap(): RoadmapPhase[] { return roadmapRaw as RoadmapPhase[] }
-export function getPrototypes(): Prototype[] { return prototypesRaw as Prototype[] }
-export function getInsights(): InsightGroup[]{ return insightsRaw as InsightGroup[] }
+type PrototypeSeed = Omit<Prototype, 'ring' | 'phase'> & Partial<Pick<Prototype, 'ring' | 'phase'>>
+
+const rings = ringsRaw as Ring[]
+const features = featuresRaw as Feature[]
+const stakeholders = stakeholdersRaw as Stakeholder[]
+const focusPath = focusPathRaw as FocusPath
+const subphases = subphasesRaw as Subphase[]
+const roadmap = roadmapRaw as RoadmapPhase[]
+const prototypeSeeds = prototypesRaw as PrototypeSeed[]
+const insights = insightsRaw as InsightGroup[]
+
+const roadmapById = new Map(roadmap.map((phase) => [phase.id, phase]))
+const featureById = new Map(features.map((feature) => [feature.id, feature]))
+
+function phaseCodeFromRoadmapPhaseId(phaseId: RoadmapPhase['id']): string {
+  if (phaseId === 'p0') return '0'
+  if (phaseId === 'p3') return '3'
+  return phaseId.replace('p', '')
+}
+
+function resolvePrototype(seed: PrototypeSeed): Prototype {
+  const roadmapPhase = roadmapById.get(seed.roadmapPhaseId)
+  const feature = seed.featureId ? featureById.get(seed.featureId) : null
+
+  return {
+    ...seed,
+    ring: feature?.ring ?? roadmapPhase?.ring ?? seed.ring ?? 'r0',
+    phase: roadmapPhase ? phaseCodeFromRoadmapPhaseId(roadmapPhase.id) : seed.phase ?? '0',
+  }
+}
+
+const prototypes = prototypeSeeds.map(resolvePrototype)
+const prototypeIdsByRoadmapPhase = new Map(
+  roadmap.map((phase) => [
+    phase.id,
+    prototypes
+      .filter((prototype) => prototype.roadmapPhaseId === phase.id)
+      .map((prototype) => prototype.id),
+  ]),
+)
+
+export function getRings(): Ring[] { return rings }
+export function getFeatures(): Feature[] { return features }
+export function getStakeholders(): Stakeholder[] { return stakeholders }
+export function getFocusPath(): FocusPath { return focusPath }
+export function getSubphases(): Subphase[] { return subphases }
+export function getRoadmap(): RoadmapPhase[] {
+  return roadmap.map((phase) => ({
+    ...phase,
+    prototypeIds: prototypeIdsByRoadmapPhase.get(phase.id) ?? phase.prototypeIds,
+  }))
+}
+export function getPrototypes(): Prototype[] { return prototypes }
+export function getInsights(): InsightGroup[] { return insights }

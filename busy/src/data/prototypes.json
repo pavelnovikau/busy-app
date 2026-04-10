@@ -3,85 +3,85 @@
     "id": "focus-heatmap",
     "title": "Focus Heatmap",
     "description": "Grid-визуализация год/месяц/неделя/день/час: тепловая карта deep work / meetings / available",
-    "ring": "r1",
+    "roadmapPhaseId": "p1.5",
+    "featureId": "1.5",
     "stakeholders": [
       "fw"
-    ],
-    "phase": "1.0"
+    ]
   },
   {
     "id": "ai-focus-mentor",
     "title": "AI Focus Mentor",
     "description": "Полукруглый ring вокруг таймера + инсайты от AI Focus Coach",
-    "ring": "r3",
+    "roadmapPhaseId": "p3",
+    "featureId": "3.1",
     "stakeholders": [
       "fw"
-    ],
-    "phase": "3"
+    ]
   },
   {
     "id": "energy-prediction",
     "title": "Energy Prediction",
     "description": "Календарь с AI-предсказанием окон фокуса и лучших часов",
-    "ring": "r1",
+    "roadmapPhaseId": "p3",
+    "featureId": "3.2",
     "stakeholders": [
       "fw"
-    ],
-    "phase": "1.5"
+    ]
   },
   {
     "id": "team-flow-dashboard",
     "title": "Team Flow Dashboard",
     "description": "Кто сейчас в deep work — командный вид, privacy-first",
-    "ring": "r2",
+    "roadmapPhaseId": "p2.5",
+    "featureId": "2.10",
     "stakeholders": [
       "fw",
       "lead"
-    ],
-    "phase": "2.0"
+    ]
   },
   {
     "id": "focus-profile",
     "title": "Focus Profile",
     "description": "Публичная карточка фокус-идентичности busy.app/status/name",
-    "ring": "r3",
+    "roadmapPhaseId": "p3",
+    "featureId": "3.5",
     "stakeholders": [
       "fw",
       "fam",
       "col"
-    ],
-    "phase": "2.5"
+    ]
   },
   {
     "id": "body-doubling-room",
     "title": "Body Doubling Room",
     "description": "Виртуальная комната совместного фокуса / social accountability",
-    "ring": "r3",
+    "roadmapPhaseId": "p3",
+    "featureId": "3.8",
     "stakeholders": [
       "fw"
-    ],
-    "phase": "3"
+    ]
   },
   {
     "id": "ai-coach-chat",
     "title": "AI Coach Chat",
     "description": "Чат с AI Focus Coach: планирование блоков, инсайты, быстрые ответы",
-    "ring": "r3",
+    "roadmapPhaseId": "p3",
+    "featureId": "3.1",
     "stakeholders": [
       "fw"
-    ],
-    "phase": "3"
+    ]
   },
   {
     "id": "focus-profile-page",
     "title": "Focus Profile Page",
     "description": "Полная страница профиля: статистика, недельный график, цели, последние сессии",
-    "ring": "r3",
+    "roadmapPhaseId": "p3",
+    "featureId": "3.5",
     "stakeholders": [
       "fw",
       "fam",
       "col"
-    ],
-    "phase": "3"
+    ]
   }
 ]

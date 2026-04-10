@@ -10,6 +10,7 @@ import { FocusProfile } from '@components/proto/FocusProfile'
 import { BodyDoublingRoom } from '@components/proto/BodyDoublingRoom'
 import { AICoachChat } from '@components/proto/AICoachChat'
 import { FocusProfilePage } from '@components/proto/FocusProfilePage'
+import { useIsCompact } from '@lib/useIsCompact'
 
 const prototypes = getPrototypes()
 
@@ -29,11 +30,11 @@ const ringDimVar: Record<string, string> = {
 }
 
 const phaseLabel: Record<string, string> = {
-  '1.0': 'Phase 1.0',
-  '1.5': 'Phase 1.5',
-  '2.0': 'Phase 2.0',
-  '2.5': 'Phase 2.5',
-  '3':   'Phase 3',
+  '1.0': 'Фаза 1.0',
+  '1.5': 'Фаза 1.5',
+  '2.0': 'Фаза 2.0',
+  '2.5': 'Фаза 2.5',
+  '3':   'Фаза 3',
 }
 
 const stakeholderLabel: Record<string, string> = {
@@ -69,6 +70,7 @@ type FilterChipProps = {
 function FilterChip({ label, active, color, dimColor, onClick }: FilterChipProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
       style={{
         fontFamily: 'var(--font-mono)',
@@ -91,6 +93,7 @@ function FilterChip({ label, active, color, dimColor, onClick }: FilterChipProps
 }
 
 export default function PrototypesPage() {
+  const isCompact = useIsCompact()
   const [activeRing, setActiveRing] = useState<string | null>(null)
   const [activePhase, setActivePhase] = useState<string | null>(null)
   const [activeStakeholder, setActiveStakeholder] = useState<string | null>(null)
@@ -104,12 +107,13 @@ export default function PrototypesPage() {
   })
 
   return (
-    <div>
+    <div style={{ textAlign: 'left' }}>
       {/* Header bar */}
       <div
         style={{
           display: 'flex',
           alignItems: 'baseline',
+          flexWrap: 'wrap',
           gap: 'var(--space-4)',
           padding: 'var(--space-4) 0',
           marginBottom: 'var(--space-4)',
@@ -126,10 +130,10 @@ export default function PrototypesPage() {
             letterSpacing: '0.05em',
           }}
         >
-          Prototypes
+          Прототипы
         </h1>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--tx-3)' }}>
-          {filtered.length}/{prototypes.length} screens
+          {filtered.length}/{prototypes.length} экранов
         </span>
       </div>
 
@@ -137,12 +141,12 @@ export default function PrototypesPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', marginBottom: 'var(--space-6)' }}>
         {/* Ring filter */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 60 }}>Ring</span>
-          <FilterChip label="All" active={activeRing === null} onClick={() => setActiveRing(null)} />
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 60 }}>Кольцо</span>
+          <FilterChip label="Все" active={activeRing === null} onClick={() => setActiveRing(null)} />
           {allRings.map((r) => (
             <FilterChip
               key={r}
-              label={`Ring ${r.replace('r', '')}`}
+              label={`Кольцо ${r.replace('r', '')}`}
               active={activeRing === r}
               color={ringColorVar[r]}
               dimColor={ringDimVar[r]}
@@ -153,12 +157,12 @@ export default function PrototypesPage() {
 
         {/* Phase filter */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 60 }}>Phase</span>
-          <FilterChip label="All" active={activePhase === null} onClick={() => setActivePhase(null)} />
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 60 }}>Фаза</span>
+          <FilterChip label="Все" active={activePhase === null} onClick={() => setActivePhase(null)} />
           {allPhases.map((ph) => (
             <FilterChip
               key={ph}
-              label={phaseLabel[ph] ?? `Phase ${ph}`}
+              label={phaseLabel[ph] ?? `Фаза ${ph}`}
               active={activePhase === ph}
               onClick={() => setActivePhase(activePhase === ph ? null : ph)}
             />
@@ -167,8 +171,8 @@ export default function PrototypesPage() {
 
         {/* Stakeholder filter */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 60 }}>User</span>
-          <FilterChip label="All" active={activeStakeholder === null} onClick={() => setActiveStakeholder(null)} />
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', width: 60 }}>Кто</span>
+          <FilterChip label="Все" active={activeStakeholder === null} onClick={() => setActiveStakeholder(null)} />
           {allStakeholders.map((s) => (
             <FilterChip
               key={s}
@@ -185,7 +189,7 @@ export default function PrototypesPage() {
         {filtered.length === 0 ? (
           <motion.div
             key="empty"
-            initial={{ opacity: 0 }}
+            initial={false}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             style={{
@@ -203,7 +207,7 @@ export default function PrototypesPage() {
             key="grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+              gridTemplateColumns: isCompact ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))',
               gap: 'var(--space-5)',
             }}
           >
@@ -217,17 +221,15 @@ export default function PrototypesPage() {
                 <motion.div
                   key={proto.id}
                   layoutId={`proto-card-${proto.id}`}
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={false}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3, delay: i * 0.05, ease: 'easeOut' }}
-                  onClick={() => setExpanded(expanded === proto.id ? null : proto.id)}
                   style={{
                     border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-lg)',
                     overflow: 'hidden',
                     background: 'var(--surface)',
-                    cursor: 'pointer',
                   }}
                 >
                   {/* Top strip: ring + phase */}
@@ -290,6 +292,26 @@ export default function PrototypesPage() {
                     <div style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', lineHeight: 1.4 }}>
                       {proto.description}
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => setExpanded(proto.id)}
+                      style={{
+                        marginTop: 'var(--space-3)',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 'var(--text-xs)',
+                        fontWeight: 700,
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        color: ringColor,
+                        background: 'transparent',
+                        border: `1px solid ${ringColor}`,
+                        borderRadius: 'var(--radius-full)',
+                        padding: '6px 10px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Открыть
+                    </button>
                   </div>
                 </motion.div>
               )
@@ -307,19 +329,19 @@ export default function PrototypesPage() {
           return (
             <motion.div
               key="overlay"
-              initial={{ opacity: 0 }}
+              initial={false}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setExpanded(null)}
               style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'oklch(0 0 0 / 0.6)',
+                background: 'var(--overlay)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                zIndex: 50,
-                padding: 'var(--space-6)',
+                zIndex: 120,
+                padding: isCompact ? 'var(--space-3)' : 'var(--space-6)',
               }}
             >
               <motion.div
@@ -332,6 +354,8 @@ export default function PrototypesPage() {
                   overflow: 'hidden',
                   maxWidth: 520,
                   width: '100%',
+                  maxHeight: 'calc(100svh - 24px)',
+                  overflowY: 'auto',
                 }}
               >
                 <Component />

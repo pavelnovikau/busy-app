@@ -16,8 +16,8 @@ export function CircuitBreaker({ text }: Props) {
         alignItems: 'flex-start',
         gap: 'var(--space-3)',
         padding: 'var(--space-3) var(--space-4)',
-        background: 'oklch(0.58 0.18 70 / 0.10)',
-        borderLeft: '3px solid var(--color-warning)',
+        background: 'var(--ye-bg)',
+        border: '1px solid var(--color-warning)',
         borderRadius: 'var(--radius-md)',
       }}
     >

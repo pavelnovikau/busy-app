@@ -16,7 +16,7 @@ const TODAY_INDEX = 3 // Thursday
 export function FocusProfile() {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
+      initial={false}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
       style={{
@@ -257,7 +257,7 @@ export function FocusProfile() {
           style={{
             flex: 1,
             background: 'var(--ring-3)',
-            color: '#fff',
+            color: 'var(--bg)',
             border: 'none',
             borderRadius: 'var(--radius-md)',
             padding: `var(--space-2) var(--space-3)`,

@@ -26,7 +26,7 @@ function SubphaseLabel({ subphases }: Props) {
         return (
           <motion.g
             key={`${sp.ring}-${sp.code}`}
-            initial={{ opacity: 0 }}
+            initial={false}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9 + i * 0.1, duration: 0.4 }}
             style={{ pointerEvents: "none", userSelect: "none" }}

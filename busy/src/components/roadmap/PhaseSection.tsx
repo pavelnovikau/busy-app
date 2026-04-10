@@ -32,11 +32,8 @@ export function PhaseSection({ phase, children }: Props) {
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
       style={{
-        borderLeft: `4px solid ${ringColor}`,
         background: 'var(--surface)',
         border: '1px solid var(--border)',
-        borderLeftWidth: 4,
-        borderLeftColor: ringColor,
         borderRadius: 'var(--radius-lg)',
         padding: 'var(--space-6)',
       }}

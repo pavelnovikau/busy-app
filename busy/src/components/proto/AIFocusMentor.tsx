@@ -8,7 +8,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 export function AIFocusMentor() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
       style={{
@@ -136,7 +136,6 @@ export function AIFocusMentor() {
               padding: 'var(--space-2) var(--space-3)',
               background: 'var(--surface-2)',
               borderRadius: 'var(--radius-md)',
-              borderLeft: `3px solid ${insight.accent}`,
             }}
           >
             <span
