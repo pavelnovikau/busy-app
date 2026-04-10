@@ -75,6 +75,10 @@ Ring 1 = **Auto Presence**.
 
 **Бизнес-модель:** Free tier (auto-presence базовый) + **BUSY Pro $4.99/мес** (аналитика, Focus Memory, история, AI-расширения). Цель: 5–10% конверсии.
 
+**72-hour rule:** каждый touchpoint Ring 1 должен доставлять видимую ценность в первые 72 часа. Anxiety ("гаджет будет пылиться") — главный блокер adoption по всем сегментам. Первый auto-trigger должен произойти до конца первого рабочего дня.
+
+**Passive adoption loop:** каждый покупатель создаёт 3–5 пассивных пользователей бесплатно — Family через URL, Colleagues через Slack sync. Это не side effect — это основной growth механизм.
+
 ### Что строим:
 
 #### 1.1 Умная синхронизация статусов (Кластер B)
@@ -129,6 +133,7 @@ Ring 1.5 = **Focus Memory** — ядро BUSY Pro подписки.
 - Project tags / project context
 - Interruption Cost — стоимость прерываний в реальном времени
 - App blocking на macOS (через Focus Modes API) — защита от внешних прерываний
+- **AI Agent Monitor** (Ring 1.5, не Ring 3): Claude Code / Copilot / Cursor активен → BUSY Bar физически сигнализирует. Джоб появился сейчас — окно захвата нарратива закроется к 2027
 
 Это отдельная подфаза, потому что:
 - другой слой ценности: не "система работает сама", а "система помогает понять мой день"
@@ -158,10 +163,11 @@ Ring 2 = **Open Platform**.
 - **Apple HomeKit / Google Home:** Через Matter протокол
 - **Automation Recipes:** Готовые шаблоны: "встреча → приглуши свет + DND"
 
-#### 2.3 Team Mesh (Кластер C + E)
-- **Workspace Dashboard:** Руководитель видит агрегированный фокус-ритм команды
-- **Focus Zones:** Запланированные блоки глубокой работы для команды
-- **Meeting-free Windows:** Автоматическая защита фокус-времени команды
+#### 2.3 Slack Bot (Trojan Horse)
+- **BUSY for Teams Slack Bot** (бесплатный): `/busy-status`, `/busy-when @user`
+- Работает для всех коллег — у кого нет BUSY Bar тоже видит статусы тех, у кого есть
+- Механизм: каждый Focus Worker создаёт 3–5 пассивных пользователей в Slack-контексте без продаж
+- **Surveillance принцип:** полный Team Dashboard — Ring 3. Риск perception как surveillance убивает доверие у обоих: Focus Worker и Team Lead
 
 #### 2.4 Стример Kit (Кластер A)
 - **OBS Studio Plugin:** Нативная интеграция — смена сцены → смена цвета BUSY Bar

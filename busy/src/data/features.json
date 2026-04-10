@@ -291,8 +291,8 @@
     "id": "2.5",
     "short": "AI Agent Monitor",
     "description": "Меняет цвет BUSY Bar когда активен AI-агент (Claude Code, Copilot, Cursor) — физический индикатор того, что AI работает и прерывать сейчас не стоит.",
-    "ring": "r3",
-    "phase": null,
+    "ring": "r1",
+    "phase": "1.5",
     "priority": "●",
     "problemCluster": "A"
   },
@@ -326,19 +326,19 @@
   {
     "id": "2.9",
     "short": "Slack Bot Free",
-    "description": "Бесплатный Slack Bot для команд: `/busy-status` и `/busy-when` — видеть статус коллеги прямо в Slack. Работает только если у человека есть BUSY Bar.",
-    "ring": "r3",
-    "phase": null,
+    "description": "Бесплатный Slack Bot для команд: `/busy-status` и `/busy-when` — видеть статус коллеги прямо в Slack. Trojan horse в командный контекст: растит passive users без дополнительных продаж.",
+    "ring": "r2",
+    "phase": "2.0",
     "priority": "●",
     "problemCluster": "E"
   },
   {
     "id": "2.10",
     "short": "Team Dashboard",
-    "description": "Агрегированный фокус-ритм команды для руководителя: пик deep work, лучшее время для встреч, динамика по неделям — без слежки за индивидуальными данными.",
+    "description": "Агрегированный фокус-ритм команды для руководителя: пик deep work, лучшее время для встреч, динамика по неделям — без слежки за индивидуальными данными. Требует зрелого privacy design.",
     "ring": "r3",
     "phase": null,
-    "priority": "●",
+    "priority": "◐",
     "problemCluster": "E"
   },
   {

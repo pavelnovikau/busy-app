@@ -54,6 +54,7 @@
     "uniqueFeatures": [
       "Interruption Cost показывает цену прерывания в минутах восстановления, а не просто факт переключения окна.",
       "Focus Heatmap строится на физическом сигнале и автоматическом контексте, поэтому показывает реальный rhythm of work без ручного логирования.",
+      "AI Agent Monitor: Claude Code / Copilot / Cursor работает — BUSY Bar сигнализирует физически. Джоб появился в 2025 году и ещё не занят конкурентами.",
       "Auto-Timesheet и app tracking работают как побочный продукт защищённого фокуса, а не как отдельная дисциплина «не забывай трекать»."
     ],
     "whyDifferent": "Apple, Google, Toggl и RescueTime видят экранное поведение, но не видят сам факт физического прерывания и момент возвращения в deep work. BUSY Bar строит аналитику на данных, которых у software-only продуктов просто нет.",
@@ -70,8 +71,8 @@
     "label": "Phase 2.0 — Open Platform",
     "horizon": "9–18 мес",
     "monthsRange": [9, 18],
-    "intro": "Одна компания не может построить все интеграции для всех workflow — но community может, если дать правильные инструменты. TypeScript/Python SDK и App Library превращают BUSY Bar из продукта в протокол: GitHub CI, Home Assistant, Toggl, Notion подключаются как модули без участия команды. 500K+ пользователей Home Assistant — готовый acquisition channel через Matter-интеграцию, которую ни один конкурент не может повторить без нового hardware. Реалистичная цель — 50 качественных интеграций от сторонних разработчиков; quality важнее quantity на маленькой базе.",
-    "outcome": "Phase 2.0 делает из BUSY не просто устройство с фичами, а внешнюю платформу, на которой другие могут строить свои сценарии и distribution loops.",
+    "intro": "Одна компания не может построить все интеграции для всех workflow — но community может, если дать правильные инструменты. TypeScript/Python SDK и App Library превращают BUSY Bar из продукта в протокол: GitHub CI, Home Assistant, Toggl, Notion подключаются как модули без участия команды. Бесплатный Slack Bot (/busy-status, /busy-when) — trojan horse в командный контекст: каждый пользователь BUSY создаёт 3-5 пассивных пользователей через Slack и Family URL. 500K+ пользователей Home Assistant — готовый acquisition channel через Matter-интеграцию.",
+    "outcome": "Phase 2.0 делает из BUSY платформу, на которой другие строят сценарии — и запускает пассивный рост: каждый Focus Worker подтягивает коллег и семью без маркетинговых затрат.",
     "uniqueFeatures": [
       "Developer Portal и SDK превращают BUSY Bar в programmable endpoint для CI, умного дома, creator workflow и личных automations.",
       "Matter + Home Assistant дают distribution в уже существующие сообщества, где люди привыкли собирать сценарии вокруг физических устройств.",
