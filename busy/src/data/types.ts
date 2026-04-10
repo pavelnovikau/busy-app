@@ -89,6 +89,19 @@ export interface Milestone {
   date: string | null;
 }
 
+export interface AjtbdForces {
+  push:    string   // pain/push force: what drives user away from status quo
+  pull:    string   // pull force: what attracts toward new solution
+  anxiety: string   // anxiety: what makes them hesitate
+  habit:   string   // habit/inertia: what existing behavior they must leave
+}
+
+export interface AjtbdData {
+  stakeholders: string[]  // stakeholder IDs from stakeholders.json
+  job:          string    // the core job statement
+  forces:       AjtbdForces
+}
+
 export interface RoadmapPhase {
   id: RoadmapPhaseId;
   ring: RingId;
@@ -103,6 +116,7 @@ export interface RoadmapPhase {
   circuitBreakers: string[];
   prototypeIds: string[];
   milestones: Milestone[];
+  ajtbd: AjtbdData;
 }
 
 // ── Prototype ─────────────────────────────────────────────────────

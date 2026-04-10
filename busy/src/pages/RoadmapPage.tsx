@@ -26,6 +26,17 @@ const priorityLabel: Record<string, string> = {
   '○': 'P2 — желательно',
 }
 
+const STAKEHOLDER_EMOJI: Record<string, { emoji: string; label: string }> = {
+  fw:   { emoji: '◉', label: 'Focus Worker' },
+  fam:  { emoji: '♥', label: 'Семья' },
+  col:  { emoji: '◆', label: 'Коллеги' },
+  dev:  { emoji: '⌘', label: 'Developer' },
+  lead: { emoji: '◈', label: 'Руководитель' },
+  sh:   { emoji: '⌂', label: 'Smart Home' },
+  str:  { emoji: '◎', label: 'Стример' },
+  it:   { emoji: '⚙', label: 'IT Manager' },
+}
+
 function getPhaseFeatures(ringId: RingId, phaseCode: string | null): Feature[] {
   if (phaseCode === null) {
     return features.filter((f) => f.ring === ringId && f.phase === null)
@@ -234,13 +245,8 @@ export default function RoadmapPage() {
         {phases.map((phase, index) => {
           const color = ringColorVar[phase.ring]
           const feats = phaseFeaturesMap[phase.id] ?? []
-          const prevPhase = phases[index - 1]
-          const showGate = index > 0 && phase.gate != null
           const isOpen = openPhases.has(phase.id)
           const phaseLabel = phase.label.split(' — ')[1] ?? phase.label
-          const gateTruncated = phase.gate && phase.gate.length > 80
-            ? phase.gate.slice(0, 80) + '…'
-            : phase.gate
 
           return (
             <motion.div
@@ -249,57 +255,6 @@ export default function RoadmapPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.06, duration: 0.3 }}
             >
-              {/* Gate checkpoint (between phases) */}
-              {showGate && (
-                <div style={{ padding: 'var(--space-3) 0 var(--space-2)' }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'stretch',
-                      gap: 'var(--space-3)',
-                      padding: '10px 14px',
-                      background: `color-mix(in oklch, ${ringColorVar[prevPhase?.ring ?? 'r0']} 7%, var(--surface))`,
-                      border: `1px solid color-mix(in oklch, ${ringColorVar[prevPhase?.ring ?? 'r0']} 35%, var(--border))`,
-                      borderRadius: 'var(--radius-md)',
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 3,
-                        borderRadius: 2,
-                        background: ringColorVar[prevPhase?.ring ?? 'r0'],
-                        flexShrink: 0,
-                      }}
-                    />
-                    <div style={{ flex: 1 }}>
-                      <div
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          fontWeight: 700,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.12em',
-                          color: ringColorVar[prevPhase?.ring ?? 'r0'],
-                          marginBottom: 4,
-                        }}
-                      >
-                        ◆ Gate — переход в {phase.label.split(' — ')[0]}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: 'var(--tx)',
-                          lineHeight: 1.4,
-                        }}
-                      >
-                        {phase.gate}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Accordion card */}
               <div
@@ -397,31 +352,38 @@ export default function RoadmapPage() {
                     </span>
                   )}
 
-                  {/* Gate metric in collapsed state */}
-                  {!isOpen && gateTruncated && (
-                    <span
-                      style={{
-                        display: isCompact ? 'none' : 'block',
-                        flexShrink: 0,
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 11,
-                        color: `color-mix(in srgb, ${color} 70%, var(--tx-3))`,
-                        background: `color-mix(in srgb, ${color} 8%, var(--surface))`,
-                        border: `1px solid color-mix(in srgb, ${color} 20%, var(--border))`,
-                        borderRadius: 'var(--radius-sm)',
-                        padding: '2px 7px',
-                        maxWidth: 240,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {gateTruncated}
-                    </span>
-                  )}
 
                   {/* Spacer when open (outcome shown inside body instead) */}
                   {isOpen && <span style={{ flex: 1 }} />}
+
+                  {/* Stakeholder icons — collapsed */}
+                  <span style={{ display: 'flex', gap: 'var(--space-1)', marginLeft: 'auto', marginRight: 'var(--space-2)', flexShrink: 0 }}>
+                    {phase.ajtbd.stakeholders.map(id => {
+                      const s = STAKEHOLDER_EMOJI[id]
+                      if (!s) return null
+                      return (
+                        <span
+                          key={id}
+                          title={s.label}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: 22,
+                            height: 22,
+                            borderRadius: 'var(--radius-full)',
+                            background: 'var(--bg-2)',
+                            border: '1px solid var(--border)',
+                            fontSize: 11,
+                            color: 'var(--tx-2)',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {s.emoji}
+                        </span>
+                      )
+                    })}
+                  </span>
 
                   {/* Chevron */}
                   <span
@@ -498,6 +460,130 @@ export default function RoadmapPage() {
                             {phase.intro}
                           </p>
                         )}
+
+                        {/* ── AJTBD block ── */}
+                        <div style={{
+                          background: 'var(--surface)',
+                          border: '1px solid var(--border)',
+                          borderRadius: 'var(--radius-md)',
+                          padding: 'var(--space-4)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 'var(--space-3)',
+                          marginBottom: 'var(--space-4)',
+                          maxWidth: 860,
+                        }}>
+                          {/* Header row: label + stakeholder icons */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                            <span style={{
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: 10,
+                              fontWeight: 700,
+                              letterSpacing: '0.12em',
+                              textTransform: 'uppercase',
+                              color: 'var(--tx-3)',
+                            }}>
+                              Работа
+                            </span>
+                            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+                            <span style={{ display: 'flex', gap: 'var(--space-1)' }}>
+                              {phase.ajtbd.stakeholders.map(id => {
+                                const s = STAKEHOLDER_EMOJI[id]
+                                if (!s) return null
+                                return (
+                                  <span
+                                    key={id}
+                                    title={s.label}
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      width: 24,
+                                      height: 24,
+                                      borderRadius: 'var(--radius-full)',
+                                      background: `color-mix(in srgb, ${color} 10%, var(--surface))`,
+                                      border: `1px solid color-mix(in srgb, ${color} 25%, var(--border))`,
+                                      fontSize: 12,
+                                      color,
+                                    }}
+                                  >
+                                    {s.emoji}
+                                  </span>
+                                )
+                              })}
+                            </span>
+                          </div>
+
+                          {/* Job statement */}
+                          <p style={{
+                            fontFamily: 'var(--font-sans)',
+                            fontSize: isCompact ? 13 : 14,
+                            fontWeight: 500,
+                            color: 'var(--tx)',
+                            lineHeight: 1.5,
+                            margin: 0,
+                            fontStyle: 'italic',
+                          }}>
+                            «{phase.ajtbd.job}»
+                          </p>
+
+                          {/* 4 forces */}
+                          <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr',
+                            gap: 'var(--space-2)',
+                          }}>
+                            {([
+                              { key: 'push',    icon: '↑', label: 'Боль',      value: phase.ajtbd.forces.push    },
+                              { key: 'pull',    icon: '→', label: 'Притяжение', value: phase.ajtbd.forces.pull    },
+                              { key: 'anxiety', icon: '⚡', label: 'Тревога',   value: phase.ajtbd.forces.anxiety },
+                              { key: 'habit',   icon: '↺', label: 'Привычка',  value: phase.ajtbd.forces.habit   },
+                            ] as const).map(({ key, icon, label, value }) => (
+                              <div key={key} style={{
+                                display: 'flex',
+                                gap: 'var(--space-2)',
+                                alignItems: 'flex-start',
+                              }}>
+                                <span style={{
+                                  flexShrink: 0,
+                                  width: 20,
+                                  height: 20,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  borderRadius: 'var(--radius-sm)',
+                                  background: 'var(--bg-2)',
+                                  fontSize: 11,
+                                  color: 'var(--tx-2)',
+                                  marginTop: 1,
+                                }}>
+                                  {icon}
+                                </span>
+                                <div>
+                                  <span style={{
+                                    fontFamily: 'var(--font-mono)',
+                                    fontSize: 10,
+                                    fontWeight: 700,
+                                    letterSpacing: '0.08em',
+                                    textTransform: 'uppercase',
+                                    color: 'var(--tx-3)',
+                                    display: 'block',
+                                  }}>
+                                    {label}
+                                  </span>
+                                  <span style={{
+                                    fontFamily: 'var(--font-sans)',
+                                    fontSize: isCompact ? 12 : 13,
+                                    color: 'var(--tx-2)',
+                                    lineHeight: 1.45,
+                                  }}>
+                                    {value}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
 
                         {(phase.outcome || phase.uniqueFeatures?.length || phase.whyDifferent) && (
                           <div
