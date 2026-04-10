@@ -92,12 +92,12 @@
     "label": "Phase 3 — Intelligence + Expansion",
     "horizon": "18–36 мес",
     "monthsRange": [18, 36],
-    "intro": "К этому моменту BUSY Bar накопил уникальные данные, которых нет ни у одного Big Tech игрока: физический контекст сессий, стоимость каждого прерывания, паттерны восстановления концентрации. Ring 3 превращает эти данные в Interruption Intelligence — точечные рекомендации на основе реальной истории прерываний конкретного человека. Одновременно — командный слой (Team Dashboard, Slack Bot) и AI Agent Monitor как micro-категория на стыке physical computing и AI workflow. Marketplace с revenue sharing превращает платформу в экономику для разработчиков.",
-    "outcome": "Phase 3 делает BUSY невоспроизводимым на одном только software layer: intelligence system + командная координация + физический AI-workflow индикатор — всё поверх одного устройства.",
+    "intro": "К этому моменту BUSY Bar накопил уникальные данные, которых нет ни у одного Big Tech игрока: физический контекст сессий, стоимость каждого прерывания, паттерны восстановления концентрации. Ring 3 превращает эти данные в Interruption Intelligence — точечные рекомендации на основе реальной истории прерываний конкретного человека. Одновременно — командный слой (Team Dashboard с privacy-first aggregate view) поверх Slack Bot, уже работающего с Ring 2. Marketplace с revenue sharing превращает платформу в экономику для разработчиков.",
+    "outcome": "Phase 3 делает BUSY невоспроизводимым на одном только software layer: intelligence system + командная координация поверх активной community-экосистемы — всё поверх одного устройства.",
     "uniqueFeatures": [
       "AI Focus Coach строится на interruption-aware данных — не generic советы, а паттерны восстановления конкретного человека за 90+ дней.",
-      "AI Agent Monitor: Claude Code / Copilot / Cursor работает → BUSY Bar сигнализирует физически. Категория, которой не было год назад.",
-      "Team Dashboard показывает коллективный ритм без surveillance UX. Slack Bot — trojan horse в B2B без enterprise sales."
+      "Team Dashboard показывает коллективный ритм без surveillance UX — поверх Slack Bot (Ring 2) как органического B2B entry point.",
+      "Marketplace с revenue sharing превращает тысячи разработчиков, пришедших через Ring 2 SDK, в монетизируемую экономику."
     ],
     "whyDifferent": "Big Tech сделает generic focus coaching, но не воспроизведёт датасет из физического контекста + interruption-patterns + командного ритма, привязанных к реальному устройству. Именно этот слой — защищённая уникальность Ring 3.",
     "gate": "Ring 2 metrics пройдены + 50K units",

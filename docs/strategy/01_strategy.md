@@ -157,16 +157,14 @@ Google Calendar · Zoom · Google Meet · Slack
 - Recipe-шаблоны: "встреча началась → приглуши свет + DND на doorbell"
 - Конкуренты физически не могут добавить Matter (USB-only)
 
-**3. Team Mesh**
-- Workspace Dashboard для руководителя
-- "BUSY for Teams" Slack Bot (бесплатный, trojan horse для B2B)
-- Focus Windows: запланированные тихие часы для всей команды
+**3. Slack Bot (Trojan Horse)**
+- "BUSY for Teams" Slack Bot (бесплатный): `/busy-status`, `/busy-when @user`
+- Работает для всех коллег — без BUSY Bar тоже видит статусы тех, у кого есть
+- Каждый пользователь BUSY подтягивает коллег в экосистему пассивно — B2B adoption без enterprise sales
 
-**Вирусный рычаг Ring 2:** Slack Bot (/busy-status, /busy-when) — бесплатный, без BUSY Bar работает. Каждый пользователь BUSY подтягивает коллег в экосистему пассивно. Это ускоряет B2B adoption без enterprise sales.
+**Surveillance принцип:** Полный Team Dashboard (aggregate focus view) откладывается в Ring 3 до проработки privacy-first UX. Риск: если воспринимается как слежка — разрушает доверие у Focus Worker И Team Lead одновременно.
 
-**Surveillance принцип:** Team Dashboard требует зрелого privacy design. Риск: если воспринимается как слежка — разрушает доверие у Focus Worker И Team Lead одновременно. Полный Dashboard откладывается в Ring 3 до проработки privacy-first UX.
-
-**Gate метрика:** 200+ интеграций в App Library, 30% пользователей используют 1+ third-party.
+**Gate метрика:** 50+ quality интеграций (≥15 от third-party), 30% пользователей используют 1+ third-party.
 
 → Подробно: [`05_step2_open_platform.md`](05_step2_open_platform.md)
 
@@ -178,10 +176,9 @@ Google Calendar · Zoom · Google Meet · Slack
 
 - BUSY Bar Mini ($99–129) — расширение TAM
 - AI Focus Coach — персональные рекомендации на основе накопленных данных
-- Team Dashboard + Slack Bot (Trojan horse в B2B)
-- AI Agent Monitor (Claude Code / Codex hooks → физический статус)
+- Team Dashboard (privacy-first aggregate view для руководителя)
 - Marketplace с revenue sharing для разработчиков
-- Enterprise tier (если Team Mesh органически растёт)
+- Enterprise tier (при органическом росте через Slack Bot)
 - HSA/FSA eligibility исследование (ADHD сегмент)
 
 → Подробно: [`03_ecosystem_rings.md`](03_ecosystem_rings.md)
@@ -225,8 +222,8 @@ LED+таймер macOS App          App tracking    Developer Portal      AI Foc
 ручной     Google Cal/Zoom    Timesheet       App Library           Focus Profile
 статус     Slack Sync         Interruption $  Home Assistant        Marketplace
            Family URL         Heatmap/Score   Windows App           Team Dashboard
-           AI Focus Intent    [BUSY Pro]      Matter Full           BUSY Mini
-           [Free + Pro]                       Recipes               AI Agent Monitor
+           AI Focus Intent    AI Agent Mon    Matter Full           BUSY Mini
+           [Free + Pro]       [BUSY Pro]      Recipes+Slack Bot
 ```
 
 **Позиционирование:**

@@ -175,7 +175,7 @@ Ring 2 = **Open Platform**.
 - **BUSY Bar Studio Pack:** Предустановленные профили для стримеров
 
 **Метрика успеха Ring 2:**
-- 200+ apps в App Library
+- 50+ quality интеграций в App Library (≥15 от third-party)
 - 30% пользователей используют 1+ third-party интеграцию
 - 5K+ GitHub stars для SDK
 
@@ -201,14 +201,13 @@ Ring 3 = **Intelligence + Identity + Expansion**.
 - Predicts focus windows на следующую неделю
 
 #### 3.2 Team + B2B Layer
-- "BUSY for Teams" Slack Bot (бесплатный trojan horse): `/busy-status`, `/busy-when @user`
-- Team Dashboard для руководителя (aggregate focus view, privacy-first)
+- Team Dashboard для руководителя (aggregate focus view, privacy-first UX)
 - Focus Windows: запланированные тихие часы для команды
-- Team license ($15/user/month) после органического роста
+- Team license ($15/user/month) после органического роста через Slack Bot (Ring 2)
 
 #### 3.3 AI Agent Monitor
-- Claude Code / Codex / CLI hooks → физический статус BUSY Bar
-- "Агент работает" как отдельный режим индикации
+- *(Ring 1.5 — уже реализовано раньше)*
+- В Ring 3: расширение на новые агенты (Codex, Copilot, Cursor), командные dashboard сигналы
 
 #### 3.4 New Hardware
 - **BUSY Bar Mini ($99–129):** Более доступная версия — расширение TAM
