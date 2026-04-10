@@ -127,8 +127,12 @@ export function constellationEdgePath(
     return `M ${from.x} ${from.y} Q ${ctrlX} ${ctrlY} ${to.x} ${to.y}`
   }
 
-  // Bridge (cross-ring): straight line — clean constellation look
-  return `M ${from.x} ${from.y} L ${to.x} ${to.y}`
+  // Bridge (cross-ring): curve toward center to avoid crossings
+  const midX = (from.x + to.x) / 2
+  const midY = (from.y + to.y) / 2
+  const cpX = midX + (CX - midX) * 0.4
+  const cpY = midY + (CY - midY) * 0.4
+  return `M ${from.x} ${from.y} Q ${cpX} ${cpY} ${to.x} ${to.y}`
 }
 
 // ── buildFeaturePositions ──────────────────────────────────────────

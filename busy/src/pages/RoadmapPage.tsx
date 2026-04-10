@@ -86,37 +86,45 @@ export default function RoadmapPage() {
   const selectedRing = selectedFeature ? ringMeta[selectedFeature.ring] : null
 
   return (
-    <div style={{ maxWidth: 980, textAlign: 'left' }}>
+    <div style={{ maxWidth: 980, margin: '0 auto', textAlign: 'left' }}>
       {/* Header */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: isCompact ? 'wrap' : 'nowrap',
           gap: 'var(--space-4)',
           padding: 'var(--space-4) 0 var(--space-6)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
-          <h1
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'var(--text-2xl)',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: 'var(--tx)',
-              margin: 0,
-            }}
-          >
-            Роадмап
-          </h1>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--tx-3)' }}>
-            4 кольца · 6 фаз · сейчас → 36 мес
-          </span>
-        </div>
+        <h1
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 'var(--text-2xl)',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            color: 'var(--tx)',
+            margin: 0,
+          }}
+        >
+          Роадмап
+        </h1>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--tx-3)' }}>
+          4 кольца · 6 фаз · сейчас → 36 мес
+        </span>
+      </div>
 
+      {/* ── Floating focus toggle ── */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 68,
+          right: 16,
+          zIndex: 40,
+          pointerEvents: 'auto',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <ConstellationToggle
           active={focusMode}
           onToggle={() => {

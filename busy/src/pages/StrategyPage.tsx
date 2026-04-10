@@ -122,7 +122,7 @@ function FeatureTooltipLayer({ feature, x, y }: TooltipInfo) {
 
 export default function StrategyPage() {
   const isCompact = useIsCompact()
-  const [constellationMode, setConstellationMode] = useState(true)
+  const [constellationMode, setConstellationMode] = useState(false)
   const [activeStakeholder, setActiveStakeholder] = useState<string | null>(null)
   const [activeRing, setActiveRing] = useState<string | null>(null)
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null)
@@ -212,8 +212,8 @@ export default function StrategyPage() {
       <div
         style={{
           position: 'fixed',
-          top: 12,
-          right: 12,
+          top: 68,
+          right: 16,
           zIndex: 40,
           pointerEvents: 'auto',
         }}

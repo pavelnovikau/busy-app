@@ -7,6 +7,7 @@ const navItems = [
   { to: '/roadmap', label: 'Роадмап' },
   { to: '/insights', label: 'Инсайты' },
   { to: '/prototypes', label: 'Прототипы' },
+  { to: '/system', label: 'Дизайн' },
 ] as const
 
 const glass: React.CSSProperties = {

@@ -107,7 +107,7 @@ export default function PrototypesPage() {
   })
 
   return (
-    <div style={{ textAlign: 'left' }}>
+    <div style={{ textAlign: 'left', maxWidth: 1100, margin: '0 auto' }}>
       {/* Header bar */}
       <div
         style={{

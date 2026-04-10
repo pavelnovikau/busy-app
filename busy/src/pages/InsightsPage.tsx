@@ -34,7 +34,7 @@ const sectionLabel: React.CSSProperties = {
 
 export default function InsightsPage() {
   return (
-    <div style={{ textAlign: 'left' }}>
+    <div style={{ textAlign: 'left', maxWidth: 980, margin: '0 auto' }}>
       <div style={{ marginBottom: 'var(--space-6)', textAlign: 'center' }}>
         <h1
           style={{

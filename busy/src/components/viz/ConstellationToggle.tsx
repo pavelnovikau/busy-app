@@ -13,14 +13,14 @@ function ConstellationToggle({ active, onToggle }: Props) {
       aria-pressed={active}
       style={{
         fontFamily: "var(--font-mono)",
-        fontSize: 11,
+        fontSize: 13,
         fontWeight: 700,
         letterSpacing: "0.08em",
         textTransform: "uppercase",
         display: "inline-flex",
         alignItems: "center",
         gap: 8,
-        padding: "8px 16px",
+        padding: "10px 20px",
         borderRadius: "var(--radius-full)",
         border: `1px solid ${active ? "var(--focus-cta-hover)" : "color-mix(in srgb, var(--focus-cta) 60%, var(--border))"}`,
         background: active
@@ -42,7 +42,7 @@ function ConstellationToggle({ active, onToggle }: Props) {
     >
       <span
         style={{
-          fontSize: 10,
+          fontSize: 12,
           lineHeight: 1,
           color: active ? "rgba(255,255,255,0.95)" : "var(--focus-cta)",
           textShadow: active ? "0 0 12px rgba(255,255,255,0.28)" : "none",
