@@ -98,7 +98,7 @@ export default function RoadmapPage() {
       >
         <h1
           style={{
-            fontFamily: 'var(--font-mono)',
+            fontFamily: 'var(--font-pixel)',
             fontSize: 'var(--text-2xl)',
             fontWeight: 600,
             textTransform: 'uppercase',
@@ -621,7 +621,7 @@ export default function RoadmapPage() {
                                       fontWeight: 700,
                                       textTransform: 'uppercase',
                                       letterSpacing: '0.12em',
-                                      color,
+                                      color: 'var(--tx-3)',
                                       marginBottom: 6,
                                     }}
                                   >
@@ -659,7 +659,7 @@ export default function RoadmapPage() {
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                                     {phase.uniqueFeatures.map((point, pointIndex) => (
                                       <div key={pointIndex} style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'flex-start' }}>
-                                        <span style={{ color, fontSize: 11, marginTop: 2, flexShrink: 0 }}>◆</span>
+                                        <span style={{ color: 'var(--tx-3)', fontSize: 11, marginTop: 2, flexShrink: 0 }}>◆</span>
                                         <span
                                           style={{
                                             fontFamily: 'var(--font-sans)',
@@ -745,8 +745,8 @@ export default function RoadmapPage() {
                                     alignItems: 'center',
                                     gap: 6,
                                     padding: '5px 10px',
-                                    background: isSelected ? color + '18' : 'var(--surface)',
-                                    border: `1px solid ${isSelected ? color : highlighted ? color : 'var(--border)'}`,
+                                    background: isSelected ? `color-mix(in srgb, ${color} 10%, var(--surface))` : 'var(--surface)',
+                                    border: `1px solid ${isSelected ? color : highlighted ? `color-mix(in srgb, ${color} 55%, var(--border))` : 'var(--border)'}`,
                                     borderRadius: 'var(--radius-md)',
                                     cursor: 'pointer',
                                     transition: 'border-color 0.15s, background 0.15s',
@@ -758,7 +758,7 @@ export default function RoadmapPage() {
                                       fontFamily: 'var(--font-mono)',
                                       fontSize: 11,
                                       fontWeight: 700,
-                                      color,
+                                      color: 'var(--tx-3)',
                                       letterSpacing: '0.05em',
                                     }}
                                   >

@@ -38,7 +38,7 @@ export default function InsightsPage() {
       <div style={{ marginBottom: 'var(--space-6)', textAlign: 'center' }}>
         <h1
           style={{
-            fontFamily: 'var(--font-mono)',
+            fontFamily: 'var(--font-pixel)',
             fontSize: 'var(--text-2xl)',
             fontWeight: 600,
             textTransform: 'uppercase',

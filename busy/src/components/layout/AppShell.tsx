@@ -8,6 +8,7 @@ const navItems = [
   { to: '/insights', label: 'Инсайты' },
   { to: '/prototypes', label: 'Прототипы' },
   { to: '/system', label: 'Дизайн' },
+  { to: '/about', label: 'About' },
 ] as const
 
 const glass: React.CSSProperties = {
