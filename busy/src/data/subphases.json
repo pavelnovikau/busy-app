@@ -15,12 +15,6 @@
     "ring": "r2",
     "code": "2.0",
     "label": "Open Platform",
-    "angleDeg": { "start": -90, "end": 90 }
-  },
-  {
-    "ring": "r2",
-    "code": "2.5",
-    "label": "Team + AI-Adjacent",
-    "angleDeg": { "start": 90, "end": 270 }
+    "angleDeg": { "start": -90, "end": 270 }
   }
 ]

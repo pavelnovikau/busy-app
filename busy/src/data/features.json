@@ -1,50 +1,416 @@
 [
-  { "id": "0.1",  "short": "Pomodoro Timer",       "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": "B" },
-  { "id": "0.2",  "short": "Status Button",        "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": "A" },
-  { "id": "0.3",  "short": "iOS App",              "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": null },
-  { "id": "0.4",  "short": "Android App",          "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": null },
-  { "id": "0.5",  "short": "Apple Watch",          "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": null },
-  { "id": "0.6",  "short": "Wear OS",              "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": null },
-  { "id": "0.7",  "short": "Focus Sessions",       "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": null },
-  { "id": "0.8",  "short": "App Blocking (basic)",  "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": null },
-  { "id": "0.9",  "short": "HTTP API + MQTT",      "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": "D" },
-  { "id": "0.10", "short": "SDK Py/TS/Go",         "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": "D" },
-  { "id": "0.11", "short": "OBS Auto-detect",      "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": "A" },
-  { "id": "0.12", "short": "WiFi 6 + Matter",      "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": "D" },
-  { "id": "0.13", "short": "LED Matrix",           "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": "A" },
-  { "id": "0.14", "short": "OLED Display",         "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": "A" },
-  { "id": "0.15", "short": "Themes & UI",          "ring": "r0", "phase": null,  "priority": "\u25cf", "problemCluster": null },
-
-  { "id": "1.1",  "short": "Google Calendar",      "ring": "r1", "phase": "1.0", "priority": "\u25cf", "problemCluster": "B" },
-  { "id": "1.2",  "short": "Zoom / Meet",          "ring": "r1", "phase": "1.0", "priority": "\u25cf", "problemCluster": "B" },
-  { "id": "1.3",  "short": "App Blocking",         "ring": "r1", "phase": "1.5", "priority": "\u25cf", "problemCluster": "C" },
-  { "id": "1.4",  "short": "App Tracking",         "ring": "r1", "phase": "1.5", "priority": "\u25cf", "problemCluster": "C" },
-  { "id": "1.5",  "short": "Focus Heatmap",        "ring": "r1", "phase": "1.5", "priority": "\u25cf", "problemCluster": "C" },
-  { "id": "1.6",  "short": "Focus Score",          "ring": "r1", "phase": "1.5", "priority": "\u25d0", "problemCluster": "C" },
-  { "id": "1.7",  "short": "Auto-Timesheet",       "ring": "r1", "phase": "1.5", "priority": "\u25cf", "problemCluster": "C" },
-  { "id": "1.8",  "short": "Project Tags",         "ring": "r1", "phase": "1.5", "priority": "\u25cf", "problemCluster": "C" },
-  { "id": "1.9",  "short": "macOS App",            "ring": "r1", "phase": "1.0", "priority": "\u25cf", "problemCluster": "B" },
-  { "id": "1.10", "short": "Interruption Cost",    "ring": "r1", "phase": "1.5", "priority": "\u25cf", "problemCluster": "C" },
-  { "id": "1.11", "short": "Family URL",           "ring": "r1", "phase": "1.0", "priority": "\u25cf", "problemCluster": "A" },
-  { "id": "1.12", "short": "Slack Sync",           "ring": "r1", "phase": "1.0", "priority": "\u25cf", "problemCluster": "B" },
-
-  { "id": "2.1",  "short": "Cross-Device Track",   "ring": "r2", "phase": "2.5", "priority": "\u25cf", "problemCluster": null },
-  { "id": "2.2",  "short": "Toggl Export",         "ring": "r2", "phase": "2.5", "priority": "\u25cf", "problemCluster": null },
-  { "id": "2.3",  "short": "Developer Portal",     "ring": "r2", "phase": "2.0", "priority": "\u25cf", "problemCluster": "D" },
-  { "id": "2.4",  "short": "App Library",          "ring": "r2", "phase": "2.0", "priority": "\u25cf", "problemCluster": "D" },
-  { "id": "2.5",  "short": "AI Agent Monitor",     "ring": "r2", "phase": "2.5", "priority": "\u25cf", "problemCluster": null },
-  { "id": "2.6",  "short": "Home Assistant",       "ring": "r2", "phase": "2.0", "priority": "\u25cf", "problemCluster": "D" },
-  { "id": "2.7",  "short": "HomeKit / Matter",     "ring": "r2", "phase": "2.0", "priority": "\u25cf", "problemCluster": "D" },
-  { "id": "2.8",  "short": "OBS Plugin",           "ring": "r2", "phase": "2.0", "priority": "\u25cf", "problemCluster": "D" },
-  { "id": "2.9",  "short": "Slack Bot Free",       "ring": "r2", "phase": "2.5", "priority": "\u25cf", "problemCluster": "E" },
-  { "id": "2.10", "short": "Team Dashboard",       "ring": "r2", "phase": "2.5", "priority": "\u25d0", "problemCluster": "E" },
-
-  { "id": "3.1",  "short": "AI Focus Coach",       "ring": "r3", "phase": null,  "priority": "\u25cf", "problemCluster": "C" },
-  { "id": "3.2",  "short": "Energy Prediction",    "ring": "r3", "phase": null,  "priority": "\u25cf", "problemCluster": "C" },
-  { "id": "3.3",  "short": "BUSY Mini ($99)",      "ring": "r3", "phase": null,  "priority": "\u25d0", "problemCluster": "A" },
-  { "id": "3.4",  "short": "Marketplace",          "ring": "r3", "phase": null,  "priority": "\u25d0", "problemCluster": "D" },
-  { "id": "3.5",  "short": "Focus Profile",        "ring": "r3", "phase": null,  "priority": "\u25d0", "problemCluster": null },
-  { "id": "3.6",  "short": "HSA/FSA ADHD",         "ring": "r3", "phase": null,  "priority": "\u25cb", "problemCluster": null },
-  { "id": "3.7",  "short": "Enterprise Tier",      "ring": "r3", "phase": null,  "priority": "\u25cb", "problemCluster": null },
-  { "id": "3.8",  "short": "Body Doubling",        "ring": "r3", "phase": null,  "priority": "\u25cb", "problemCluster": null }
+  {
+    "id": "0.1",
+    "short": "Pomodoro Timer",
+    "description": "Запускает таймер Помодоро (25+5 мин) прямо с BUSY Bar — LED пульсирует в ритме сессии, физически сигнализируя коллегам и домашним о начале блока глубокой работы. Кнопка запускает и завершает блок без телефона.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "B"
+  },
+  {
+    "id": "0.2",
+    "short": "Status Button",
+    "description": "Ручное переключение статуса одним нажатием физической кнопки: занят / доступен / пауза — без разблокировки телефона и без открытия приложения.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "A"
+  },
+  {
+    "id": "0.3",
+    "short": "iOS App",
+    "description": "Базовое управление BUSY Bar с iPhone: выбор цвета, запуск таймера, просмотр статуса и настройка первых автоматизаций. Работает как пульт дистанционного управления.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": null
+  },
+  {
+    "id": "0.4",
+    "short": "Android App",
+    "description": "То же управление для Android-устройств: смена цвета, таймер, статус и базовые настройки через мобильное приложение.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "◐",
+    "problemCluster": null
+  },
+  {
+    "id": "0.5",
+    "short": "Apple Watch",
+    "description": "Смена статуса с запястья одним тапом — BUSY Bar переключается без разблокировки телефона, прямо из осложнения на watchface.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "○",
+    "problemCluster": null
+  },
+  {
+    "id": "0.6",
+    "short": "Wear OS",
+    "description": "Управление BUSY Bar с Android-часов: тап меняет статус, вибро-подтверждение на запястье. Удобно при работе стоя или в движении.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "○",
+    "problemCluster": null
+  },
+  {
+    "id": "0.7",
+    "short": "Focus Sessions",
+    "description": "Ручная установка именованных блоков фокус-работы с таймером и счётчиком серий. История сессий за день — первый шаг к пониманию своего рабочего ритма.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "C"
+  },
+  {
+    "id": "0.8",
+    "short": "App Blocking (basic)",
+    "description": "Базовая блокировка отвлекающих приложений на macOS во время BUSY-сессии. Работает через системные macOS API — стабильнее iOS Screen Time и не требует VPN.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "◐",
+    "problemCluster": "B"
+  },
+  {
+    "id": "0.9",
+    "short": "HTTP API + MQTT",
+    "description": "Локальное REST API и MQTT-брокер прямо на устройстве: управление цветом и состоянием без интернета, для DIY-автоматизаций, home lab и скриптов.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "D"
+  },
+  {
+    "id": "0.10",
+    "short": "SDK Py/TS/Go",
+    "description": "Готовые библиотеки для Python, TypeScript и Go — подключение BUSY Bar к своим скриптам и инструментам за несколько строк кода. Документация и примеры включены.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "D"
+  },
+  {
+    "id": "0.11",
+    "short": "OBS Auto-detect",
+    "description": "Автоматически переключает BUSY Bar в режим «В эфире» когда OBS Studio запускает стрим или запись — без ручных действий стримера.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "◐",
+    "problemCluster": "A"
+  },
+  {
+    "id": "0.12",
+    "short": "WiFi 6 + Matter",
+    "description": "WiFi 6 и Matter-сертификация превращают BUSY Bar в живое устройство умного дома: работает с Home Assistant, Apple HomeKit и Google Home из коробки без хабов.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "D"
+  },
+  {
+    "id": "0.13",
+    "short": "LED Matrix",
+    "description": "Программируемая LED-матрица с анимациями, кастомными паттернами и поддержкой текстовых уведомлений — физически богаче одноцветного индикатора.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "◐",
+    "problemCluster": "A"
+  },
+  {
+    "id": "0.14",
+    "short": "OLED Display",
+    "description": "Дополнительный OLED-экран для текстовой информации: имя проекта, счётчик сессий, время до конца блока — не нужно смотреть на телефон.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "○",
+    "problemCluster": null
+  },
+  {
+    "id": "0.15",
+    "short": "Themes & UI",
+    "description": "Встроенные визуальные темы и пользовательские профили: цветовые схемы под разные задачи, паттерны анимаций, кастомная палитра цветов статусов.",
+    "ring": "r0",
+    "phase": null,
+    "priority": "○",
+    "problemCluster": null
+  },
+  {
+    "id": "1.1",
+    "short": "Google Calendar",
+    "description": "Читает Google Calendar и автоматически переключает BUSY Bar за 2 минуты до каждой встречи — статус меняется без участия пользователя, система работает сама.",
+    "ring": "r1",
+    "phase": "1.0",
+    "priority": "●",
+    "problemCluster": "B"
+  },
+  {
+    "id": "1.2",
+    "short": "Zoom / Meet",
+    "description": "Определяет активный видеозвонок (Zoom, Google Meet, Microsoft Teams) и автоматически ставит статус DND на всё время звонка, включая ожидание.",
+    "ring": "r1",
+    "phase": "1.0",
+    "priority": "●",
+    "problemCluster": "B"
+  },
+  {
+    "id": "1.3",
+    "short": "App Blocking",
+    "description": "Блокирует указанные приложения на macOS во время BUSY-сессий через системные API — предотвращает самопрерывания, не требует VPN и работает надёжно.",
+    "ring": "r1",
+    "phase": "1.5",
+    "priority": "◐",
+    "problemCluster": "B"
+  },
+  {
+    "id": "1.4",
+    "short": "App Tracking",
+    "description": "Записывает какие приложения были активны в каждую BUSY-сессию — автоматически, без ручного ввода. Основа для тайм-шита и анализа рабочих паттернов.",
+    "ring": "r1",
+    "phase": "1.5",
+    "priority": "●",
+    "problemCluster": "C"
+  },
+  {
+    "id": "1.5",
+    "short": "Focus Heatmap",
+    "description": "Тепловая карта рабочего дня: когда был в deep work, на звонках, доступен — наглядная картина реального расписания без ручного ведения дневника.",
+    "ring": "r1",
+    "phase": "1.5",
+    "priority": "●",
+    "problemCluster": "C"
+  },
+  {
+    "id": "1.6",
+    "short": "Focus Score",
+    "description": "Ежедневная и еженедельная оценка продуктивности на основе соотношения фокус-времени к прерываниям и встречам — мотивирующий gamification-элемент.",
+    "ring": "r1",
+    "phase": "1.5",
+    "priority": "◐",
+    "problemCluster": "C"
+  },
+  {
+    "id": "1.7",
+    "short": "Auto-Timesheet",
+    "description": "Автоматический тайм-шит с разбивкой по приложениям и проектам без ручного трекинга — формируется из BUSY-сессий, экспортируется в CSV/PDF.",
+    "ring": "r1",
+    "phase": "1.5",
+    "priority": "◐",
+    "problemCluster": "C"
+  },
+  {
+    "id": "1.8",
+    "short": "Project Tags",
+    "description": "Разметка BUSY-сессий по проектам и задачам: понять куда уходит время, подготовить отчёт клиенту или распределить нагрузку между проектами.",
+    "ring": "r1",
+    "phase": "1.5",
+    "priority": "○",
+    "problemCluster": "C"
+  },
+  {
+    "id": "1.9",
+    "short": "macOS App",
+    "description": "Нативное приложение для macOS с menubar-индикатором, автозапуском и горячими клавишами — постоянный bridge между системой и BUSY Bar без открытия браузера.",
+    "ring": "r1",
+    "phase": "1.0",
+    "priority": "●",
+    "problemCluster": "B"
+  },
+  {
+    "id": "1.13",
+    "short": "Smart Focus Intent",
+    "description": "On-device AI детектирует рабочий контекст: редактор или IDE открыт, нет активных звонков 90+ минут — автоматически предлагает фокус-режим. Работает без встречи в календаре, без истории данных, полностью локально. Расширяет Auto Presence на сценарии глубокой работы.",
+    "ring": "r1",
+    "phase": "1.0",
+    "priority": "●",
+    "problemCluster": "B"
+  },
+  {
+    "id": "1.10",
+    "short": "Interruption Cost",
+    "description": "Показывает стоимость каждого прерывания в минутах восстановления концентрации — делает невидимые потери видимыми и меняет отношение к «быстрым вопросам».",
+    "ring": "r1",
+    "phase": "1.5",
+    "priority": "●",
+    "problemCluster": "C"
+  },
+  {
+    "id": "1.11",
+    "short": "Family URL",
+    "description": "Персональная страница busy.app/status/имя — семья видит статус (в встрече / свободен / не беспокоить) без установки приложения, по любой ссылке.",
+    "ring": "r1",
+    "phase": "1.0",
+    "priority": "●",
+    "problemCluster": "A"
+  },
+  {
+    "id": "1.12",
+    "short": "Slack Sync",
+    "description": "Двусторонняя синхронизация: смена статуса в Slack автоматически меняет BUSY Bar, и наоборот — один источник правды для физического и цифрового пространства.",
+    "ring": "r1",
+    "phase": "1.0",
+    "priority": "●",
+    "problemCluster": "B"
+  },
+  {
+    "id": "2.1",
+    "short": "Cross-Device Track",
+    "description": "Отслеживает фокус-паттерны при работе за несколькими устройствами — единая картина дня независимо от того, за каким ноутбуком или ПК работает пользователь.",
+    "ring": "r2",
+    "phase": "2.0",
+    "priority": "◐",
+    "problemCluster": "C"
+  },
+  {
+    "id": "2.2",
+    "short": "Toggl Export",
+    "description": "Прямой экспорт BUSY-сессий в Toggl Track, Clockify, Harvest — интеграция с существующими рабочими процессами без двойного трекинга.",
+    "ring": "r2",
+    "phase": "2.0",
+    "priority": "◐",
+    "problemCluster": "C"
+  },
+  {
+    "id": "2.3",
+    "short": "Developer Portal",
+    "description": "Документация, интерактивная песочница и showcase лучших community-интеграций — центральная точка входа для разработчиков, создающих на платформе BUSY Bar.",
+    "ring": "r2",
+    "phase": "2.0",
+    "priority": "●",
+    "problemCluster": "D"
+  },
+  {
+    "id": "2.4",
+    "short": "App Library",
+    "description": "Каталог community-интеграций с рейтингами и инструкциями: GitHub CI, Notion, Toggl, Home Assistant и десятки других — одно место для всех расширений.",
+    "ring": "r2",
+    "phase": "2.0",
+    "priority": "●",
+    "problemCluster": "D"
+  },
+  {
+    "id": "2.5",
+    "short": "AI Agent Monitor",
+    "description": "Меняет цвет BUSY Bar когда активен AI-агент (Claude Code, Copilot, Cursor) — физический индикатор того, что AI работает и прерывать сейчас не стоит.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "A"
+  },
+  {
+    "id": "2.6",
+    "short": "Home Assistant",
+    "description": "Нативная интеграция с Home Assistant через Matter: BUSY Bar становится полноценным устройством умного дома с автоматизациями, сценами и webhook-тригерами.",
+    "ring": "r2",
+    "phase": "2.0",
+    "priority": "●",
+    "problemCluster": "D"
+  },
+  {
+    "id": "2.7",
+    "short": "HomeKit / Matter",
+    "description": "Полная поддержка Apple HomeKit и Google Home: команды Siri, сцены, автоматизации «встреча → приглуши свет + DND на doorbell» через стандартные экосистемы.",
+    "ring": "r2",
+    "phase": "2.0",
+    "priority": "●",
+    "problemCluster": "D"
+  },
+  {
+    "id": "2.8",
+    "short": "OBS Plugin",
+    "description": "Нативный плагин для OBS Studio: смена сцены или переход в live автоматически меняет цвет и статус BUSY Bar — физический сигнал «в эфире» без настройки webhook.",
+    "ring": "r2",
+    "phase": "2.0",
+    "priority": "◐",
+    "problemCluster": "A"
+  },
+  {
+    "id": "2.9",
+    "short": "Slack Bot Free",
+    "description": "Бесплатный Slack Bot для команд: `/busy-status` и `/busy-when` — видеть статус коллеги прямо в Slack. Работает только если у человека есть BUSY Bar.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "E"
+  },
+  {
+    "id": "2.10",
+    "short": "Team Dashboard",
+    "description": "Агрегированный фокус-ритм команды для руководителя: пик deep work, лучшее время для встреч, динамика по неделям — без слежки за индивидуальными данными.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "E"
+  },
+  {
+    "id": "3.1",
+    "short": "AI Focus Coach",
+    "description": "Персональные рекомендации на основе 90+ дней данных о прерываниях и паттернах восстановления — не generic советы, а конкретная история твоих прерываний и recovery.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "C"
+  },
+  {
+    "id": "3.2",
+    "short": "Energy Prediction",
+    "description": "Предсказывает лучшие окна для глубокой работы на следующую неделю на основе исторических паттернов энергии, встреч и данных о восстановлении.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "C"
+  },
+  {
+    "id": "3.3",
+    "short": "BUSY Mini ($99)",
+    "description": "Более доступная версия BUSY Bar для расширения TAM — только после валидации спроса и достижения 50K units. Без чёткой дифференциации не запускать.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "◐",
+    "problemCluster": null
+  },
+  {
+    "id": "3.4",
+    "short": "Marketplace",
+    "description": "Монетизация community-интеграций: revenue sharing для разработчиков, премиум анимации и шаблоны. BUSY Bar превращается из продукта в платформу с экономикой.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "●",
+    "problemCluster": "D"
+  },
+  {
+    "id": "3.5",
+    "short": "Focus Profile",
+    "description": "Публичный или приватный профиль продуктивности — shareable summary фокус-паттернов, достижений и типа работника. Социальный слой вокруг культуры фокуса.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "◐",
+    "problemCluster": "E"
+  },
+  {
+    "id": "3.6",
+    "short": "HSA/FSA ADHD",
+    "description": "Позиционирование как медицинское устройство для ADHD: HSA/FSA-совместимость в США, специальный onboarding под ADHD-паттерны и документация для страховых.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "◐",
+    "problemCluster": null
+  },
+  {
+    "id": "3.7",
+    "short": "Enterprise Tier",
+    "description": "Team license с enterprise SSO, bulk provisioning и compliance-ready dashboard для IT Manager — запускается только если Team Mesh органически вырос до 100+ команд.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "○",
+    "problemCluster": "E"
+  },
+  {
+    "id": "3.8",
+    "short": "Body Doubling",
+    "description": "Виртуальные сессии совместной работы: синхронизированные таймеры, shared presence, ощущение «работаем параллельно» — проверенная техника продуктивности для ADHD.",
+    "ring": "r3",
+    "phase": null,
+    "priority": "○",
+    "problemCluster": "E"
+  }
 ]

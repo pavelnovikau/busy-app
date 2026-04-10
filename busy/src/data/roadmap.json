@@ -4,20 +4,22 @@
     "ring": "r0",
     "label": "Phase 0 — Core",
     "horizon": "Сейчас",
-    "monthsRange": [
-      0,
-      0
+    "monthsRange": [0, 0],
+    "intro": "Физический индикатор внимания на столе — первый объект, который делает фокус видимым для окружающих. Красный свет понятен ребёнку, курьеру и коллеге без объяснений: это универсальный социальный контракт, которого не создаёт ни один цифровой статус. WiFi, Matter-сертификация и HTTP API делают BUSY Bar живой платформой, а не замороженным гаджетом — каждое следующее кольцо добавляет ценность уже отгруженному железу. Конкуренты (Luxafor, Kuando, Embrava) — USB HID без обновлений; окно, пока они перепроектируют hardware под WiFi — 18–24 месяца.",
+    "outcome": "На выходе Phase 0 BUSY Bar уже не выглядит как аксессуар для таймера. Это физическая точка координации внимания с реальным железом, API и smart-home связностью.",
+    "uniqueFeatures": [
+      "WiFi + Matter + HTTP API из коробки: BUSY Bar можно встроить в дом, home lab и рабочие сценарии без нового hardware.",
+      "Физический социальный контракт, а не просто цифровой статус: устройство говорит за тебя даже когда экран закрыт и телефона рядом нет.",
+      "Программируемая LED-матрица и живые сценарии на устройстве: value доставляется в пространстве, а не только в app layer."
     ],
+    "whyDifferent": "У других busy lights обычно USB HID и закрытая логика. Они могут повторить цветовую лампу, но не могут быстро повторить WiFi-платформу, Matter-интеграцию и обновляемый device layer без перепроектирования всего устройства.",
     "gate": null,
     "circuitBreakers": [
       "Если 30-day retention < 15% через 6 месяцев → остановить все Ring 1 работы"
     ],
     "prototypeIds": [],
     "milestones": [
-      {
-        "label": "Hardware ship",
-        "date": "2025-Q4"
-      }
+      { "label": "Hardware ship", "date": "2025-Q4" }
     ]
   },
   {
@@ -25,17 +27,20 @@
     "ring": "r1",
     "label": "Phase 1.0 — Auto Presence",
     "horizon": "0–6 мес",
-    "monthsRange": [
-      0,
-      6
+    "monthsRange": [0, 6],
+    "intro": "Главная причина смерти busy lights — ручное управление: пользователь забывает включить статус, и устройство пылится. Ring 1 убивает эту проблему: календарь, видеозвонок и on-device AI автоматически управляют BUSY Bar без участия человека. Family URL (busy.app/status/имя) решает бытовой конфликт — семья видит статус без приложения. Платформа: macOS-only, 3 ключевые интеграции (Google Calendar + Slack + Zoom). Free tier — базовый Auto Presence; BUSY Pro $4.99/мес — аналитика, Focus Memory, AI-расширения.",
+    "outcome": "Phase 1.0 превращает BUSY Bar из красивой вещи в автономную привычку: статус начинает жить сам — через календарь, звонок или AI-детекцию рабочего контекста — и пользователю больше не нужно помнить о нём.",
+    "uniqueFeatures": [
+      "Auto Presence связывает календарь, звонки и on-device AI-детекцию приложений в один автоматический контур — без calendar event тоже работает.",
+      "Smart Focus Intent: on-device AI видит открытый редактор и 90+ мин без звонков → предлагает фокус-режим. Privacy-first, всё локально, работает с первого дня.",
+      "Family URL выносит статус за пределы рабочего софта: семья видит без приложения. Slack Sync создаёт единый источник правды для стола и чата."
     ],
-    "gate": "30-day retention ≥ 40%; < 20% = STOP",
+    "whyDifferent": "Большинство альтернатив умеют только «включить лампу» или поменять статус в одном месте. BUSY — первый автоматический слой присутствия, который одновременно работает в комнате, в календаре и определяет рабочий контекст без calendar event.",
+    "gate": "30-day retention ≥ 30% (retention = WiFi подключение + ≥1 auto-trigger за 30 дней); < 15% retention = STOP",
     "circuitBreakers": [
       "Если Microsoft выпускает Teams hardware < $79 → pivot to ADHD/prosumer"
     ],
-    "prototypeIds": [
-      "focus-heatmap"
-    ],
+    "prototypeIds": [],
     "milestones": []
   },
   {
@@ -43,17 +48,20 @@
     "ring": "r1",
     "label": "Phase 1.5 — Focus Memory",
     "horizon": "6–9 мес",
-    "monthsRange": [
-      6,
-      9
+    "monthsRange": [6, 9],
+    "intro": "Работники умственного труда не знают, как реально устроен их рабочий день — сколько стоят прерывания, какие часы самые продуктивные, куда уходит время между встречами. BUSY Bar знает то, чего не знает ни один тайм-трекер: физический контекст сессии, кто прервал и сколько минут заняло восстановление концентрации. Phase 1.5 — ядро BUSY Pro подписки ($4.99/мес): аналитика видна каждый день, это именно тот слой ценности, за который платят.",
+    "outcome": "Phase 1.5 активирует BUSY Pro: из автоматизации превращается в зеркало рабочего дня — не тайм-трекер и не wellness-дашборд, а память о том, как на самом деле ломается и восстанавливается фокус.",
+    "uniqueFeatures": [
+      "Interruption Cost показывает цену прерывания в минутах восстановления, а не просто факт переключения окна.",
+      "Focus Heatmap строится на физическом сигнале и автоматическом контексте, поэтому показывает реальный rhythm of work без ручного логирования.",
+      "Auto-Timesheet и app tracking работают как побочный продукт защищённого фокуса, а не как отдельная дисциплина «не забывай трекать»."
     ],
-    "gate": "Focus Score adoption ≥ 30% DAU",
+    "whyDifferent": "Apple, Google, Toggl и RescueTime видят экранное поведение, но не видят сам факт физического прерывания и момент возвращения в deep work. BUSY Bar строит аналитику на данных, которых у software-only продуктов просто нет.",
+    "gate": "≥ 30% активных пользователей открывают аналитику каждую неделю",
     "circuitBreakers": [
       "Если < 10% пользователей открывают аналитику еженедельно → пересмотреть UX"
     ],
-    "prototypeIds": [
-      "energy-prediction"
-    ],
+    "prototypeIds": ["focus-heatmap"],
     "milestones": []
   },
   {
@@ -61,35 +69,20 @@
     "ring": "r2",
     "label": "Phase 2.0 — Open Platform",
     "horizon": "9–18 мес",
-    "monthsRange": [
-      9,
-      18
+    "monthsRange": [9, 18],
+    "intro": "Одна компания не может построить все интеграции для всех workflow — но community может, если дать правильные инструменты. TypeScript/Python SDK и App Library превращают BUSY Bar из продукта в протокол: GitHub CI, Home Assistant, Toggl, Notion подключаются как модули без участия команды. 500K+ пользователей Home Assistant — готовый acquisition channel через Matter-интеграцию, которую ни один конкурент не может повторить без нового hardware. Реалистичная цель — 50 качественных интеграций от сторонних разработчиков; quality важнее quantity на маленькой базе.",
+    "outcome": "Phase 2.0 делает из BUSY не просто устройство с фичами, а внешнюю платформу, на которой другие могут строить свои сценарии и distribution loops.",
+    "uniqueFeatures": [
+      "Developer Portal и SDK превращают BUSY Bar в programmable endpoint для CI, умного дома, creator workflow и личных automations.",
+      "Matter + Home Assistant дают distribution в уже существующие сообщества, где люди привыкли собирать сценарии вокруг физических устройств.",
+      "App Library позволяет продавать не железо как единичную покупку, а growing ecosystem use-cases поверх уже установленной базы."
     ],
-    "gate": "200+ apps в Library, 30% active 3rd party",
+    "whyDifferent": "Обычный конкурент должен сначала догнать hardware и connectivity, потом API, потом ecosystem. У BUSY эти слои уже связаны, поэтому открытая платформа здесь не маркетинговая надстройка, а естественное продолжение устройства.",
+    "gate": "50+ quality интеграций, ≥ 15 от third-party, 30% пользователей используют ≥ 1 third-party",
     "circuitBreakers": [
-      "Если < 50 интеграций через 12 месяцев → пересмотреть API стратегию"
+      "Если < 15 third-party интеграций через 12 месяцев → пересмотреть API стратегию"
     ],
-    "prototypeIds": [
-      "team-flow-dashboard"
-    ],
-    "milestones": []
-  },
-  {
-    "id": "p2.5",
-    "ring": "r2",
-    "label": "Phase 2.5 — Team + AI-Adjacent",
-    "horizon": "12–24 мес",
-    "monthsRange": [
-      12,
-      24
-    ],
-    "gate": "Team Mesh organic adoption ≥ 100 команд",
-    "circuitBreakers": [
-      "Если Slack Bot MAU < 500 через 6 месяцев после запуска → прекратить инвестиции в Team"
-    ],
-    "prototypeIds": [
-      "focus-profile"
-    ],
+    "prototypeIds": [],
     "milestones": []
   },
   {
@@ -97,25 +90,29 @@
     "ring": "r3",
     "label": "Phase 3 — Intelligence + Expansion",
     "horizon": "18–36 мес",
-    "monthsRange": [
-      18,
-      36
+    "monthsRange": [18, 36],
+    "intro": "К этому моменту BUSY Bar накопил уникальные данные, которых нет ни у одного Big Tech игрока: физический контекст сессий, стоимость каждого прерывания, паттерны восстановления концентрации. Ring 3 превращает эти данные в Interruption Intelligence — точечные рекомендации на основе реальной истории прерываний конкретного человека. Одновременно — командный слой (Team Dashboard, Slack Bot) и AI Agent Monitor как micro-категория на стыке physical computing и AI workflow. Marketplace с revenue sharing превращает платформу в экономику для разработчиков.",
+    "outcome": "Phase 3 делает BUSY невоспроизводимым на одном только software layer: intelligence system + командная координация + физический AI-workflow индикатор — всё поверх одного устройства.",
+    "uniqueFeatures": [
+      "AI Focus Coach строится на interruption-aware данных — не generic советы, а паттерны восстановления конкретного человека за 90+ дней.",
+      "AI Agent Monitor: Claude Code / Copilot / Cursor работает → BUSY Bar сигнализирует физически. Категория, которой не было год назад.",
+      "Team Dashboard показывает коллективный ритм без surveillance UX. Slack Bot — trojan horse в B2B без enterprise sales."
     ],
-    "gate": "Ring 2 metrics + 50K units",
+    "whyDifferent": "Big Tech сделает generic focus coaching, но не воспроизведёт датасет из физического контекста + interruption-patterns + командного ритма, привязанных к реальному устройству. Именно этот слой — защищённая уникальность Ring 3.",
+    "gate": "Ring 2 metrics пройдены + 50K units",
     "circuitBreakers": [
-      "Если AI Coach retention < 20% через 3 месяца → пересмотреть подход"
+      "Если AI Coach retention < 20% через 3 месяца → переключиться на Interruption Intelligence"
     ],
     "prototypeIds": [
+      "focus-profile",
       "ai-focus-mentor",
+      "energy-prediction",
       "body-doubling-room",
       "ai-coach-chat",
       "focus-profile-page"
     ],
     "milestones": [
-      {
-        "label": "Revenue target: $12–18M/year steady state",
-        "date": null
-      }
+      { "label": "Revenue target: $12–18M/year steady state", "date": null }
     ]
   }
 ]

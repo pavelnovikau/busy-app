@@ -21,7 +21,7 @@
 
 ---
 
-## Ring 1 — Auto Presence (0–6 мес)
+## Ring 1 — Auto Presence (0–6 мес) — macOS only
 
 ### Проблема A: Невидимая занятость
 
@@ -36,24 +36,33 @@
 | Фича | Приоритет | Примечание |
 |------|-----------|-----------|
 | Google Calendar → автостатус | ● | За 2 мин до встречи → красный |
-| Outlook Calendar → автостатус | ● | |
-| Zoom / Meet / Teams → автодетект активного звонка | ● | |
+| Outlook Calendar → автостатус | ◐ | Ring 2 (Windows + enterprise расширение) |
+| Zoom / Meet → автодетект активного звонка | ● | Zoom + Google Meet |
+| Microsoft Teams → автодетект | ◐ | Ring 2 |
 | Slack bidirectional sync | ● | BUSY Bar ↔ Slack DND |
-| Microsoft Teams presence sync | ◐ | |
 | Smart transitions (cooling period после встречи) | ◐ | 15 мин "остывания" → зелёный |
 | Override: "я работаю" без встречи в календаре | ● | Ручное включение фокуса |
-| Hotkey быстрого переключения статуса | ◐ | `⌥⌘B` и аналог Windows |
+| Hotkey быстрого переключения статуса | ◐ | `⌥⌘B` |
 
-### Desktop App
+### AI: Smart Focus Intent (новое в Ring 1)
+
+| Фича | Приоритет | Примечание |
+|------|-----------|-----------|
+| On-device app context detection | ● | Редактор / IDE открыт, нет звонков ≥ 90 мин → предлагает фокус |
+| Auto-suggest фокус-режима | ● | Popup / menubar suggestion — без обязательного включения |
+| Privacy-first: всё локально | ● | Никакого cloud, никакой истории не нужно |
+| Настройка: какие приложения = "работа" | ◐ | Пользователь задаёт свой список |
+
+### macOS Desktop App
 
 | Фича | Приоритет | Примечание |
 |------|-----------|-----------|
 | macOS app (menubar) | ● | Основа для всех Ring 1 фич |
-| Windows app (system tray) | ● | |
+| Windows app (system tray) | ◐ | Ring 2 — после macOS валидации |
 | Автозапуск при старте ОС | ● | |
 | Background sync без открытого браузера | ● | |
 | Hotkeys | ◐ | |
-| Linux (snap / flatpak) | ○ | После macOS/Win |
+| Linux (snap / flatpak) | ○ | Ring 3 и позже |
 
 ---
 
@@ -113,28 +122,6 @@
 
 ---
 
-## Ring 2.5 — Team + AI-Adjacent (12–24 мес)
-
-### Проблема E: Культура постоянной доступности
-
-| Фича | Приоритет | Примечание |
-|------|-----------|-----------|
-| "BUSY for Teams" Slack Bot (бесплатный) | ● | Trojan horse: `/busy-status`, `/busy-when @user` |
-| Team Dashboard для менеджера | ◐ | Aggregate focus view, privacy-first |
-| Focus Windows — тихие часы для команды | ◐ | Calendar блоки для всей команды |
-| Team aggregate analytics | ○ | Паттерны команды: где теряем фокус |
-| Workspace license (5–25 устройств) | ○ | После органического роста Team Mesh |
-
-### AI-adjacent workflows
-
-| Фича | Приоритет | Примечание |
-|------|-----------|-----------|
-| AI Agent Monitor | ● | Claude Code / Codex / CLI hooks → физический статус |
-| Cross-device tracking | ● | Mac + iPhone + iPad → единый BUSY-контекст |
-| Экспорт таймшита: CSV / JSON | ● | Для консультантов, фрилансеров, команд |
-| Интеграция с Toggl | ● | Может жить здесь, если Time Tracking выделяем отдельно |
-| Интеграция с Clockify / Harvest | ◐ | |
-
 ---
 
 ## Ring 3 — Intelligence + Expansion (18–36 мес, только при прохождении gate)
@@ -144,15 +131,19 @@
 | AI Focus Coach | C: Аналитика | Персональные рекомендации на основе данных |
 | AI: предсказание лучших часов | C: Аналитика | "Сейчас твоё продуктивное окно, 90 мин свободно" |
 | AI: инсайты по типу работы | Timesheet | "60% фокуса в Figma — ты дизайнер, не менеджер" |
-| BUSY Bar Mini ($99–129) | A: Доступность | Только после 50K units + 40% retention |
-| BUSY Bar Pro (office, larger display) | Enterprise | |
+| AI Agent Monitor | Developer | Claude Code / Codex / CLI hooks → физический статус |
+| "BUSY for Teams" Slack Bot (бесплатный) | E: Доступность | Trojan horse: `/busy-status`, `/busy-when @user` |
+| Team Dashboard для менеджера | E: Доступность | Aggregate focus view, privacy-first |
+| Focus Windows — тихие часы для команды | E: Доступность | Calendar блоки для всей команды |
+| Team aggregate analytics | E: Доступность | Паттерны команды: где теряем фокус |
+| Workspace license (5–25 устройств) | B2B | После органического роста Team Mesh |
+| BUSY Bar Mini ($99–129) | A: Доступность | Только после 50K units + 30% retention |
 | Marketplace: платные анимации | D: Экосистема | Revenue sharing с авторами |
 | Marketplace: premium интеграции | D: Экосистема | |
 | Enterprise tier + fleet management | B2B | Только если Team Mesh органически вырос |
 | HSA/FSA eligibility (ADHD) | ADHD | Консультация с healthcare юристом |
 | Focusmate / body-doubling интеграция | ADHD | Social accountability через физический девайс |
 | Focus Score как публичный профиль | Viral | Шаринг в LinkedIn/Twitter |
-| Корпоративный ROI calculator | Enterprise | "Сколько теряете на прерываниях" |
 
 ---
 
@@ -194,11 +185,10 @@
 
 | Фаза | Главный вопрос | Что должно стать правдой |
 |------|----------------|--------------------------|
-| Ring 1 | "BUSY сам понимает когда я занят?" | Presence работает без ручного участия |
-| Ring 1.5 | "BUSY помогает понять как прошёл день?" | Появляется память и аналитика |
-| Ring 2 | "BUSY можно расширять?" | Появляется ecosystem surface |
-| Ring 2.5 | "BUSY полезен команде и новым workflows?" | Появляется team / AI-adjacent gravity |
-| Ring 3 | "BUSY понимает меня и расширяет категорию?" | Появляется intelligence + identity + expansion |
+| Ring 1 | "BUSY сам понимает когда я занят?" | Presence работает без ручного участия (incl. AI intent) |
+| Ring 1.5 | "BUSY помогает понять как прошёл день?" | Появляется память и аналитика → BUSY Pro |
+| Ring 2 | "BUSY можно расширять?" | Появляется ecosystem surface + Windows |
+| Ring 3 | "BUSY понимает меня и расширяет категорию?" | Intelligence + Team + expansion |
 
 ---
 
