@@ -23,6 +23,7 @@ export default function ConstellationOverlay({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
+          style={{ pointerEvents: 'none' }}
         >
           {/* Edges */}
           {focusPath.edges.map((edge, i) => {

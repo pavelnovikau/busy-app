@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { getInsights } from '@lib/data'
+import PageHeader from '@components/layout/PageHeader'
 
 const insights = getInsights()
 
@@ -24,7 +25,7 @@ const tagColor: Record<string, string> = {
 
 const sectionLabel: React.CSSProperties = {
   fontFamily: 'var(--font-mono)',
-  fontSize: 11,
+  fontSize: 'var(--text-xs)',
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.12em',
@@ -35,31 +36,10 @@ const sectionLabel: React.CSSProperties = {
 export default function InsightsPage() {
   return (
     <div style={{ textAlign: 'left', maxWidth: 980, margin: '0 auto' }}>
-      <div style={{ marginBottom: 'var(--space-6)', textAlign: 'center' }}>
-        <h1
-          style={{
-            fontFamily: 'var(--font-pixel)',
-            fontSize: 'var(--text-2xl)',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            color: 'var(--tx)',
-            margin: 0,
-          }}
-        >
-          Инсайты
-        </h1>
-        <p
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: 'var(--text-sm)',
-            color: 'var(--tx-3)',
-            margin: 'var(--space-1) 0 0',
-          }}
-        >
-          что нашли в рисёрче — меняет предположения
-        </p>
-      </div>
+      <PageHeader
+        title="Инсайты"
+        description="Что нашли в рисёрче и почему это меняет исходные предположения."
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
         {[...insights].sort((a, b) => (a.id === 'i-research' ? 1 : b.id === 'i-research' ? -1 : 0)).map((group, gi) => (

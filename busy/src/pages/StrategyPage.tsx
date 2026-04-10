@@ -8,6 +8,7 @@ import ConstellationOverlay from '@components/viz/ConstellationOverlay'
 import { FeatureNode } from '@components/viz/FeatureNode'
 import { SubphaseLabel } from '@components/viz/SubphaseLabel'
 import { ConstellationToggle } from '@components/viz/ConstellationToggle'
+import PageHeader from '@components/layout/PageHeader'
 import type { Feature } from '@data/types'
 import { useIsCompact } from '@lib/useIsCompact'
 
@@ -36,7 +37,7 @@ const priorityLabel: Record<string, string> = {
 
 const sectionLabel: React.CSSProperties = {
   fontFamily: 'var(--font-mono)',
-  fontSize: 11,
+  fontSize: 'var(--text-xs)',
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.12em',
@@ -246,7 +247,7 @@ export default function StrategyPage() {
             style={{
               ...floatPanel,
               fontFamily: 'var(--font-mono)',
-              fontSize: 11,
+              fontSize: 'var(--text-xs)',
               fontWeight: 700,
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
@@ -291,13 +292,13 @@ export default function StrategyPage() {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-        {/* Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: '3px var(--space-1)', marginBottom: 'var(--space-1)' }}>
-          <span style={{ width: 7, height: 7, borderRadius: 'var(--radius-full)', background: 'var(--focus-cta)', display: 'inline-block', flexShrink: 0, boxShadow: 'var(--focus-cta-shadow-sm)' }} />
-          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: 'var(--tx)' }}>
-            BUSY BAR
-          </span>
-        </div>
+        <PageHeader
+          eyebrow="BUSY BAR"
+          title="Стратегия"
+          description="4 кольца · стейкхолдеры · фокусный контур"
+          marginBottom="var(--space-3)"
+          descriptionMaxWidth={220}
+        />
 
         <div style={divider} />
 
@@ -396,18 +397,17 @@ export default function StrategyPage() {
                 <div
                   style={{
                     margin: 'var(--space-2) 0',
-                    padding: 'var(--space-2) var(--space-2)',
+                    padding: 'var(--space-3)',
                     background: 'var(--surface-2)',
                     borderRadius: 'var(--radius-md)',
-                    borderLeft: `2px solid ${ringColorVar.r1}`,
                   }}
                 >
                   <div style={{ ...sectionLabel, marginBottom: 'var(--space-2)' }}>Боли</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
                     {sh.painPoints.map((pt, i) => (
                       <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
-                        <span style={{ color: 'var(--tx-3)', fontSize: 11, marginTop: 2, flexShrink: 0 }}>—</span>
-                        <span style={{ fontFamily: 'var(--font-sans)', fontSize: 10.5, color: 'var(--tx-2)', lineHeight: 1.45 }}>
+                        <span style={{ color: 'var(--tx-3)', fontSize: 'var(--text-xs)', marginTop: 2, flexShrink: 0 }}>—</span>
+                        <span style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', color: 'var(--tx-2)', lineHeight: 1.6 }}>
                           {pt}
                         </span>
                       </div>
@@ -465,7 +465,7 @@ export default function StrategyPage() {
                   <div
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
+                      fontSize: 'var(--text-xs)',
                       color: ringColorVar[ring.id],
                       fontWeight: 600,
                       lineHeight: 1.3,
@@ -479,7 +479,7 @@ export default function StrategyPage() {
                   <div
                     style={{
                       fontFamily: 'var(--font-sans)',
-                      fontSize: 11,
+                      fontSize: 'var(--text-xs)',
                       color: 'var(--tx-3)',
                       lineHeight: 1.3,
                       whiteSpace: 'nowrap',
@@ -549,7 +549,7 @@ export default function StrategyPage() {
             style={{
               ...floatPanel,
               position: 'fixed',
-              top: isCompact ? 'auto' : 68,
+              top: isCompact ? 'auto' : 132,
               bottom: isCompact ? 84 : 'auto',
               right: 12,
               left: isCompact ? 12 : 'auto',
@@ -615,7 +615,7 @@ export default function StrategyPage() {
               <p
                 style={{
                   fontFamily: 'var(--font-sans)',
-                  fontSize: 11,
+                  fontSize: 'var(--text-xs)',
                   color: 'var(--tx-2)',
                   lineHeight: 1.55,
                   margin: '0 0 var(--space-3)',
@@ -668,7 +668,7 @@ function MetaRow({ label, children }: { label: string; children: React.ReactNode
       >
         {label}
       </span>
-      <span style={{ fontFamily: 'var(--font-sans)', fontSize: 11, color: 'var(--tx-2)' }}>
+      <span style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', color: 'var(--tx-2)' }}>
         {children}
       </span>
     </div>

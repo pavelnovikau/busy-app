@@ -129,4 +129,7 @@ p {
   html {
     @apply font-sans;
   }
+  h2 {
+    font-family: var(--font-pixel);
+  }
 }

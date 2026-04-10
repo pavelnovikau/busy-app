@@ -125,7 +125,7 @@ export default function AppShell() {
         <Link
           to="/system"
           style={{
-            fontSize: 11,
+            fontSize: 'var(--text-xs)',
             color: 'var(--tx-3)',
             textDecoration: 'none',
             fontFamily: 'var(--font-mono)',
@@ -141,7 +141,7 @@ export default function AppShell() {
           aria-label="Toggle theme"
           style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: isCompact ? 9 : 10,
+            fontSize: 'var(--text-xs)',
             fontWeight: 700,
             letterSpacing: '0.08em',
             background: 'color-mix(in srgb, var(--surface) 72%, var(--bg))',

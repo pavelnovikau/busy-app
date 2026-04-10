@@ -11,6 +11,7 @@ const RoadmapPage = lazy(() => import('./pages/RoadmapPage'))
 const InsightsPage = lazy(() => import('./pages/InsightsPage'))
 const PrototypesPage = lazy(() => import('./pages/PrototypesPage'))
 const SystemPage = lazy(() => import('./pages/SystemPage'))
+const AboutPage = lazy(() => import('./pages/AboutPage'))
 
 function PageFallback() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
             <Route path="insights" element={<Suspense fallback={<PageFallback />}><InsightsPage /></Suspense>} />
             <Route path="prototypes" element={<Suspense fallback={<PageFallback />}><PrototypesPage /></Suspense>} />
             <Route path="system" element={<Suspense fallback={<PageFallback />}><SystemPage /></Suspense>} />
+            <Route path="about" element={<Suspense fallback={<PageFallback />}><AboutPage /></Suspense>} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { getRings, getFeatures, getRoadmap, getFocusPath } from '@lib/data'
 import { ConstellationToggle } from '@components/viz/ConstellationToggle'
+import PageHeader from '@components/layout/PageHeader'
 import type { Feature, RingId } from '@data/types'
 import { useIsCompact } from '@lib/useIsCompact'
 
@@ -87,32 +88,11 @@ export default function RoadmapPage() {
 
   return (
     <div style={{ maxWidth: 980, margin: '0 auto', textAlign: 'left' }}>
-      {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 'var(--space-4)',
-          padding: 'var(--space-4) 0 var(--space-6)',
-        }}
-      >
-        <h1
-          style={{
-            fontFamily: 'var(--font-pixel)',
-            fontSize: 'var(--text-2xl)',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            color: 'var(--tx)',
-            margin: 0,
-          }}
-        >
-          Роадмап
-        </h1>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--tx-3)' }}>
-          4 кольца · 6 фаз · сейчас → 36 мес
-        </span>
-      </div>
+      <PageHeader
+        title="Роадмап"
+        meta="4 кольца · 6 фаз · сейчас → 36 мес"
+        marginBottom="var(--space-6)"
+      />
 
       {/* ── Floating focus toggle ── */}
       <div
@@ -146,7 +126,7 @@ export default function RoadmapPage() {
                 style={{
                   flex: m === 36 ? '0 0 auto' : '6 0 0',
                   fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
+                  fontSize: 'var(--text-xs)',
                   color: 'var(--tx-3)',
                   letterSpacing: '0.06em',
                 }}
@@ -159,7 +139,6 @@ export default function RoadmapPage() {
           {/* Gantt bars */}
           {phases.map((phase) => {
             const [start, end] = phase.monthsRange
-            const color = ringColorVar[phase.ring]
             const leftPct = (start / 36) * 100
             const widthPct = Math.max((end - start) / 36 * 100, 2)
             const label = phase.label.split(' — ')[1] ?? phase.label
@@ -174,9 +153,9 @@ export default function RoadmapPage() {
                     width: 68,
                     flexShrink: 0,
                     fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
+                    fontSize: 'var(--text-xs)',
                     fontWeight: 700,
-                    color,
+                    color: 'var(--tx-3)',
                     textAlign: 'right',
                     paddingRight: 8,
                     letterSpacing: '0.05em',
@@ -218,8 +197,8 @@ export default function RoadmapPage() {
                       width: `${widthPct}%`,
                       top: 4,
                       bottom: 4,
-                      background: `color-mix(in oklch, ${color} 30%, var(--surface))`,
-                      border: `1px solid ${color}`,
+                      background: 'var(--surface)',
+                      border: '1px solid var(--border)',
                       borderRadius: 3,
                       display: 'flex',
                       alignItems: 'center',
@@ -232,7 +211,7 @@ export default function RoadmapPage() {
                         fontFamily: 'var(--font-sans)',
                         fontSize: 12,
                         fontWeight: 600,
-                        color,
+                        color: 'var(--tx-2)',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -267,14 +246,10 @@ export default function RoadmapPage() {
               {/* Accordion card */}
               <div
                 style={{
-                  border: `1px solid ${isOpen
-                    ? `color-mix(in srgb, ${color} 28%, var(--border))`
-                    : 'var(--border)'}`,
+                  border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-lg)',
                   marginBottom: 'var(--space-2)',
-                  background: isOpen
-                    ? `color-mix(in srgb, ${color} 3%, var(--surface))`
-                    : 'var(--surface)',
+                  background: 'var(--surface)',
                   overflow: 'hidden',
                   transition: 'border-color var(--transition-base), background var(--transition-base)',
                 }}
@@ -301,7 +276,7 @@ export default function RoadmapPage() {
                     style={{
                       flexShrink: 0,
                       fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
+                      fontSize: 'var(--text-xs)',
                       fontWeight: 700,
                       textTransform: 'uppercase',
                       letterSpacing: '0.08em',
@@ -334,7 +309,7 @@ export default function RoadmapPage() {
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
+                      fontSize: 'var(--text-xs)',
                       color: 'var(--tx-3)',
                       flexShrink: 0,
                     }}
@@ -382,7 +357,7 @@ export default function RoadmapPage() {
                             borderRadius: 'var(--radius-full)',
                             background: 'var(--bg-2)',
                             border: '1px solid var(--border)',
-                            fontSize: 11,
+                            fontSize: 'var(--text-xs)',
                             color: 'var(--tx-2)',
                             flexShrink: 0,
                           }}
@@ -426,7 +401,7 @@ export default function RoadmapPage() {
                           padding: isCompact
                             ? 'var(--space-1) var(--space-3) var(--space-4)'
                             : 'var(--space-1) var(--space-4) var(--space-4)',
-                          borderTop: `1px solid color-mix(in srgb, ${color} 18%, var(--border))`,
+                          borderTop: '1px solid var(--border)',
                         }}
                       >
                         {/* Gate metric — promoted to top of expanded body */}
@@ -439,12 +414,12 @@ export default function RoadmapPage() {
                               padding: '8px 12px',
                               marginBottom: 'var(--space-4)',
                               marginTop: 'var(--space-3)',
-                              background: `color-mix(in srgb, ${color} 7%, var(--surface))`,
-                              border: `1px solid color-mix(in srgb, ${color} 25%, var(--border))`,
+                              background: 'var(--surface)',
+                              border: '1px solid var(--border)',
                               borderRadius: 'var(--radius-md)',
                             }}
                           >
-                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color, flexShrink: 0 }}>
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--tx-3)', flexShrink: 0 }}>
                               Gate
                             </span>
                             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--tx)', lineHeight: 1.4 }}>
@@ -509,10 +484,10 @@ export default function RoadmapPage() {
                                       width: 24,
                                       height: 24,
                                       borderRadius: 'var(--radius-full)',
-                                      background: `color-mix(in srgb, ${color} 10%, var(--surface))`,
-                                      border: `1px solid color-mix(in srgb, ${color} 25%, var(--border))`,
+                                      background: 'var(--bg-2)',
+                                      border: '1px solid var(--border)',
                                       fontSize: 12,
-                                      color,
+                                      color: 'var(--tx-2)',
                                     }}
                                   >
                                     {s.emoji}
@@ -561,7 +536,7 @@ export default function RoadmapPage() {
                                   justifyContent: 'center',
                                   borderRadius: 'var(--radius-sm)',
                                   background: 'var(--bg-2)',
-                                  fontSize: 11,
+                                  fontSize: 'var(--text-xs)',
                                   color: 'var(--tx-2)',
                                   marginTop: 1,
                                 }}>
@@ -606,7 +581,7 @@ export default function RoadmapPage() {
                             <div
                               style={{
                                 background: 'var(--surface)',
-                                border: `1px solid color-mix(in srgb, ${color} 22%, var(--border))`,
+                                border: '1px solid var(--border)',
                                 borderRadius: 'var(--radius-lg)',
                                 padding: 'var(--space-4)',
                                 boxShadow: 'var(--shadow-xs)',
@@ -659,7 +634,7 @@ export default function RoadmapPage() {
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                                     {phase.uniqueFeatures.map((point, pointIndex) => (
                                       <div key={pointIndex} style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'flex-start' }}>
-                                        <span style={{ color: 'var(--tx-3)', fontSize: 11, marginTop: 2, flexShrink: 0 }}>◆</span>
+                                        <span style={{ color: 'var(--tx-3)', fontSize: 'var(--text-xs)', marginTop: 2, flexShrink: 0 }}>◆</span>
                                         <span
                                           style={{
                                             fontFamily: 'var(--font-sans)',
@@ -680,8 +655,8 @@ export default function RoadmapPage() {
                             {phase.whyDifferent && (
                               <div
                                 style={{
-                                  background: `color-mix(in srgb, ${color} 6%, var(--surface))`,
-                                  border: `1px solid color-mix(in srgb, ${color} 28%, var(--border))`,
+                                  background: 'var(--surface)',
+                                  border: '1px solid var(--border)',
                                   borderRadius: 'var(--radius-lg)',
                                   padding: 'var(--space-4)',
                                 }}
@@ -693,7 +668,7 @@ export default function RoadmapPage() {
                                     fontWeight: 700,
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.12em',
-                                    color,
+                                    color: 'var(--tx-3)',
                                     marginBottom: 8,
                                   }}
                                 >
@@ -745,8 +720,8 @@ export default function RoadmapPage() {
                                     alignItems: 'center',
                                     gap: 6,
                                     padding: '5px 10px',
-                                    background: isSelected ? `color-mix(in srgb, ${color} 10%, var(--surface))` : 'var(--surface)',
-                                    border: `1px solid ${isSelected ? color : highlighted ? `color-mix(in srgb, ${color} 55%, var(--border))` : 'var(--border)'}`,
+                                    background: isSelected ? 'var(--surface-2)' : 'var(--surface)',
+                                    border: `1px solid ${isSelected || highlighted ? 'var(--border-2)' : 'var(--border)'}`,
                                     borderRadius: 'var(--radius-md)',
                                     cursor: 'pointer',
                                     transition: 'border-color 0.15s, background 0.15s',
@@ -756,7 +731,7 @@ export default function RoadmapPage() {
                                   <span
                                     style={{
                                       fontFamily: 'var(--font-mono)',
-                                      fontSize: 11,
+                                      fontSize: 'var(--text-xs)',
                                       fontWeight: 700,
                                       color: 'var(--tx-3)',
                                       letterSpacing: '0.05em',
@@ -805,7 +780,7 @@ export default function RoadmapPage() {
                                   borderRadius: 'var(--radius-md)',
                                 }}
                               >
-                                <span style={{ fontSize: 11, flexShrink: 0, marginTop: 2, color: 'var(--tx-3)' }}>⚠</span>
+                                <span style={{ fontSize: 'var(--text-xs)', flexShrink: 0, marginTop: 2, color: 'var(--tx-3)' }}>⚠</span>
                                 <span
                                   style={{
                                     fontFamily: 'var(--font-sans)',
@@ -846,7 +821,7 @@ export default function RoadmapPage() {
               transform: isCompact ? 'none' : 'translateX(-50%)',
               width: isCompact ? 'auto' : 420,
               background: 'var(--surface)',
-              border: `1px solid ${ringColorVar[selectedFeature.ring] ?? 'var(--border)'}`,
+              border: '1px solid var(--border)',
               borderRadius: 'var(--radius-lg)',
               padding: 'var(--space-4)',
               boxShadow: 'var(--shadow-lg)',
@@ -877,7 +852,7 @@ export default function RoadmapPage() {
                 fontFamily: 'var(--font-mono)',
                 fontSize: 10,
                 fontWeight: 700,
-                color: ringColorVar[selectedFeature.ring],
+                color: 'var(--tx-3)',
                 letterSpacing: '0.08em',
                 marginBottom: 4,
               }}
@@ -912,7 +887,7 @@ export default function RoadmapPage() {
             )}
 
             <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
-              <PanelMeta label="Ring" value={selectedRing?.short ?? selectedFeature.ring} color={ringColorVar[selectedFeature.ring]} />
+              <PanelMeta label="Ring" value={selectedRing?.short ?? selectedFeature.ring} />
               {selectedFeature.phase && <PanelMeta label="Phase" value={`Phase ${selectedFeature.phase}`} />}
               <PanelMeta label="Priority" value={priorityLabel[selectedFeature.priority] ?? ''} />
               {selectedFeature.problemCluster && <PanelMeta label="Cluster" value={`Cluster ${selectedFeature.problemCluster}`} />}

@@ -1,5 +1,8 @@
 import { motion } from 'motion/react'
 import { Button } from '@components/ui/button'
+import PageHeader from '@components/layout/PageHeader'
+
+type DemoStyle = React.CSSProperties & Record<`--${string}`, string>
 
 // ── Section wrapper ──────────────────────────────────────────────────────────
 
@@ -118,38 +121,21 @@ function TokenRow({ name, value }: { name: string; value: string }) {
   )
 }
 
+const slateButtonDemoVars: DemoStyle = {
+  '--primary': 'var(--sl)',
+  '--ring': 'var(--sl)',
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function SystemPage() {
   return (
-    <div>
-      {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'baseline',
-          gap: 'var(--space-4)',
-          padding: 'var(--space-4) 0',
-          marginBottom: 'var(--space-8)',
-        }}
-      >
-        <h1
-          style={{
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--tx)',
-            fontSize: 'var(--text-2xl)',
-            fontWeight: 600,
-            margin: 0,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-          }}
-        >
-          Система дизайна
-        </h1>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--tx-3)' }}>
-          токены · типографика · компоненты
-        </span>
-      </div>
+    <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+      <PageHeader
+        title="Система дизайна"
+        meta="токены · типографика · компоненты"
+        marginBottom="var(--space-8)"
+      />
 
       {/* ── 1. Typography ── */}
       <Section title="Typography" id="typography">
@@ -206,7 +192,7 @@ export default function SystemPage() {
           {/* Scale reference */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
             {[
-              ['--text-xs', '11px'], ['--text-sm', '12px'], ['--text-base', '14px'],
+              ['--text-xs', '12px'], ['--text-sm', '12px'], ['--text-base', '14px'],
               ['--text-lg', '16px'], ['--text-xl', '18px'], ['--text-2xl', '24px'],
               ['--text-3xl', '32px'], ['--text-4xl', '42px'],
             ].map(([token, val]) => (
@@ -433,7 +419,7 @@ export default function SystemPage() {
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--tx-3)', marginBottom: 'var(--space-3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               Button variants (shadcn/ui)
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)' }}>
+            <div style={{ ...slateButtonDemoVars, display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)' }}>
               <Button variant="default">Default</Button>
               <Button variant="secondary">Secondary</Button>
               <Button variant="outline">Outline</Button>
