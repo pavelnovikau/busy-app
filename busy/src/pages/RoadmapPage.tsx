@@ -14,10 +14,6 @@ const ringColorVar: Record<string, string> = {
   r0: 'var(--ring-0)', r1: 'var(--ring-1)', r2: 'var(--ring-2)', r3: 'var(--ring-3)',
 }
 
-const ringLabel: Record<string, string> = {
-  r0: 'Core', r1: 'Software', r2: 'Platform', r3: 'Ecosystem',
-}
-
 const priorityColor: Record<string, string> = {
   '●': 'var(--tx)',
   '◐': 'var(--tx-2)',
@@ -44,6 +40,19 @@ export default function RoadmapPage() {
   const isCompact = useIsCompact()
   const [focusMode, setFocusMode] = useState(false)
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null)
+  const [openPhases, setOpenPhases] = useState<Set<string>>(() => new Set(['p0']))
+
+  const togglePhase = (id: string) => {
+    setOpenPhases((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }
 
   const ringMeta = useMemo(
     () => Object.fromEntries(rings.map((r) => [r.id, r])),
@@ -227,10 +236,20 @@ export default function RoadmapPage() {
           const feats = phaseFeaturesMap[phase.id] ?? []
           const prevPhase = phases[index - 1]
           const showGate = index > 0 && phase.gate != null
+          const isOpen = openPhases.has(phase.id)
+          const phaseLabel = phase.label.split(' — ')[1] ?? phase.label
+          const gateTruncated = phase.gate && phase.gate.length > 80
+            ? phase.gate.slice(0, 80) + '…'
+            : phase.gate
 
           return (
-            <div key={phase.id}>
-              {/* Gate checkpoint */}
+            <motion.div
+              key={phase.id}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.06, duration: 0.3 }}
+            >
+              {/* Gate checkpoint (between phases) */}
               {showGate && (
                 <div style={{ padding: 'var(--space-3) 0 var(--space-2)' }}>
                   <div
@@ -244,7 +263,6 @@ export default function RoadmapPage() {
                       borderRadius: 'var(--radius-md)',
                     }}
                   >
-                    {/* Left accent bar */}
                     <div
                       style={{
                         width: 3,
@@ -283,305 +301,437 @@ export default function RoadmapPage() {
                 </div>
               )}
 
-              {/* Phase section */}
-              <motion.div
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.06, duration: 0.3 }}
+              {/* Accordion card */}
+              <div
                 style={{
-                  paddingLeft: 0,
-                  paddingBottom: 'var(--space-5)',
+                  border: `1px solid ${isOpen
+                    ? `color-mix(in srgb, ${color} 28%, var(--border))`
+                    : 'var(--border)'}`,
+                  borderRadius: 'var(--radius-lg)',
+                  marginBottom: 'var(--space-2)',
+                  background: isOpen
+                    ? `color-mix(in srgb, ${color} 3%, var(--surface))`
+                    : 'var(--surface)',
+                  overflow: 'hidden',
+                  transition: 'border-color var(--transition-base), background var(--transition-base)',
                 }}
               >
-                {/* Phase header */}
-                <div
+                {/* ── Collapsed summary row (always visible) ── */}
+                <button
+                  type="button"
+                  onClick={() => togglePhase(phase.id)}
+                  aria-expanded={isOpen}
                   style={{
+                    width: '100%',
                     display: 'flex',
-                    alignItems: 'baseline',
+                    alignItems: 'center',
                     gap: 'var(--space-3)',
-                    paddingTop: 'var(--space-4)',
-                    marginBottom: 'var(--space-4)',
+                    padding: isCompact ? 'var(--space-3) var(--space-3)' : 'var(--space-3) var(--space-4)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
                   }}
                 >
+                  {/* Ring pill */}
                   <span
                     style={{
+                      flexShrink: 0,
                       fontFamily: 'var(--font-mono)',
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
+                      letterSpacing: '0.08em',
                       color,
+                      background: `color-mix(in srgb, ${color} 12%, var(--surface))`,
+                      border: `1px solid color-mix(in srgb, ${color} 30%, var(--border))`,
+                      borderRadius: 'var(--radius-full)',
+                      padding: '2px 8px',
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    Ring {phase.ring.replace('r', '')} · {ringLabel[phase.ring]}
+                    R{phase.ring.replace('r', '')}
                   </span>
+
+                  {/* Phase name */}
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: 14,
+                      fontSize: isCompact ? 13 : 14,
                       fontWeight: 700,
                       color: 'var(--tx)',
                       letterSpacing: '0.02em',
+                      flexShrink: 0,
                     }}
                   >
-                    {phase.label.split(' — ')[1] ?? phase.label}
+                    {phaseLabel}
                   </span>
+
+                  {/* Horizon */}
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: 11,
                       color: 'var(--tx-3)',
+                      flexShrink: 0,
                     }}
                   >
                     {phase.horizon}
                   </span>
-                </div>
 
-                {/* Intro */}
-                {phase.intro && (
-                  <p
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: 13,
-                      color: 'var(--tx-2)',
-                      lineHeight: 1.65,
-                      margin: '0 0 var(--space-4)',
-                      maxWidth: 680,
-                    }}
-                  >
-                    {phase.intro}
-                  </p>
-                )}
-
-                {(phase.outcome || phase.uniqueFeatures?.length || phase.whyDifferent) && (
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: isCompact ? '1fr' : 'minmax(0, 1.15fr) minmax(0, 0.85fr)',
-                      gap: 'var(--space-3)',
-                      marginBottom: 'var(--space-4)',
-                      maxWidth: 860,
-                    }}
-                  >
-                    <div
+                  {/* Outcome snippet — fills available space, truncates */}
+                  {phase.outcome && !isOpen && (
+                    <span
                       style={{
-                        background: 'var(--surface)',
-                        border: `1px solid color-mix(in srgb, ${color} 22%, var(--border))`,
-                        borderRadius: 'var(--radius-lg)',
-                        padding: 'var(--space-4)',
-                        boxShadow: 'var(--shadow-xs)',
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: 12,
+                        color: 'var(--tx-3)',
+                        flex: 1,
+                        minWidth: 0,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
                       }}
                     >
-                      {phase.outcome && (
-                        <>
+                      {phase.outcome}
+                    </span>
+                  )}
+
+                  {/* Gate metric in collapsed state */}
+                  {!isOpen && gateTruncated && (
+                    <span
+                      style={{
+                        display: isCompact ? 'none' : 'block',
+                        flexShrink: 0,
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 11,
+                        color: `color-mix(in srgb, ${color} 70%, var(--tx-3))`,
+                        background: `color-mix(in srgb, ${color} 8%, var(--surface))`,
+                        border: `1px solid color-mix(in srgb, ${color} 20%, var(--border))`,
+                        borderRadius: 'var(--radius-sm)',
+                        padding: '2px 7px',
+                        maxWidth: 240,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {gateTruncated}
+                    </span>
+                  )}
+
+                  {/* Spacer when open (outcome shown inside body instead) */}
+                  {isOpen && <span style={{ flex: 1 }} />}
+
+                  {/* Chevron */}
+                  <span
+                    style={{
+                      flexShrink: 0,
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 14,
+                      color: 'var(--tx-3)',
+                      transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                      transition: 'transform var(--transition-base)',
+                      lineHeight: 1,
+                      userSelect: 'none',
+                    }}
+                  >
+                    ›
+                  </span>
+                </button>
+
+                {/* ── Expanded body ── */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="body"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeInOut' }}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      <div
+                        style={{
+                          padding: isCompact
+                            ? 'var(--space-1) var(--space-3) var(--space-4)'
+                            : 'var(--space-1) var(--space-4) var(--space-4)',
+                          borderTop: `1px solid color-mix(in srgb, ${color} 18%, var(--border))`,
+                        }}
+                      >
+                        {/* Gate metric — promoted to top of expanded body */}
+                        {phase.gate && (
                           <div
                             style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 10,
-                              fontWeight: 700,
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.12em',
-                              color,
-                              marginBottom: 6,
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 'var(--space-2)',
+                              padding: '8px 12px',
+                              marginBottom: 'var(--space-4)',
+                              marginTop: 'var(--space-3)',
+                              background: `color-mix(in srgb, ${color} 7%, var(--surface))`,
+                              border: `1px solid color-mix(in srgb, ${color} 25%, var(--border))`,
+                              borderRadius: 'var(--radius-md)',
                             }}
                           >
-                            Что меняется на этом этапе
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color, flexShrink: 0 }}>
+                              Gate
+                            </span>
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--tx)', lineHeight: 1.4 }}>
+                              {phase.gate}
+                            </span>
                           </div>
+                        )}
+
+                        {/* Intro */}
+                        {phase.intro && (
                           <p
                             style={{
                               fontFamily: 'var(--font-sans)',
                               fontSize: 13,
-                              color: 'var(--tx)',
-                              lineHeight: 1.6,
-                              margin: phase.uniqueFeatures?.length ? '0 0 var(--space-3)' : 0,
+                              color: 'var(--tx-2)',
+                              lineHeight: 1.65,
+                              margin: '0 0 var(--space-4)',
+                              maxWidth: 680,
                             }}
                           >
-                            {phase.outcome}
+                            {phase.intro}
                           </p>
-                        </>
-                      )}
+                        )}
 
-                      {phase.uniqueFeatures?.length ? (
-                        <>
+                        {(phase.outcome || phase.uniqueFeatures?.length || phase.whyDifferent) && (
                           <div
                             style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 10,
-                              fontWeight: 700,
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.12em',
-                              color: 'var(--tx-3)',
-                              marginBottom: 8,
+                              display: 'grid',
+                              gridTemplateColumns: isCompact ? '1fr' : 'minmax(0, 1.15fr) minmax(0, 0.85fr)',
+                              gap: 'var(--space-3)',
+                              marginBottom: 'var(--space-4)',
+                              maxWidth: 860,
                             }}
                           >
-                            Уникально у BUSY
+                            <div
+                              style={{
+                                background: 'var(--surface)',
+                                border: `1px solid color-mix(in srgb, ${color} 22%, var(--border))`,
+                                borderRadius: 'var(--radius-lg)',
+                                padding: 'var(--space-4)',
+                                boxShadow: 'var(--shadow-xs)',
+                              }}
+                            >
+                              {phase.outcome && (
+                                <>
+                                  <div
+                                    style={{
+                                      fontFamily: 'var(--font-mono)',
+                                      fontSize: 10,
+                                      fontWeight: 700,
+                                      textTransform: 'uppercase',
+                                      letterSpacing: '0.12em',
+                                      color,
+                                      marginBottom: 6,
+                                    }}
+                                  >
+                                    Что меняется на этом этапе
+                                  </div>
+                                  <p
+                                    style={{
+                                      fontFamily: 'var(--font-sans)',
+                                      fontSize: 13,
+                                      color: 'var(--tx)',
+                                      lineHeight: 1.6,
+                                      margin: phase.uniqueFeatures?.length ? '0 0 var(--space-3)' : 0,
+                                    }}
+                                  >
+                                    {phase.outcome}
+                                  </p>
+                                </>
+                              )}
+
+                              {phase.uniqueFeatures?.length ? (
+                                <>
+                                  <div
+                                    style={{
+                                      fontFamily: 'var(--font-mono)',
+                                      fontSize: 10,
+                                      fontWeight: 700,
+                                      textTransform: 'uppercase',
+                                      letterSpacing: '0.12em',
+                                      color: 'var(--tx-3)',
+                                      marginBottom: 8,
+                                    }}
+                                  >
+                                    Уникально у BUSY
+                                  </div>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                                    {phase.uniqueFeatures.map((point, pointIndex) => (
+                                      <div key={pointIndex} style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'flex-start' }}>
+                                        <span style={{ color, fontSize: 11, marginTop: 2, flexShrink: 0 }}>◆</span>
+                                        <span
+                                          style={{
+                                            fontFamily: 'var(--font-sans)',
+                                            fontSize: 13,
+                                            color: 'var(--tx-2)',
+                                            lineHeight: 1.55,
+                                          }}
+                                        >
+                                          {point}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              ) : null}
+                            </div>
+
+                            {phase.whyDifferent && (
+                              <div
+                                style={{
+                                  background: `color-mix(in srgb, ${color} 6%, var(--surface))`,
+                                  border: `1px solid color-mix(in srgb, ${color} 28%, var(--border))`,
+                                  borderRadius: 'var(--radius-lg)',
+                                  padding: 'var(--space-4)',
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    fontFamily: 'var(--font-mono)',
+                                    fontSize: 10,
+                                    fontWeight: 700,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.12em',
+                                    color,
+                                    marginBottom: 8,
+                                  }}
+                                >
+                                  Почему это не commodity
+                                </div>
+                                <p
+                                  style={{
+                                    fontFamily: 'var(--font-sans)',
+                                    fontSize: 13,
+                                    color: 'var(--tx)',
+                                    lineHeight: 1.62,
+                                    margin: 0,
+                                  }}
+                                >
+                                  {phase.whyDifferent}
+                                </p>
+                              </div>
+                            )}
                           </div>
+                        )}
+
+                        {/* Features */}
+                        {feats.length > 0 && (
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexWrap: 'wrap',
+                              gap: 'var(--space-2)',
+                              marginBottom: phase.circuitBreakers.length > 0 ? 'var(--space-4)' : 0,
+                            }}
+                          >
+                            {feats.map((f) => {
+                              const key = `${f.ring}:${f.id}`
+                              const isOnPath = focusKeys.has(key)
+                              const dimmed = focusMode && !isOnPath
+                              const highlighted = focusMode && isOnPath
+                              const isSelected = selectedFeature?.id === f.id
+                              return (
+                                <motion.button
+                                  key={f.id}
+                                  type="button"
+                                  animate={{ opacity: dimmed ? 0.25 : 1 }}
+                                  transition={{ duration: 0.2 }}
+                                  onClick={() => handleFeatureClick(f)}
+                                  aria-pressed={isSelected}
+                                  aria-label={`${f.id}. ${f.short}`}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '5px 10px',
+                                    background: isSelected ? color + '18' : 'var(--surface)',
+                                    border: `1px solid ${isSelected ? color : highlighted ? color : 'var(--border)'}`,
+                                    borderRadius: 'var(--radius-md)',
+                                    cursor: 'pointer',
+                                    transition: 'border-color 0.15s, background 0.15s',
+                                    textAlign: 'left',
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      fontFamily: 'var(--font-mono)',
+                                      fontSize: 11,
+                                      fontWeight: 700,
+                                      color,
+                                      letterSpacing: '0.05em',
+                                    }}
+                                  >
+                                    {f.id}
+                                  </span>
+                                  <span
+                                    style={{
+                                      fontFamily: 'var(--font-sans)',
+                                      fontSize: 13,
+                                      color: 'var(--tx)',
+                                    }}
+                                  >
+                                    {f.short}
+                                  </span>
+                                  <span
+                                    style={{
+                                      fontFamily: 'var(--font-sans)',
+                                      fontSize: 13,
+                                      color: priorityColor[f.priority] ?? 'var(--tx-3)',
+                                      marginLeft: 2,
+                                    }}
+                                  >
+                                    {f.priority}
+                                  </span>
+                                </motion.button>
+                              )
+                            })}
+                          </div>
+                        )}
+
+                        {/* Circuit breakers */}
+                        {phase.circuitBreakers.length > 0 && (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                            {phase.uniqueFeatures.map((point, pointIndex) => (
-                              <div key={pointIndex} style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'flex-start' }}>
-                                <span style={{ color, fontSize: 11, marginTop: 2, flexShrink: 0 }}>◆</span>
+                            {phase.circuitBreakers.map((cb, i) => (
+                              <div
+                                key={i}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  gap: 'var(--space-2)',
+                                  padding: '8px 12px',
+                                  background: 'var(--surface)',
+                                  border: '1px solid var(--border)',
+                                  borderRadius: 'var(--radius-md)',
+                                }}
+                              >
+                                <span style={{ fontSize: 11, flexShrink: 0, marginTop: 2, color: 'var(--tx-3)' }}>⚠</span>
                                 <span
                                   style={{
                                     fontFamily: 'var(--font-sans)',
                                     fontSize: 13,
                                     color: 'var(--tx-2)',
-                                    lineHeight: 1.55,
+                                    lineHeight: 1.5,
                                   }}
                                 >
-                                  {point}
+                                  {cb}
                                 </span>
                               </div>
                             ))}
                           </div>
-                        </>
-                      ) : null}
-                    </div>
-
-                    {phase.whyDifferent && (
-                      <div
-                        style={{
-                          background: `color-mix(in srgb, ${color} 6%, var(--surface))`,
-                          border: `1px solid color-mix(in srgb, ${color} 28%, var(--border))`,
-                          borderRadius: 'var(--radius-lg)',
-                          padding: 'var(--space-4)',
-                        }}
-                      >
-                        <div
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 10,
-                            fontWeight: 700,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.12em',
-                            color,
-                            marginBottom: 8,
-                          }}
-                        >
-                          Почему это не commodity
-                        </div>
-                        <p
-                          style={{
-                            fontFamily: 'var(--font-sans)',
-                            fontSize: 13,
-                            color: 'var(--tx)',
-                            lineHeight: 1.62,
-                            margin: 0,
-                          }}
-                        >
-                          {phase.whyDifferent}
-                        </p>
+                        )}
                       </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Features */}
-                {feats.length > 0 && (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: 'var(--space-2)',
-                      marginBottom: phase.circuitBreakers.length > 0 ? 'var(--space-4)' : 0,
-                    }}
-                  >
-                    {feats.map((f) => {
-                      const key = `${f.ring}:${f.id}`
-                      const isOnPath = focusKeys.has(key)
-                      const dimmed = focusMode && !isOnPath
-                      const highlighted = focusMode && isOnPath
-                      const isSelected = selectedFeature?.id === f.id
-                      return (
-                        <motion.button
-                          key={f.id}
-                          type="button"
-                          animate={{ opacity: dimmed ? 0.25 : 1 }}
-                          transition={{ duration: 0.2 }}
-                          onClick={() => handleFeatureClick(f)}
-                          aria-pressed={isSelected}
-                          aria-label={`${f.id}. ${f.short}`}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            padding: '5px 10px',
-                            background: isSelected ? color + '18' : 'var(--surface)',
-                            border: `1px solid ${isSelected ? color : highlighted ? color : 'var(--border)'}`,
-                            borderRadius: 'var(--radius-md)',
-                            cursor: 'pointer',
-                            transition: 'border-color 0.15s, background 0.15s',
-                            textAlign: 'left',
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 11,
-                              fontWeight: 700,
-                              color,
-                              letterSpacing: '0.05em',
-                            }}
-                          >
-                            {f.id}
-                          </span>
-                          <span
-                            style={{
-                              fontFamily: 'var(--font-sans)',
-                              fontSize: 13,
-                              color: 'var(--tx)',
-                            }}
-                          >
-                            {f.short}
-                          </span>
-                          <span
-                            style={{
-                              fontFamily: 'var(--font-sans)',
-                              fontSize: 13,
-                              color: priorityColor[f.priority] ?? 'var(--tx-3)',
-                              marginLeft: 2,
-                            }}
-                          >
-                            {f.priority}
-                          </span>
-                        </motion.button>
-                      )
-                    })}
-                  </div>
-                )}
-
-                {/* Circuit breakers */}
-                {phase.circuitBreakers.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                    {phase.circuitBreakers.map((cb, i) => (
-                      <div
-                        key={i}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: 'var(--space-2)',
-                          padding: '8px 12px',
-                          background: 'var(--surface)',
-                          border: '1px solid var(--border)',
-                          borderRadius: 'var(--radius-md)',
-                        }}
-                      >
-                        <span style={{ fontSize: 11, flexShrink: 0, marginTop: 2, color: 'var(--tx-3)' }}>⚠</span>
-                        <span
-                          style={{
-                            fontFamily: 'var(--font-sans)',
-                            fontSize: 13,
-                            color: 'var(--tx-2)',
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          {cb}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </motion.div>
-            </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
           )
         })}
       </div>
