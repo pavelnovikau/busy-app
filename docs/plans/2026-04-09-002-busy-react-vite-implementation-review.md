@@ -344,4 +344,3 @@ Files:
 
 - `npm run build` — проходит
 - `npm run lint` — падает
-
