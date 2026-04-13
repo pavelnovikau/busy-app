@@ -338,6 +338,34 @@ export default function AboutPage() {
           and future platform directions.
         </p>
       </section>
+
+      {/* Made by */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          paddingBottom: 'var(--space-4)',
+        }}
+      >
+        <a
+          href="https://thtds.com"
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 'var(--text-xs)',
+            color: 'var(--tx-3)',
+            textDecoration: 'none',
+            letterSpacing: '0.08em',
+            opacity: 0.6,
+            transition: 'var(--transition-fast)',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '0.6')}
+        >
+          thtds.com · the dots
+        </a>
+      </div>
     </div>
   )
 }
