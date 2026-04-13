@@ -1,4 +1,5 @@
 import PageHeader from '@components/layout/PageHeader'
+import DitheredRings from '@components/viz/DitheredRings'
 
 export default function AboutPage() {
   return (
@@ -13,6 +14,17 @@ export default function AboutPage() {
         paddingBottom: 'var(--space-10)',
       }}
     >
+      {/* Dithered rings hero */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          padding: 'var(--space-8) 0 var(--space-4)',
+        }}
+      >
+        <DitheredRings size={320} />
+      </div>
+
       <PageHeader
         title="ABOUT"
         subtitle={
