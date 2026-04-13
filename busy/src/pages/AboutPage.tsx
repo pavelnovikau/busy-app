@@ -348,7 +348,7 @@ export default function AboutPage() {
         }}
       >
         <a
-          href="https://thtds.com"
+          href="https://thdts.com"
           target="_blank"
           rel="noreferrer"
           style={{
@@ -363,7 +363,7 @@ export default function AboutPage() {
           onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
           onMouseLeave={e => (e.currentTarget.style.opacity = '0.6')}
         >
-          thtds.com · the dots
+          thdts.com · the dots
         </a>
       </div>
     </div>
