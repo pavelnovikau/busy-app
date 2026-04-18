@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
 import { Link } from 'react-router'
 import type { SimpleChapter as SimpleChapterType } from '@data/types'
+import SimpleBusyBarMotif from './SimpleBusyBarMotif'
 
 interface Props {
   chapter: SimpleChapterType
@@ -63,6 +64,15 @@ export default function SimpleChapter({ chapter, totalChapters, onVisible }: Pro
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
       >
+        <motion.div variants={slideUp}>
+          <SimpleBusyBarMotif
+            status={chapter.deviceStatus}
+            color={chapter.color}
+            index={chapter.index}
+            total={totalChapters}
+          />
+        </motion.div>
+
         {/* Phase label */}
         {chapter.phase && (
           <motion.div variants={slideUp} style={{ marginBottom: 'var(--space-3)' }}>
@@ -208,8 +218,8 @@ export default function SimpleChapter({ chapter, totalChapters, onVisible }: Pro
                   fontSize: 'var(--text-base)',
                   fontWeight: 600,
                   color: 'var(--tx)',
-                  background: `color-mix(in srgb, var(${chapter.color}) 10%, var(--bg))`,
-                  border: `1.5px solid color-mix(in srgb, var(${chapter.color}) 35%, transparent)`,
+                  background: 'color-mix(in srgb, var(--or) 12%, var(--bg))',
+                  border: '1.5px solid color-mix(in srgb, var(--or) 36%, transparent)',
                   borderRadius: 'var(--radius-lg)',
                   padding: 'var(--space-4) var(--space-7)',
                   cursor: 'pointer',
@@ -220,7 +230,7 @@ export default function SimpleChapter({ chapter, totalChapters, onVisible }: Pro
                 }}
               >
                 Полная версия
-                <span style={{ color: colorVar }}>→</span>
+                <span style={{ color: 'var(--or)' }}>→</span>
               </motion.button>
             </Link>
           </motion.div>

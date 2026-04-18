@@ -156,6 +156,7 @@ export interface SimpleChapter {
   index: number;
   name: string;
   color: string;                          // CSS var name, e.g. '--cy'
+  deviceStatus: string;                   // short device UI label, e.g. 'FOCUS ON'
   phase?: string;                         // product ring label, e.g. 'Ring 0'
   headline: string;
   body: string;
