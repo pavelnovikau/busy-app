@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { useIsCompact } from '@lib/useIsCompact'
+import { useTheme } from '@lib/ThemeContext'
 
 const navItems = [
   { to: '/simple', label: 'Simple' },
@@ -19,35 +19,15 @@ const glass: React.CSSProperties = {
   boxShadow: 'var(--shadow-md)',
 }
 
-const THEME_STORAGE_KEY = 'busy-theme'
-
-function getInitialTheme(): 'light' | 'dark' {
-  if (typeof window === 'undefined') return 'light'
-
-  const stored = window.localStorage.getItem(THEME_STORAGE_KEY)
-  if (stored === 'dark' || stored === 'light') return stored
-
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
 export default function AppShell() {
   const location = useLocation()
   const isCompact = useIsCompact()
-  const [theme, setTheme] = useState<'light' | 'dark'>(getInitialTheme)
+  const { theme, toggleTheme } = useTheme()
 
   const isLandingPage = location.pathname === '/'
   const isSimplePage = location.pathname === '/simple'
   const isStrategyPage = location.pathname === '/strategy'
   const hideNav = isLandingPage || isSimplePage
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : ''
-    window.localStorage.setItem(THEME_STORAGE_KEY, theme)
-  }, [theme])
-
-  const toggleTheme = () => {
-    setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
-  }
 
   return (
     <div style={{ minHeight: '100svh', background: 'var(--bg)', color: 'var(--tx)' }}>

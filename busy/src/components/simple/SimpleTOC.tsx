@@ -1,5 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react'
+import { Link } from 'react-router'
 import type { SimpleChapter } from '@data/types'
+import { useTheme } from '@lib/ThemeContext'
 
 interface Props {
   chapters: SimpleChapter[]
@@ -10,6 +12,8 @@ interface Props {
 }
 
 export default function SimpleTOC({ chapters, activeChapterId, isOpen, onClose, onChapterSelect }: Props) {
+  const { theme, toggleTheme } = useTheme()
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -70,12 +74,7 @@ export default function SimpleTOC({ chapters, activeChapterId, isOpen, onClose, 
                 const isActive = chapter.id === activeChapterId
                 const isLast = i === chapters.length - 1
                 return (
-                  <li
-                    key={chapter.id}
-                    style={{
-                      borderBottom: isLast ? 'none' : '1px solid var(--border)',
-                    }}
-                  >
+                  <li key={chapter.id} style={{ borderBottom: isLast ? 'none' : '1px solid var(--border)' }}>
                     <button
                       onClick={() => { onChapterSelect(chapter.id); onClose() }}
                       style={{
@@ -107,7 +106,7 @@ export default function SimpleTOC({ chapters, activeChapterId, isOpen, onClose, 
                         fontFamily: 'var(--font-sans)',
                         fontSize: 'var(--text-sm)',
                         fontWeight: isActive ? 600 : 400,
-                        color: isActive ? `var(${chapter.color})` : 'var(--tx-2)',
+                        color: isActive ? `var(${chapters[i].color})` : 'var(--tx-2)',
                         lineHeight: 1.4,
                         transition: 'color 0.15s',
                       }}>
@@ -119,7 +118,81 @@ export default function SimpleTOC({ chapters, activeChapterId, isOpen, onClose, 
               })}
             </ul>
 
-            <div style={{ height: 56 }} />
+            {/* Footer */}
+            <div style={{
+              borderTop: '1px solid var(--border)',
+              padding: 'var(--space-4) var(--space-5)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--space-3)',
+            }}>
+              {/* Row: back + theme */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Link
+                  to="/"
+                  onClick={onClose}
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'var(--text-xs)',
+                    letterSpacing: '0.06em',
+                    color: 'var(--tx-3)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  ← выбор версии
+                </Link>
+                <button
+                  onClick={toggleTheme}
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'var(--text-xs)',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    background: 'color-mix(in srgb, var(--surface) 72%, var(--bg))',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '3px 8px',
+                    cursor: 'pointer',
+                    color: 'var(--tx-2)',
+                  }}
+                >
+                  {theme === 'dark' ? 'LIGHT' : 'DARK'}
+                </button>
+              </div>
+
+              {/* Full version CTA */}
+              <Link
+                to="/strategy"
+                style={{ textDecoration: 'none', display: 'block' }}
+                onClick={onClose}
+              >
+                <motion.button
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{
+                    width: '100%',
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 600,
+                    color: 'var(--tx)',
+                    background: 'color-mix(in srgb, var(--sl) 10%, var(--bg))',
+                    border: '1.5px solid color-mix(in srgb, var(--sl) 30%, transparent)',
+                    borderRadius: 'var(--radius-lg)',
+                    padding: 'var(--space-3) var(--space-5)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 'var(--space-2)',
+                  }}
+                >
+                  Полная версия
+                  <span style={{ color: 'var(--sl)' }}>→</span>
+                </motion.button>
+              </Link>
+            </div>
+
+            <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} />
           </motion.div>
         </>
       )}

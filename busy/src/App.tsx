@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import { LazyMotion } from 'motion/react'
 import AppShell from './components/layout/AppShell'
+import { ThemeProvider } from '@lib/ThemeContext'
 
 const loadFeatures = () =>
   import('motion/react').then((m) => m.domAnimation)
@@ -36,6 +37,7 @@ function PageFallback() {
 
 export default function App() {
   return (
+    <ThemeProvider>
     <LazyMotion features={loadFeatures} strict>
       <BrowserRouter>
         <Routes>
@@ -52,5 +54,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </LazyMotion>
+    </ThemeProvider>
   )
 }
