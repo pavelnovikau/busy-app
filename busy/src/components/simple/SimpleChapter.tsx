@@ -63,6 +63,23 @@ export default function SimpleChapter({ chapter, totalChapters, onVisible }: Pro
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
       >
+        {/* Phase label */}
+        {chapter.phase && (
+          <motion.div variants={slideUp} style={{ marginBottom: 'var(--space-3)' }}>
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: colorVar,
+              opacity: 0.7,
+            }}>
+              {chapter.phase}
+            </span>
+          </motion.div>
+        )}
+
         {/* Headline */}
         <motion.h2
           variants={slideUp}
