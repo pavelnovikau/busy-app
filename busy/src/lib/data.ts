@@ -12,10 +12,11 @@ import subphasesRaw from '@data/subphases.json'
 import roadmapRaw from '@data/roadmap.json'
 import prototypesRaw from '@data/prototypes.json'
 import insightsRaw from '@data/insights.json'
+import simpleStoryRaw from '@data/simple-story.json'
 
 import type {
   Ring, Feature, Stakeholder, FocusPath,
-  Subphase, RoadmapPhase, Prototype, InsightGroup,
+  Subphase, RoadmapPhase, Prototype, InsightGroup, SimpleChapter,
 } from '@data/types'
 
 type PrototypeSeed = Omit<Prototype, 'ring' | 'phase'> & Partial<Pick<Prototype, 'ring' | 'phase'>>
@@ -28,6 +29,7 @@ const subphases = subphasesRaw as Subphase[]
 const roadmap = roadmapRaw as RoadmapPhase[]
 const prototypeSeeds = prototypesRaw as PrototypeSeed[]
 const insights = insightsRaw as InsightGroup[]
+const simpleStory = simpleStoryRaw as SimpleChapter[]
 
 const roadmapById = new Map(roadmap.map((phase) => [phase.id, phase]))
 const featureById = new Map(features.map((feature) => [feature.id, feature]))
@@ -72,3 +74,4 @@ export function getRoadmap(): RoadmapPhase[] {
 }
 export function getPrototypes(): Prototype[] { return prototypes }
 export function getInsights(): InsightGroup[] { return insights }
+export function getSimpleStory(): SimpleChapter[] { return simpleStory }

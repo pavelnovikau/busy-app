@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { useIsCompact } from '@lib/useIsCompact'
 
 const navItems = [
-  { to: '/', label: 'Стратегия' },
+  { to: '/strategy', label: 'Стратегия' },
   { to: '/roadmap', label: 'Роадмап' },
   { to: '/insights', label: 'Инсайты' },
   { to: '/prototypes', label: 'Прототипы' },
@@ -34,7 +34,10 @@ export default function AppShell() {
   const isCompact = useIsCompact()
   const [theme, setTheme] = useState<'light' | 'dark'>(getInitialTheme)
 
-  const isStrategyPage = location.pathname === '/'
+  const isLandingPage = location.pathname === '/'
+  const isSimplePage = location.pathname === '/simple'
+  const isStrategyPage = location.pathname === '/strategy'
+  const hideNav = isLandingPage || isSimplePage
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : ''
@@ -61,7 +64,7 @@ export default function AppShell() {
       </main>
 
       {/* ── Bottom center: nav tabs ── */}
-      <nav
+      {!hideNav && <nav
         aria-label="Основная навигация"
         style={{
           ...glass,
@@ -84,7 +87,7 @@ export default function AppShell() {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === '/strategy'}
             style={({ isActive }) => ({
               padding: isCompact ? '6px 10px' : '5px 14px',
               fontSize: isCompact ? 'var(--text-xs)' : 'var(--text-sm)',
@@ -102,10 +105,10 @@ export default function AppShell() {
             {label}
           </NavLink>
         ))}
-      </nav>
+      </nav>}
 
       {/* ── Bottom right: zoom slot + theme toggle ── */}
-      <div
+      {!isSimplePage && <div
         style={{
           ...glass,
           position: 'fixed',
@@ -156,7 +159,7 @@ export default function AppShell() {
         >
           {theme === 'dark' ? 'LIGHT' : 'DARK'}
         </button>
-      </div>
+      </div>}
     </div>
   )
 }

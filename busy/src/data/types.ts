@@ -148,3 +148,16 @@ export interface InsightGroup {
   heading: string;
   cards: InsightCard[];
 }
+
+// ── Simple Story ──────────────────────────────────────────────────
+
+export interface SimpleChapter {
+  id: string;
+  index: number;
+  name: string;
+  color: string;                          // CSS var name, e.g. '--cy'
+  headline: string;
+  body: string;
+  bridge?: string;                        // 'yes, but...' transition
+  keyPoints: [string, string, string];
+}

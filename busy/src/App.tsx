@@ -6,6 +6,8 @@ import AppShell from './components/layout/AppShell'
 const loadFeatures = () =>
   import('motion/react').then((m) => m.domAnimation)
 
+const LandingPage = lazy(() => import('./pages/LandingPage'))
+const SimplePage = lazy(() => import('./pages/SimplePage'))
 const StrategyPage = lazy(() => import('./pages/StrategyPage'))
 const RoadmapPage = lazy(() => import('./pages/RoadmapPage'))
 const InsightsPage = lazy(() => import('./pages/InsightsPage'))
@@ -38,7 +40,9 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<AppShell />}>
-            <Route index element={<Suspense fallback={<PageFallback />}><StrategyPage /></Suspense>} />
+            <Route index element={<Suspense fallback={<PageFallback />}><LandingPage /></Suspense>} />
+            <Route path="simple" element={<Suspense fallback={<PageFallback />}><SimplePage /></Suspense>} />
+            <Route path="strategy" element={<Suspense fallback={<PageFallback />}><StrategyPage /></Suspense>} />
             <Route path="roadmap" element={<Suspense fallback={<PageFallback />}><RoadmapPage /></Suspense>} />
             <Route path="insights" element={<Suspense fallback={<PageFallback />}><InsightsPage /></Suspense>} />
             <Route path="prototypes" element={<Suspense fallback={<PageFallback />}><PrototypesPage /></Suspense>} />
