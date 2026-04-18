@@ -28,8 +28,8 @@ export default function SimpleBusyBarMotif({ status, color, index, total }: Simp
       <div
         style={{
           position: 'relative',
-          borderRadius: 18,
-          padding: '15px 14px 12px',
+          borderRadius: 16,
+          padding: '11px 14px 10px',
           background: `
             radial-gradient(circle at 78% 8%, color-mix(in srgb, white 18%, transparent), transparent 24%),
             radial-gradient(circle at 50% 36%, color-mix(in srgb, ${colorVar} 8%, transparent), transparent 54%),
@@ -44,14 +44,14 @@ export default function SimpleBusyBarMotif({ status, color, index, total }: Simp
       >
         <div
           style={{
-            padding: '3px 2px 7px',
+            padding: '1px 2px 5px',
             background: 'transparent',
             border: 0,
             boxShadow: 'none',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            minHeight: 58,
+            minHeight: 48,
           }}
         >
           <div
@@ -80,7 +80,7 @@ export default function SimpleBusyBarMotif({ status, color, index, total }: Simp
             display: 'grid',
             gridTemplateColumns: `repeat(${segmentCount}, 1fr)`,
             gap: 2,
-            marginTop: 8,
+            marginTop: 6,
             padding: '0 2px',
           }}
         >
