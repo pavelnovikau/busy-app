@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { useIsCompact } from '@lib/useIsCompact'
 
 const navItems = [
+  { to: '/simple', label: 'Simple' },
   { to: '/strategy', label: 'Стратегия' },
   { to: '/roadmap', label: 'Роадмап' },
   { to: '/insights', label: 'Инсайты' },

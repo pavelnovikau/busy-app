@@ -1,11 +1,27 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
+import { Link } from 'react-router'
 import type { SimpleChapter as SimpleChapterType } from '@data/types'
 
 interface Props {
   chapter: SimpleChapterType
   totalChapters: number
   onVisible: (id: string) => void
+}
+
+const slideUp = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.48, ease: [0.25, 0.1, 0.25, 1] as const } },
+}
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+}
+
+const keyStagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 }
 
 export default function SimpleChapter({ chapter, totalChapters, onVisible }: Props) {
@@ -16,14 +32,13 @@ export default function SimpleChapter({ chapter, totalChapters, onVisible }: Pro
     if (!el) return
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) onVisible(chapter.id) },
-      { threshold: 0.5 },
+      { threshold: 0.35 },
     )
     obs.observe(el)
     return () => obs.disconnect()
   }, [chapter.id, onVisible])
 
   const colorVar = `var(${chapter.color})`
-  const colorBg = `color-mix(in srgb, var(${chapter.color}) 12%, var(--bg))`
   const isLast = chapter.index === totalChapters
 
   return (
@@ -43,63 +58,29 @@ export default function SimpleChapter({ chapter, totalChapters, onVisible }: Pro
       }}
     >
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
+        variants={stagger}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-80px' }}
       >
-        {/* Chapter label pill */}
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 'var(--space-2)',
-            background: colorBg,
-            border: `1px solid color-mix(in srgb, var(${chapter.color}) 30%, transparent)`,
-            borderRadius: 'var(--radius-full)',
-            padding: 'var(--space-1) var(--space-3)',
-            marginBottom: 'var(--space-6)',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'var(--text-xs)',
-              fontWeight: 600,
-              letterSpacing: '0.08em',
-              color: colorVar,
-            }}
-          >
-            {String(chapter.index).padStart(2, '0')}
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'var(--text-xs)',
-              letterSpacing: '0.06em',
-              color: colorVar,
-            }}
-          >
-            {chapter.name.toUpperCase()}
-          </span>
-        </div>
-
         {/* Headline */}
-        <h2
+        <motion.h2
+          variants={slideUp}
           style={{
             fontFamily: 'var(--font-sans)',
             fontSize: 'clamp(var(--text-2xl), 5vw, var(--text-3xl))',
             fontWeight: 700,
             color: 'var(--tx)',
-            lineHeight: 1.25,
+            lineHeight: 1.2,
             margin: '0 0 var(--space-5)',
           }}
         >
           {chapter.headline}
-        </h2>
+        </motion.h2>
 
         {/* Body */}
-        <p
+        <motion.p
+          variants={slideUp}
           style={{
             fontFamily: 'var(--font-sans)',
             fontSize: 'var(--text-lg)',
@@ -109,22 +90,24 @@ export default function SimpleChapter({ chapter, totalChapters, onVisible }: Pro
           }}
         >
           {chapter.body}
-        </p>
+        </motion.p>
 
         {/* Key points */}
-        <ul
+        <motion.ul
+          variants={keyStagger}
           style={{
             listStyle: 'none',
             padding: 0,
-            margin: '0 0 var(--space-7)',
+            margin: chapter.bridge ? '0 0 var(--space-8)' : '0',
             display: 'flex',
             flexDirection: 'column',
             gap: 'var(--space-3)',
           }}
         >
           {chapter.keyPoints.map((point, i) => (
-            <li
+            <motion.li
               key={i}
+              variants={slideUp}
               style={{
                 display: 'flex',
                 gap: 'var(--space-3)',
@@ -153,55 +136,77 @@ export default function SimpleChapter({ chapter, totalChapters, onVisible }: Pro
               >
                 {point}
               </span>
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
 
-        {/* Bridge — "yes, but..." */}
+        {/* Bridge — visual pause */}
         {chapter.bridge && (
-          <p
+          <motion.div
+            variants={slideUp}
             style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: 'var(--text-sm)',
-              fontStyle: 'italic',
-              color: 'var(--tx-3)',
-              lineHeight: 1.6,
-              margin: 0,
-              paddingLeft: 'var(--space-5)',
-              borderLeft: `2px solid color-mix(in srgb, var(${chapter.color}) 40%, transparent)`,
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 'var(--space-3)',
+              paddingTop: 'var(--space-2)',
             }}
           >
-            {chapter.bridge}
-          </p>
+            <span
+              style={{
+                color: colorVar,
+                fontFamily: 'var(--font-mono)',
+                fontSize: 'var(--text-sm)',
+                flexShrink: 0,
+                marginTop: 2,
+                opacity: 0.7,
+              }}
+            >
+              —
+            </span>
+            <p
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: 'var(--text-base)',
+                fontWeight: 500,
+                color: 'var(--tx-2)',
+                lineHeight: 1.6,
+                margin: 0,
+              }}
+            >
+              {chapter.bridge}
+            </p>
+          </motion.div>
         )}
 
         {/* Last chapter CTA */}
         {isLast && (
-          <div style={{ marginTop: 'var(--space-9)' }}>
-            <a href="/strategy" style={{ textDecoration: 'none' }}>
+          <motion.div variants={slideUp} style={{ marginTop: 'var(--space-10)' }}>
+            <Link to="/strategy" style={{ textDecoration: 'none', display: 'block' }}>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 style={{
+                  width: '100%',
                   fontFamily: 'var(--font-sans)',
                   fontSize: 'var(--text-base)',
                   fontWeight: 600,
                   color: 'var(--tx)',
-                  background: colorBg,
-                  border: `1.5px solid color-mix(in srgb, var(${chapter.color}) 40%, transparent)`,
+                  background: `color-mix(in srgb, var(${chapter.color}) 10%, var(--bg))`,
+                  border: `1.5px solid color-mix(in srgb, var(${chapter.color}) 35%, transparent)`,
                   borderRadius: 'var(--radius-lg)',
                   padding: 'var(--space-4) var(--space-7)',
                   cursor: 'pointer',
-                  display: 'inline-flex',
+                  display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'center',
                   gap: 'var(--space-2)',
                 }}
               >
                 Полная версия
                 <span style={{ color: colorVar }}>→</span>
               </motion.button>
-            </a>
-          </div>
+            </Link>
+          </motion.div>
         )}
       </motion.div>
     </section>

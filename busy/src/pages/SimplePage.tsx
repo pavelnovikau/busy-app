@@ -10,27 +10,38 @@ export default function SimplePage() {
   const [activeChapterId, setActiveChapterId] = useState(chapters[0].id)
   const [tocOpen, setTocOpen] = useState(false)
 
+  const activeChapter = chapters.find((c) => c.id === activeChapterId) ?? chapters[0]
+
   const handleVisible = useCallback((id: string) => {
     setActiveChapterId(id)
   }, [])
 
   const handleChapterSelect = useCallback((id: string) => {
-    const el = document.getElementById(id)
-    el?.scrollIntoView({ behavior: 'smooth' })
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
     setActiveChapterId(id)
   }, [])
 
   const handleNext = useCallback(() => {
-    const activeIndex = chapters.findIndex((c) => c.id === activeChapterId)
-    const next = chapters[activeIndex + 1]
-    if (next) {
-      document.getElementById(next.id)?.scrollIntoView({ behavior: 'smooth' })
-    }
+    const idx = chapters.findIndex((c) => c.id === activeChapterId)
+    const next = chapters[idx + 1]
+    if (next) document.getElementById(next.id)?.scrollIntoView({ behavior: 'smooth' })
   }, [activeChapterId])
 
   return (
     <>
-      <div style={{ paddingBottom: 'calc(var(--nav-height) + 48px)' }}>
+      {/* Background micro-tint — transitions with active chapter color */}
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: `color-mix(in srgb, var(${activeChapter.color}) 5%, var(--bg))`,
+          transition: 'background 0.7s ease',
+          zIndex: 0,
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div style={{ position: 'relative', zIndex: 1, paddingBottom: 56 }}>
         {chapters.map((chapter) => (
           <SimpleChapter
             key={chapter.id}

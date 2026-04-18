@@ -14,7 +14,6 @@ export default function SimpleTOC({ chapters, activeChapterId, isOpen, onClose, 
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
@@ -25,13 +24,12 @@ export default function SimpleTOC({ chapters, activeChapterId, isOpen, onClose, 
             style={{
               position: 'fixed',
               inset: 0,
-              background: 'color-mix(in srgb, var(--bg) 50%, transparent)',
+              background: 'color-mix(in srgb, var(--bg) 55%, transparent)',
               backdropFilter: 'blur(6px)',
               zIndex: 40,
             }}
           />
 
-          {/* Sheet */}
           <motion.div
             key="sheet"
             initial={{ y: '100%' }}
@@ -47,61 +45,39 @@ export default function SimpleTOC({ chapters, activeChapterId, isOpen, onClose, 
               background: 'var(--bg)',
               borderTop: '1px solid var(--border)',
               borderRadius: 'var(--radius-xl) var(--radius-xl) 0 0',
-              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
             }}
           >
             {/* Handle */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                paddingTop: 'var(--space-3)',
-                paddingBottom: 'var(--space-2)',
-              }}
-            >
-              <div
-                style={{
-                  width: 32,
-                  height: 3,
-                  borderRadius: 2,
-                  background: 'var(--border-2)',
-                }}
-              />
+            <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--space-3) 0 var(--space-1)' }}>
+              <div style={{ width: 32, height: 3, borderRadius: 2, background: 'var(--border-2)' }} />
             </div>
 
             {/* Label */}
-            <div
-              style={{
-                padding: 'var(--space-3) var(--space-6) var(--space-4)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                letterSpacing: '0.12em',
-                color: 'var(--tx-3)',
-                textTransform: 'uppercase',
-              }}
-            >
+            <div style={{
+              padding: 'var(--space-2) var(--space-6) var(--space-3)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 10,
+              letterSpacing: '0.14em',
+              color: 'var(--tx-3)',
+              textTransform: 'uppercase',
+            }}>
               Содержание
             </div>
 
             {/* Chapter list */}
-            <ul
-              style={{
-                listStyle: 'none',
-                padding: '0 var(--space-3)',
-                margin: 0,
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              {chapters.map((chapter) => {
+            <ul style={{ listStyle: 'none', padding: '0 var(--space-2)', margin: 0 }}>
+              {chapters.map((chapter, i) => {
                 const isActive = chapter.id === activeChapterId
+                const isLast = i === chapters.length - 1
                 return (
-                  <li key={chapter.id}>
+                  <li
+                    key={chapter.id}
+                    style={{
+                      borderBottom: isLast ? 'none' : '1px solid var(--border)',
+                    }}
+                  >
                     <button
-                      onClick={() => {
-                        onChapterSelect(chapter.id)
-                        onClose()
-                      }}
+                      onClick={() => { onChapterSelect(chapter.id); onClose() }}
                       style={{
                         display: 'flex',
                         alignItems: 'baseline',
@@ -110,35 +86,31 @@ export default function SimpleTOC({ chapters, activeChapterId, isOpen, onClose, 
                         background: 'none',
                         border: 'none',
                         borderRadius: 'var(--radius-md)',
-                        padding: 'var(--space-3) var(--space-3)',
+                        padding: 'var(--space-3) var(--space-4)',
                         cursor: 'pointer',
                         textAlign: 'left',
                       }}
                     >
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          fontWeight: 600,
-                          color: isActive ? `var(${chapter.color})` : 'var(--tx-3)',
-                          letterSpacing: '0.08em',
-                          minWidth: 20,
-                          flexShrink: 0,
-                          transition: 'color 0.15s',
-                        }}
-                      >
+                      <span style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 10,
+                        fontWeight: 600,
+                        color: isActive ? `var(${chapter.color})` : 'var(--tx-3)',
+                        letterSpacing: '0.08em',
+                        minWidth: 20,
+                        flexShrink: 0,
+                        transition: 'color 0.15s',
+                      }}>
                         {String(chapter.index).padStart(2, '0')}
                       </span>
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: 'var(--text-base)',
-                          fontWeight: isActive ? 600 : 400,
-                          color: isActive ? `var(${chapter.color})` : 'var(--tx-2)',
-                          lineHeight: 1.35,
-                          transition: 'color 0.15s',
-                        }}
-                      >
+                      <span style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: 'var(--text-sm)',
+                        fontWeight: isActive ? 600 : 400,
+                        color: isActive ? `var(${chapter.color})` : 'var(--tx-2)',
+                        lineHeight: 1.4,
+                        transition: 'color 0.15s',
+                      }}>
                         {chapter.headline}
                       </span>
                     </button>
@@ -147,7 +119,7 @@ export default function SimpleTOC({ chapters, activeChapterId, isOpen, onClose, 
               })}
             </ul>
 
-            <div style={{ height: 'calc(56px + env(safe-area-inset-bottom, 0px))' }} />
+            <div style={{ height: 56 }} />
           </motion.div>
         </>
       )}
